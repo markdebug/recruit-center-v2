@@ -22,14 +22,6 @@ func SetupRouter(jobHandler *JobHandler, jobApplyHandler *JobApplyHandler) *gin.
 	// CORS中间件
 	r.Use(middleware.CORSMiddleware())
 
-	// 健康检查
-	r.GET("/health", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"status": "ok",
-			"time":   time.Now().Format(time.RFC3339),
-		})
-	})
-
 	// API 版本分组
 	v1 := r.Group("/api/v1")
 	{
@@ -54,6 +46,20 @@ func SetupRouter(jobHandler *JobHandler, jobApplyHandler *JobApplyHandler) *gin.
 			applies.PUT("/:id/status", middleware.AuthRequired(), jobApplyHandler.UpdateStatus) // 更新状态
 		}
 	}
-	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
+	addToolHandlers(r)
 	return r
+}
+
+func addToolHandlers(r *gin.Engine) {
+
+	// 健康检查
+	r.GET("/health", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{
+			"status": "ok",
+			"time":   time.Now().Format(time.RFC3339),
+		})
+	})
+
+	// 工具相关路由
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 }

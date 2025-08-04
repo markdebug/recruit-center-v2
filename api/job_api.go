@@ -4,6 +4,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"org.thinkinai.com/recruit-center/api/dto/request"
 	"org.thinkinai.com/recruit-center/api/dto/response"
 	"org.thinkinai.com/recruit-center/internal/dao"
 	"org.thinkinai.com/recruit-center/internal/service"
@@ -24,16 +25,17 @@ func NewJobHandler(jobService *service.JobService) *JobHandler {
 
 // Create 创建职位
 func (h *JobHandler) Create(c *gin.Context) {
-	var job dao.Job
+	var job request.CreateJobRequest
 	if err := c.ShouldBindJSON(&job); err != nil {
 		c.JSON(200, response.NewError(enums.BadRequest))
 		return
 	}
+	//校验参数
 
 	// 获取当前用户公司ID（假设从JWT中获取）
-	companyID := c.GetUint("company_id")
+	companyID := c.GetUint("companyId")
 	job.CompanyID = companyID
-
+	//判断公司是否存在
 	if err := h.jobService.Create(&job); err != nil {
 		c.JSON(200, response.NewErrorWithMsg(enums.InternalServerError, err.Error()))
 		return
@@ -49,6 +51,9 @@ func (h *JobHandler) Update(c *gin.Context) {
 		c.JSON(200, response.NewError(enums.BadRequest))
 		return
 	}
+	//判断职位是否存在
+
+	//判断公司是否正确
 
 	// 检查权限（确保是职位所属公司）
 	companyID := c.GetUint("company_id")
@@ -72,6 +77,9 @@ func (h *JobHandler) Delete(c *gin.Context) {
 		c.JSON(200, response.NewError(enums.BadRequest))
 		return
 	}
+	//判断职位是否存在
+
+	//判断公司是否正确
 
 	if err := h.jobService.Delete(uint(id)); err != nil {
 		c.JSON(200, response.NewErrorWithMsg(enums.InternalServerError, err.Error()))

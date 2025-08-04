@@ -8,6 +8,7 @@ import (
 
 // CreateJobRequest 创建职位请求
 type CreateJobRequest struct {
+	CompanyID     uint          `json:"companyId" binding:"required" example:"1"`
 	Name          string        `json:"name" binding:"required,min=1,max=100" example:"高级Go开发工程师"`
 	JobSkill      string        `json:"jobSkill" binding:"max=500" example:"Go,Redis,MySQL,Docker"`
 	JobSalary     string        `json:"jobSalary" binding:"max=50" example:"15k-25k"`
