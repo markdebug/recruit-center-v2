@@ -21,12 +21,12 @@ func (s JobStatus) String() string {
 }
 
 // JobType 职位类型
-type JobType string
+type JobType int
 
 const (
-	JobTypeFullTime JobType = "full_time" // 全职
-	JobTypePartTime JobType = "part_time" // 兼职
-	JobTypeIntern   JobType = "intern"    // 实习
+	JobTypeFullTime JobType = 1 // 全职
+	JobTypePartTime JobType = 2 // 兼职
+	JobTypeIntern   JobType = 3 // 实习
 )
 
 func (t JobType) String() string {
@@ -81,12 +81,12 @@ func (s JobStatus) IsValid() bool {
 }
 
 // JobType 相关方法
-func JobTypeFromString(typeStr string) JobType {
+func JobTypeFromInt(typeStr int) JobType {
 	return JobType(typeStr)
 }
 
-func GetJobTypeText(typeStr string) string {
-	return JobTypeFromString(typeStr).String()
+func GetJobTypeText(typeStr int) string {
+	return JobTypeFromInt(typeStr).String()
 }
 
 func (t JobType) IsValid() bool {

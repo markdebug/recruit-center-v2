@@ -8,14 +8,22 @@ import (
 
 // JobApply 职位申请记录
 type JobApply struct {
-	ID            uint      `gorm:"primarykey" json:"id"`              // 申请ID
-	JobID         uint      `gorm:"not null;index" json:"job_id"`      // 职位ID
-	UserID        uint      `gorm:"not null;index" json:"user_id"`     // 用户ID
-	ApplyTime     time.Time `gorm:"not null" json:"apply_time"`        // 申请时间
-	ApplyProgress string    `gorm:"size:50" json:"apply_progress"`     // 申请进度
-	Status        int       `gorm:"default:1" json:"status"`           // 申请状态
-	CreateTime    time.Time `gorm:"autoCreateTime" json:"create_time"` // 创建时间
-	UpdateTime    time.Time `gorm:"autoUpdateTime" json:"update_time"` // 更新时间
+	ID            uint      `gorm:"primarykey" json:"id"`             // 申请ID
+	JobID         uint      `gorm:"not null;index" json:"jobId"`      // 职位ID
+	UserID        uint      `gorm:"not null;index" json:"userId"`     // 用户ID
+	ApplyTime     time.Time `gorm:"not null" json:"applyTime"`        // 申请时间
+	ApplyProgress string    `gorm:"size:50" json:"applyProgress"`     // 申请进度
+	Status        int       `gorm:"default:1" json:"status"`          // 申请状态
+	CreateTime    time.Time `gorm:"autoCreateTime" json:"createTime"` // 创建时间
+	UpdateTime    time.Time `gorm:"autoUpdateTime" json:"updateTime"` // 更新时间
+}
+
+func NewJobApply(jobID, userID uint) *JobApply {
+	return &JobApply{
+		JobID:  jobID,
+		UserID: userID,
+		Status: 1, // 默认状态为1（待处理）
+	}
 }
 
 // TableName 指定表名

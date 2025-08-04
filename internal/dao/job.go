@@ -8,25 +8,32 @@ import (
 
 // Job 职位信息结构体
 type Job struct {
-	ID            uint      `gorm:"primarykey" json:"id"`              // 职位ID
-	Name          string    `gorm:"size:100;not null" json:"name"`     // 职位名称
-	CompanyID     uint      `gorm:"not null" json:"company_id"`        // 公司ID
-	JobSkill      string    `gorm:"size:500" json:"job_skill"`         // 职位所需技能
-	JobSalary     string    `gorm:"size:50" json:"job_salary"`         // 职位薪资范围
-	JobDescribe   string    `gorm:"type:text" json:"job_describe"`     // 职位描述
-	JobLocation   string    `gorm:"size:200" json:"job_location"`      // 工作地点
-	JobExpireTime time.Time `gorm:"index" json:"job_expire_time"`      // 职位过期时间
-	Status        int       `gorm:"default:1" json:"status"`           // 职位状态（1: 正常, 0: 已过期）
-	JobType       string    `gorm:"size:50" json:"job_type"`           // 职位类型（全职、兼职、实习等）
-	JobCategory   string    `gorm:"size:50" json:"job_category"`       // 职位分类 （行业分类）
-	JobExperience string    `gorm:"size:50" json:"job_experience"`     // 职位经验要求
-	JobEducation  string    `gorm:"size:50" json:"job_education"`      // 职位学历要求
-	JobBenefit    string    `gorm:"size:500" json:"job_benefit"`       // 职位福利
-	JobContact    string    `gorm:"size:100" json:"job_contact"`       // 联系方式
-	DeleteStatus  int       `gorm:"default:0" json:"delete_status"`    // 删除状态（0: 正常, 1: 已删除）
-	JobSource     string    `gorm:"size:100" json:"job_source"`        // 职位来源（内推、直招、猎头等）
-	CreateTime    time.Time `gorm:"autoCreateTime" json:"create_time"` // 创建时间
-	UpdateTime    time.Time `gorm:"autoUpdateTime" json:"update_time"` // 更新时间
+	ID            uint      `gorm:"primarykey" json:"id"`             // 职位ID
+	Name          string    `gorm:"size:100;not null" json:"name"`    // 职位名称
+	CompanyID     uint      `gorm:"not null" json:"companyId"`        // 公司ID
+	JobSkill      string    `gorm:"size:500" json:"jobSkill"`         // 职位所需技能
+	JobSalary     string    `gorm:"size:50" json:"jobSalary"`         // 职位薪资范围
+	JobDescribe   string    `gorm:"type:text" json:"jobDescribe"`     // 职位描述
+	JobLocation   string    `gorm:"size:200" json:"jobLocation"`      // 工作地点
+	JobExpireTime time.Time `gorm:"index" json:"jobExpireTime"`       // 职位过期时间
+	Status        int       `gorm:"default:1" json:"status"`          // 职位状态（1: 正常, 0: 已过期）
+	JobType       int       `gorm:"size:50" json:"jobType"`           // 职位类型（全职、兼职、实习等）
+	JobCategory   string    `gorm:"size:50" json:"jobCategory"`       // 职位分类 （行业分类）
+	JobExperience string    `gorm:"size:50" json:"jobExperience"`     // 职位经验要求
+	JobEducation  string    `gorm:"size:50" json:"jobEducation"`      // 职位学历要求
+	JobBenefit    string    `gorm:"size:500" json:"jobBenefit"`       // 职位福利
+	JobContact    string    `gorm:"size:100" json:"jobContact"`       // 联系方式
+	DeleteStatus  int       `gorm:"default:0" json:"deleteStatus"`    // 删除状态（0: 正常, 1: 已删除）
+	JobSource     string    `gorm:"size:100" json:"jobSource"`        // 职位来源（内推、直招、猎头等）
+	CreateTime    time.Time `gorm:"autoCreateTime" json:"createTime"` // 创建时间
+	UpdateTime    time.Time `gorm:"autoUpdateTime" json:"updateTime"` // 更新时间
+}
+
+func NewJob(name string, companyID uint) *Job {
+	return &Job{
+		Name:      name,
+		CompanyID: companyID,
+	}
 }
 
 // TableName 指定表名

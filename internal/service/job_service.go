@@ -5,8 +5,8 @@ import (
 	"time"
 
 	"go.uber.org/zap"
+	"org.thinkinai.com/recruit-center/api/dto/response"
 	"org.thinkinai.com/recruit-center/internal/dao"
-	"org.thinkinai.com/recruit-center/internal/entity/rsp"
 	"org.thinkinai.com/recruit-center/pkg/enums"
 	"org.thinkinai.com/recruit-center/pkg/logger"
 )
@@ -89,13 +89,13 @@ func (s *JobService) SearchByKeyword(keyword string) ([]dao.Job, error) {
 }
 
 // SearchByCondition 多条件搜索职位
-func (s *JobService) SearchByCondition(conditions map[string]interface{}, page, size int) (*rsp.PageResponse, error) {
+func (s *JobService) SearchByCondition(conditions map[string]interface{}, page, size int) (*response.PageResponse, error) {
 	jobs, total, err := s.jobDao.SearchByCondition(conditions, page, size)
 	if err != nil {
 		return nil, err
 	}
 
-	return rsp.NewPage(jobs, total, page, size), nil
+	return response.NewPage(jobs, total, page, size), nil
 }
 
 // UpdateStatus 更新职位状态
@@ -114,11 +114,11 @@ func (s *JobService) GetExpiredJobs() ([]dao.Job, error) {
 }
 
 // SearchByCompany 获取公司发布的职位
-func (s *JobService) SearchByCompany(companyID uint, page, size int) (*rsp.PageResponse, error) {
+func (s *JobService) SearchByCompany(companyID uint, page, size int) (*response.PageResponse, error) {
 	jobs, total, err := s.jobDao.SearchByCompany(companyID, page, size)
 	if err != nil {
 		return nil, err
 	}
 
-	return rsp.NewPage(jobs, total, page, size), nil
+	return response.NewPage(jobs, total, page, size), nil
 }

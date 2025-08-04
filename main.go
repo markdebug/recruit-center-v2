@@ -1,10 +1,13 @@
 package main
 
 import (
+	"context"
 	"fmt"
+	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"go.uber.org/zap"
 	"org.thinkinai.com/recruit-center/api"
@@ -55,10 +58,17 @@ func main() {
 	r := api.SetupRouter(jobHandler, jobApplyHandler)
 
 	// 6. 启动HTTP服务
+	// 8. 启动HTTP服务器
+	server := &http.Server{
+		Addr:    fmt.Sprintf(":%d", cfg.Port),
+		Handler: r,
+	}
+
+	// 启动服务器的goroutine
 	go func() {
-		addr := fmt.Sprintf(":%d", cfg.Port)
-		logger.L.Info("HTTP服务启动", zap.String("addr", addr))
-		if err := r.Run(addr); err != nil {
+		logger.L.Info("HTTP服务启动",
+			zap.String("address", server.Addr))
+		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			logger.L.Fatal("HTTP服务启动失败", zap.Error(err))
 		}
 	}()
@@ -70,8 +80,13 @@ func main() {
 
 	logger.L.Info("开始关闭服务...")
 
-	// 这里可以添加清理资源的代码
-	// 例如关闭数据库连接等
+	// 给服务器30秒时间来完成当前请求
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+
+	if err := server.Shutdown(ctx); err != nil {
+		logger.L.Fatal("服务关闭失败", zap.Error(err))
+	}
 
 	logger.L.Info("服务已关闭")
 }

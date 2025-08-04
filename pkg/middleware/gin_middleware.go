@@ -8,7 +8,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
-	"org.thinkinai.com/recruit-center/internal/entity/rsp"
+	"org.thinkinai.com/recruit-center/api/dto/response"
 	"org.thinkinai.com/recruit-center/pkg/enums"
 	"org.thinkinai.com/recruit-center/pkg/logger"
 )
@@ -18,7 +18,7 @@ func AuthRequired() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		token := c.GetHeader("Authorization")
 		if token == "" {
-			c.AbortWithStatusJSON(200, rsp.NewError(enums.Unauthorized))
+			c.AbortWithStatusJSON(200, response.NewError(enums.Unauthorized))
 			return
 		}
 
