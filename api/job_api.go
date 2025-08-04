@@ -1,6 +1,7 @@
 package api
 
 import (
+	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -27,7 +28,7 @@ func NewJobHandler(jobService *service.JobService) *JobHandler {
 func (h *JobHandler) Create(c *gin.Context) {
 	var job request.CreateJobRequest
 	if err := c.ShouldBindJSON(&job); err != nil {
-		c.JSON(200, response.NewError(enums.BadRequest))
+		c.JSON(http.StatusOK, response.NewError(enums.BadRequest))
 		return
 	}
 	//校验参数
@@ -37,18 +38,18 @@ func (h *JobHandler) Create(c *gin.Context) {
 	job.CompanyID = companyID
 	//判断公司是否存在
 	if err := h.jobService.Create(&job); err != nil {
-		c.JSON(200, response.NewErrorWithMsg(enums.InternalServerError, err.Error()))
+		c.JSON(http.StatusOK, response.NewErrorWithMsg(enums.InternalServerError, err.Error()))
 		return
 	}
 
-	c.JSON(200, response.NewSuccess(job))
+	c.JSON(http.StatusOK, response.NewSuccess(job))
 }
 
 // Update 更新职位
 func (h *JobHandler) Update(c *gin.Context) {
 	var job dao.Job
 	if err := c.ShouldBindJSON(&job); err != nil {
-		c.JSON(200, response.NewError(enums.BadRequest))
+		c.JSON(http.StatusOK, response.NewError(enums.BadRequest))
 		return
 	}
 	//判断职位是否存在
@@ -58,23 +59,23 @@ func (h *JobHandler) Update(c *gin.Context) {
 	// 检查权限（确保是职位所属公司）
 	companyID := c.GetUint("company_id")
 	if job.CompanyID != companyID {
-		c.JSON(200, response.NewError(enums.Forbidden))
+		c.JSON(http.StatusOK, response.NewError(enums.Forbidden))
 		return
 	}
 
 	if err := h.jobService.Update(&job); err != nil {
-		c.JSON(200, response.NewErrorWithMsg(enums.InternalServerError, err.Error()))
+		c.JSON(http.StatusOK, response.NewErrorWithMsg(enums.InternalServerError, err.Error()))
 		return
 	}
 
-	c.JSON(200, response.NewSuccess(nil))
+	c.JSON(http.StatusOK, response.NewSuccess(nil))
 }
 
 // Delete 删除职位
 func (h *JobHandler) Delete(c *gin.Context) {
 	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
 	if err != nil {
-		c.JSON(200, response.NewError(enums.BadRequest))
+		c.JSON(http.StatusOK, response.NewError(enums.BadRequest))
 		return
 	}
 	//判断职位是否存在
@@ -82,28 +83,28 @@ func (h *JobHandler) Delete(c *gin.Context) {
 	//判断公司是否正确
 
 	if err := h.jobService.Delete(uint(id)); err != nil {
-		c.JSON(200, response.NewErrorWithMsg(enums.InternalServerError, err.Error()))
+		c.JSON(http.StatusOK, response.NewErrorWithMsg(enums.InternalServerError, err.Error()))
 		return
 	}
 
-	c.JSON(200, response.NewSuccess(nil))
+	c.JSON(http.StatusOK, response.NewSuccess(nil))
 }
 
 // GetByID 获取职位详情
 func (h *JobHandler) GetByID(c *gin.Context) {
 	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
 	if err != nil {
-		c.JSON(200, response.NewError(enums.BadRequest))
+		c.JSON(http.StatusOK, response.NewError(enums.BadRequest))
 		return
 	}
 
 	job, err := h.jobService.GetByID(uint(id))
 	if err != nil {
-		c.JSON(200, response.NewError(enums.JobNotFound))
+		c.JSON(http.StatusOK, response.NewError(enums.JobNotFound))
 		return
 	}
 
-	c.JSON(200, response.NewSuccess(job))
+	c.JSON(http.StatusOK, response.NewSuccess(job))
 }
 
 // List 获取职位列表
@@ -113,11 +114,11 @@ func (h *JobHandler) List(c *gin.Context) {
 
 	jobs, total, err := h.jobService.List(page, size)
 	if err != nil {
-		c.JSON(200, response.NewError(enums.InternalServerError))
+		c.JSON(http.StatusOK, response.NewError(enums.InternalServerError))
 		return
 	}
 
-	c.JSON(200, response.NewPage(jobs, total, page, size))
+	c.JSON(http.StatusOK, response.NewPage(jobs, total, page, size))
 }
 
 // Search 搜索职位
@@ -144,9 +145,9 @@ func (h *JobHandler) Search(c *gin.Context) {
 	// 执行搜索
 	result, err := h.jobService.SearchByCondition(conditions, page, size)
 	if err != nil {
-		c.JSON(200, response.NewError(enums.InternalServerError))
+		c.JSON(http.StatusOK, response.NewError(enums.InternalServerError))
 		return
 	}
 
-	c.JSON(200, result)
+	c.JSON(http.StatusOK, result)
 }

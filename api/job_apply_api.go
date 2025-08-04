@@ -1,6 +1,7 @@
 package api
 
 import (
+	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -26,7 +27,7 @@ func NewJobApplyHandler(service *service.JobApplyService) *JobApplyHandler {
 func (h *JobApplyHandler) Create(c *gin.Context) {
 	var apply dao.JobApply
 	if err := c.ShouldBindJSON(&apply); err != nil {
-		c.JSON(200, response.NewError(enums.BadRequest))
+		c.JSON(http.StatusOK, response.NewError(enums.BadRequest))
 		return
 	}
 
@@ -35,11 +36,11 @@ func (h *JobApplyHandler) Create(c *gin.Context) {
 	apply.UserID = userID
 
 	if err := h.jobApplyService.Create(&apply); err != nil {
-		c.JSON(200, response.NewErrorWithMsg(enums.InternalServerError, err.Error()))
+		c.JSON(http.StatusOK, response.NewErrorWithMsg(enums.InternalServerError, err.Error()))
 		return
 	}
 
-	c.JSON(200, response.NewSuccess(apply))
+	c.JSON(http.StatusOK, response.NewSuccess(apply))
 }
 
 // ListByUser 获取用户的申请列表
@@ -50,18 +51,18 @@ func (h *JobApplyHandler) ListByUser(c *gin.Context) {
 
 	applies, total, err := h.jobApplyService.ListByUser(userID, page, size)
 	if err != nil {
-		c.JSON(200, response.NewError(enums.InternalServerError))
+		c.JSON(http.StatusOK, response.NewError(enums.InternalServerError))
 		return
 	}
 
-	c.JSON(200, response.NewPage(applies, total, page, size))
+	c.JSON(http.StatusOK, response.NewPage(applies, total, page, size))
 }
 
 // ListByJob 获取职位的申请列表
 func (h *JobApplyHandler) ListByJob(c *gin.Context) {
 	jobID, err := strconv.ParseUint(c.Param("id"), 10, 64)
 	if err != nil {
-		c.JSON(200, response.NewError(enums.BadRequest))
+		c.JSON(http.StatusOK, response.NewError(enums.BadRequest))
 		return
 	}
 
@@ -70,18 +71,18 @@ func (h *JobApplyHandler) ListByJob(c *gin.Context) {
 
 	applies, total, err := h.jobApplyService.ListByJob(uint(jobID), page, size)
 	if err != nil {
-		c.JSON(200, response.NewError(enums.InternalServerError))
+		c.JSON(http.StatusOK, response.NewError(enums.InternalServerError))
 		return
 	}
 
-	c.JSON(200, response.NewPage(applies, total, page, size))
+	c.JSON(http.StatusOK, response.NewPage(applies, total, page, size))
 }
 
 // UpdateStatus 更新申请状态
 func (h *JobApplyHandler) UpdateStatus(c *gin.Context) {
 	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
 	if err != nil {
-		c.JSON(200, response.NewError(enums.BadRequest))
+		c.JSON(http.StatusOK, response.NewError(enums.BadRequest))
 		return
 	}
 
@@ -89,37 +90,37 @@ func (h *JobApplyHandler) UpdateStatus(c *gin.Context) {
 		Status int `json:"status" binding:"required"`
 	}
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(200, response.NewError(enums.BadRequest))
+		c.JSON(http.StatusOK, response.NewError(enums.BadRequest))
 		return
 	}
 
 	// 验证状态值是否有效
 	if !enums.JobApplyEnum(req.Status).IsValid() {
-		c.JSON(200, response.NewError(enums.BadRequest))
+		c.JSON(http.StatusOK, response.NewError(enums.BadRequest))
 		return
 	}
 
 	if err := h.jobApplyService.UpdateStatus(uint(id), req.Status); err != nil {
-		c.JSON(200, response.NewErrorWithMsg(enums.InternalServerError, err.Error()))
+		c.JSON(http.StatusOK, response.NewErrorWithMsg(enums.InternalServerError, err.Error()))
 		return
 	}
 
-	c.JSON(200, response.NewSuccess(nil))
+	c.JSON(http.StatusOK, response.NewSuccess(nil))
 }
 
 // GetByID 获取申请详情
 func (h *JobApplyHandler) GetByID(c *gin.Context) {
 	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
 	if err != nil {
-		c.JSON(200, response.NewError(enums.BadRequest))
+		c.JSON(http.StatusOK, response.NewError(enums.BadRequest))
 		return
 	}
 
 	apply, err := h.jobApplyService.GetByID(uint(id))
 	if err != nil {
-		c.JSON(200, response.NewError(enums.NotFound))
+		c.JSON(http.StatusOK, response.NewError(enums.NotFound))
 		return
 	}
 
-	c.JSON(200, response.NewSuccess(apply))
+	c.JSON(http.StatusOK, response.NewSuccess(apply))
 }
