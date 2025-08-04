@@ -5,6 +5,8 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	swaggerfiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 	"org.thinkinai.com/recruit-center/pkg/middleware"
 )
 
@@ -52,6 +54,6 @@ func SetupRouter(jobHandler *JobHandler, jobApplyHandler *JobApplyHandler) *gin.
 			applies.PUT("/:id/status", middleware.AuthRequired(), jobApplyHandler.UpdateStatus) // 更新状态
 		}
 	}
-
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 	return r
 }
