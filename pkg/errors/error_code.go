@@ -28,9 +28,15 @@ const (
 	PasswordIncorrect ErrorCode = 1003 // 密码错误
 
 	// 职位模块 (2001-2999)
-	JobNotFound       ErrorCode = 2001 // 职位不存在
-	JobExpired        ErrorCode = 2002 // 职位已过期
-	JobAlreadyApplied ErrorCode = 2003 // 已经申请过该职位
+	JobNotFound                   ErrorCode = 2001 // 职位不存在
+	JobExpired                    ErrorCode = 2002 // 职位已过期
+	JobAlreadyApplied             ErrorCode = 2003 // 已经申请过该职位
+	JobApplicationLimitReached    ErrorCode = 2004 // 职位申请次数已达上限
+	JobCreationLimitReached       ErrorCode = 2005 // 职位创建次数已达上限
+	JobUpdateNotAllowed           ErrorCode = 2006 // 职位更新不允许
+	JobDeleteNotAllowed           ErrorCode = 2007 // 职位删除不允许
+	JobApplicationNotFound        ErrorCode = 2008 // 职位申请不存在
+	JobApplicationAlreadyReviewed ErrorCode = 2009 // 职位申请已被审核
 
 	// 公司模块 (3001-3999)
 	CompanyNotFound ErrorCode = 3001 // 公司不存在
@@ -41,6 +47,20 @@ const (
 	FileTypeNotAllowed ErrorCode = 4002 // 文件类型不允许
 	InvalidFileFormat  ErrorCode = 4003 // 无效的文件格式
 	TooManyFiles       ErrorCode = 4004 // 文件数量超过限制
+
+	//简历模块 (5001-5999)
+	ResumeNotFound          ErrorCode = 5001 // 简历不存在
+	ResumeInvalid           ErrorCode = 5002 // 简历无效
+	ResumeExists            ErrorCode = 5003 // 简历已存在
+	ResumeTooLarge          ErrorCode = 5004 // 简历文件过大
+	ResumeFormat            ErrorCode = 5005 // 简历格式错误
+	ResumeUpload            ErrorCode = 5006 // 简历上传失败
+	ResumeDelete            ErrorCode = 5007 // 简历删除失败
+	ResumeAccess            ErrorCode = 5008 // 无权限访问简历
+	ResumeParse             ErrorCode = 5009 // 简历解析失败
+	ResumeUpdate            ErrorCode = 5010 // 简历更新失败
+	ResumeUpdateTooFrequent ErrorCode = 5011 // 简历更新过于频繁
+	ResumeUpdateStatus      ErrorCode = 5012 // 简历更新状态错误
 
 )
 

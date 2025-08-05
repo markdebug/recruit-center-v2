@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"io"
 	"path/filepath"
@@ -13,6 +12,7 @@ import (
 	"org.thinkinai.com/recruit-center/internal/dao"
 	"org.thinkinai.com/recruit-center/internal/model"
 	"org.thinkinai.com/recruit-center/pkg/enums"
+	"org.thinkinai.com/recruit-center/pkg/errors"
 	"org.thinkinai.com/recruit-center/pkg/oss"
 )
 
@@ -28,7 +28,7 @@ func NewResumeService(resumeDao *dao.ResumeDAO) *ResumeService {
 func (s *ResumeService) Create(userID uint, req *request.CreateResumeRequest) (*model.Resume, error) {
 	// 检查用户是否已有简历
 	if _, err := s.resumeDao.GetByUser(userID); err == nil {
-		return nil, errors.New("用户已有简历")
+		return nil, errors.New(errors.ResumeExists)
 	}
 
 	resume := &model.Resume{
@@ -105,7 +105,7 @@ func (s *ResumeService) Update(resume *model.Resume) error {
 // 更新简历访问状态
 func (s *ResumeService) UpdateAccessStatus(userID uint, status int) error {
 	if _, err := enums.ParseResumeAccess(2); err != nil {
-		return errors.New("无效的简历访问状态")
+		return errors.New(errors.ResumeUpdateStatus)
 	}
 
 	resume, err := s.resumeDao.GetByUser(userID)
@@ -120,7 +120,7 @@ func (s *ResumeService) UpdateAccessStatus(userID uint, status int) error {
 // 更新简历工作状态
 func (s *ResumeService) UpdateWorkingStatus(userID uint, targetStatus int) error {
 	if _, err := enums.ParseWorkingStatus(1); err != nil {
-		return errors.New("无效的在职状态")
+		return errors.New(errors.ResumeUpdateStatus)
 	}
 
 	resume, err := s.resumeDao.GetByUser(userID)
