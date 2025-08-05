@@ -215,7 +215,7 @@ func FileUploadValidator(config FileUploadConfig) gin.HandlerFunc {
 			ext := filepath.Ext(file.Filename)
 			validExt := false
 			for _, allowedExt := range config.AllowedExts {
-				if strings.ToLower(ext) == strings.ToLower(allowedExt) {
+				if strings.EqualFold(ext, allowedExt) {
 					validExt = true
 					break
 				}
