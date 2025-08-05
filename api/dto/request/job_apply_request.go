@@ -2,6 +2,8 @@ package request
 
 import (
 	"time"
+
+	"org.thinkinai.com/recruit-center/internal/model"
 )
 
 // JobApply 职位申请实体
@@ -85,4 +87,18 @@ func (ja *JobApply) canTransitionTo(targetStatus JobApplyStatus) bool {
 		}
 	}
 	return false
+}
+
+// ToModel 将 DTO 转换为数据模型
+func (ja *JobApply) ToModel() *model.JobApply {
+	return &model.JobApply{
+		ID:            ja.ID,
+		JobID:         ja.JobID,
+		UserID:        ja.UserID,
+		ApplyTime:     ja.ApplyTime,
+		ApplyProgress: ja.ApplyProgress,
+		Status:        int(ja.Status),
+		CreateTime:    ja.CreateTime,
+		UpdateTime:    ja.UpdateTime,
+	}
 }

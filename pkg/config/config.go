@@ -2,20 +2,28 @@ package config
 
 import (
 	"fmt"
+	"sync"
 
 	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/viper"
 )
 
+var (
+	globalConfig *Config
+	once         sync.Once
+)
+
 // Config holds the application configuration.
 type Config struct {
-	DB      DB           `mapstructure:"db"`      // Database configuration
-	Name    string       `mapstructure:"name"`    // Application name
-	Port    int          `mapstructure:"port"`    // Application port
-	Env     string       `mapstructure:"env"`     // Application environment (e.g., development, production)
-	Log     LogConfig    `mapstructure:"log"`     // Logging configuration
-	Version string       `mapstructure:"version"` // Application version
-	v       *viper.Viper `mapstructure:"-"`
+	DB               DB               `mapstructure:"db"`          // Database configuration
+	Oss              OssConfig        `mapstructure:"oss"`         // OSS configuration
+	FileUploadConfig FileUploadConfig `mapstructure:"file_upload"` // File upload configuration
+	Name             string           `mapstructure:"name"`        // Application name
+	Port             int              `mapstructure:"port"`        // Application port
+	Env              string           `mapstructure:"env"`         // Application environment (e.g., development, production)
+	Log              LogConfig        `mapstructure:"log"`         // Logging configuration
+	Version          string           `mapstructure:"version"`     // Application version
+	v                *viper.Viper     `mapstructure:"-"`
 }
 
 type DB struct {
@@ -24,6 +32,13 @@ type DB struct {
 	Username string `mapstructure:"username"`
 	Password string `mapstructure:"password"`
 	Database string `mapstructure:"database"`
+}
+
+type FileUploadConfig struct {
+	MaxSize      int64    `mapstructure:"max_size"`      // 最大文件大小（字节）
+	AllowedTypes []string `mapstructure:"allowed_types"` // 允许的MIME类型
+	MaxFiles     int      `mapstructure:"max_files"`     // 最大文件数量
+	AllowedExts  []string `mapstructure:"allowed_exts"`  // 允许的文件扩展名
 }
 
 // LoadConfig loads the configuration from a file or environment variables.
@@ -91,4 +106,21 @@ func (c *Config) Reload() error {
 		return fmt.Errorf("重新解析配置失败: %w", err)
 	}
 	return nil
+}
+
+// InitGlobalConfig 初始化全局配置
+func InitGlobalConfig(configPath string) error {
+	var err error
+	once.Do(func() {
+		globalConfig, err = LoadConfig(configPath)
+	})
+	return err
+}
+
+// GetConfig 获取全局配置实例
+func GetConfig() *Config {
+	if globalConfig == nil {
+		panic("配置未初始化，请先调用 InitGlobalConfig")
+	}
+	return globalConfig
 }

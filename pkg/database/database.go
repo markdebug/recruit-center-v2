@@ -7,7 +7,6 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
-	"org.thinkinai.com/recruit-center/internal/dao"
 	"org.thinkinai.com/recruit-center/pkg/config"
 )
 
@@ -52,14 +51,14 @@ func Init(cfg *config.DB) (*gorm.DB, error) {
 	return db, nil
 }
 
-// AutoMigrate 自动迁移数据库表结构
-func AutoMigrate(db *gorm.DB) error {
-	return db.AutoMigrate(
-		&dao.Job{},
-		&dao.JobApply{},
-		// 添加其他需要迁移的模型
-	)
-}
+// // AutoMigrate 自动迁移数据库表结构
+// func AutoMigrate(db *gorm.DB) error {
+// 	return db.AutoMigrate(
+// 		&dao.Job{},
+// 		&dao.JobApply{},
+// 		// 添加其他需要迁移的模型
+// 	)
+// }
 
 // Close 关闭数据库连接
 func Close(db *gorm.DB) error {

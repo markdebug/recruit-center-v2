@@ -7,30 +7,46 @@ import (
 	"go.uber.org/zap"
 	"org.thinkinai.com/recruit-center/api/dto/response"
 	"org.thinkinai.com/recruit-center/internal/dao"
+	"org.thinkinai.com/recruit-center/internal/model"
 	"org.thinkinai.com/recruit-center/pkg/enums"
+	"org.thinkinai.com/recruit-center/pkg/errors"
 	"org.thinkinai.com/recruit-center/pkg/logger"
 )
 
 // JobService 职位服务
 type JobService struct {
-	jobDao *dao.JobDao
+	jobDao *dao.JobDAO
 }
 
 // NewJobService 创建职位服务实例
-func NewJobService(jobDao *dao.JobDao) *JobService {
+func NewJobService(jobDao *dao.JobDAO) *JobService {
 	return &JobService{
 		jobDao: jobDao,
 	}
 }
 
 // Create 创建职位
-func (s *JobService) Create(job *dao.Job) error {
+func (s *JobService) Create(job *model.Job) error {
 	// 参数校验
 	if job.Name == "" {
 		return fmt.Errorf("职位名称不能为空")
 	}
 	if job.CompanyID == 0 {
 		return fmt.Errorf("公司ID不能为空")
+	}
+
+	// 验证公司是否存在且有效
+	// company, err := s.companyDAO.GetByID(job.CompanyID)
+	// if err != nil {
+	// 	return errors.Wrap(err, enums.CompanyNotFound)
+	// }
+	// if !company.IsActive() {
+	// 	return errors.New(enums.CompanyInactive)
+	// }
+
+	// 验证职位类型
+	if !job.ValidateJobType() {
+		return errors.New(errors.BadRequest).WithMessage("无效的职位类型")
 	}
 
 	// 设置默认值
@@ -50,12 +66,11 @@ func (s *JobService) Create(job *dao.Job) error {
 			zap.Uint("company_id", job.CompanyID))
 		return err
 	}
-
 	return nil
 }
 
 // Update 更新职位信息
-func (s *JobService) Update(job *dao.Job) error {
+func (s *JobService) Update(job *model.Job) error {
 	// 检查职位是否存在
 	exist, err := s.jobDao.GetByID(job.ID)
 	if err != nil {
@@ -74,17 +89,23 @@ func (s *JobService) Delete(id uint) error {
 }
 
 // GetByID 获取职位详情
-func (s *JobService) GetByID(id uint) (*dao.Job, error) {
-	return s.jobDao.GetByID(id)
+func (s *JobService) GetByID(id uint) (*model.Job, error) {
+	// 从数据库获取
+	job, err := s.jobDao.GetByID(id)
+	if err != nil {
+		return nil, errors.Wrap(err, errors.JobNotFound)
+	}
+
+	return job, nil
 }
 
 // List 获取职位列表
-func (s *JobService) List(page, size int) ([]dao.Job, int64, error) {
+func (s *JobService) List(page, size int) ([]model.Job, int64, error) {
 	return s.jobDao.List(page, size)
 }
 
 // SearchByKeyword 关键词搜索职位
-func (s *JobService) SearchByKeyword(keyword string) ([]dao.Job, error) {
+func (s *JobService) SearchByKeyword(keyword string) ([]model.Job, error) {
 	return s.jobDao.SearchByKeyword(keyword)
 }
 
@@ -109,7 +130,7 @@ func (s *JobService) UpdateStatus(id uint, status int) error {
 }
 
 // GetExpiredJobs 获取已过期职位
-func (s *JobService) GetExpiredJobs() ([]dao.Job, error) {
+func (s *JobService) GetExpiredJobs() ([]model.Job, error) {
 	return s.jobDao.GetExpiredJobs()
 }
 
@@ -121,4 +142,9 @@ func (s *JobService) SearchByCompany(companyID uint, page, size int) (*response.
 	}
 
 	return response.NewPage(jobs, total, page, size), nil
+}
+
+// 其他辅助方法...
+func getCacheKey(jobID uint) string {
+	return fmt.Sprintf("job:%d", jobID)
 }

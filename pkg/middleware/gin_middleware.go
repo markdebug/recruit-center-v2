@@ -4,12 +4,14 @@ import (
 	"bytes"
 	"io"
 	"net/http"
+	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 	"org.thinkinai.com/recruit-center/api/dto/response"
-	"org.thinkinai.com/recruit-center/pkg/enums"
+	"org.thinkinai.com/recruit-center/pkg/errors"
 	"org.thinkinai.com/recruit-center/pkg/logger"
 )
 
@@ -18,7 +20,7 @@ func AuthRequired() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		token := c.GetHeader("Authorization")
 		if token == "" {
-			c.AbortWithStatusJSON(200, response.NewError(enums.Unauthorized))
+			c.AbortWithStatusJSON(200, response.NewError(errors.Unauthorized))
 			return
 		}
 
@@ -109,6 +111,137 @@ func LoggerMiddleware() gin.HandlerFunc {
 				zap.String("path", path),
 				zap.Any("errors", c.Errors.Errors()),
 			)
+		}
+	}
+}
+
+// FileUploadConfig 文件上传配置
+type FileUploadConfig struct {
+	MaxSize      int64    // 最大文件大小（字节）
+	AllowedTypes []string // 允许的MIME类型
+	MaxFiles     int      // 最大文件数量
+	AllowedExts  []string // 允许的文件扩展名
+}
+
+// DefaultFileUploadConfig 默认文件上传配置
+var DefaultFileUploadConfig = FileUploadConfig{
+	MaxSize: 10 << 20, // 10MB
+	AllowedTypes: []string{
+		"image/jpeg",
+		"image/png",
+		"image/gif",
+		"application/pdf",
+		"application/msword",
+		"application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+	},
+	MaxFiles: 5,
+	AllowedExts: []string{
+		".jpg",
+		".jpeg",
+		".png",
+		".gif",
+		".pdf",
+		".doc",
+		".docx",
+	},
+}
+
+// FileUploadValidator 文件上传验证中间件
+func FileUploadValidator(config FileUploadConfig) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		// 检查是否是multipart/form-data请求
+		if err := c.Request.ParseMultipartForm(config.MaxSize); err != nil {
+			c.AbortWithStatusJSON(200, response.NewError(errors.InvalidFileFormat))
+			return
+		}
+
+		form, err := c.MultipartForm()
+		if err != nil {
+			c.AbortWithStatusJSON(200, response.NewError(errors.InvalidFileFormat))
+			return
+		}
+
+		files := form.File["files"]
+
+		// 检查文件数量
+		if len(files) > config.MaxFiles {
+			c.AbortWithStatusJSON(200, response.NewError(
+				errors.TooManyFiles))
+			return
+		}
+
+		// 验证每个文件
+		for _, file := range files {
+			// 检查文件大小
+			if file.Size > config.MaxSize {
+				c.AbortWithStatusJSON(200, response.NewError(
+					errors.FileTooLarge))
+				return
+			}
+
+			// 获取文件类型
+			fileHeader, err := file.Open()
+			if err != nil {
+				c.AbortWithStatusJSON(200, response.NewError(errors.FileTypeNotAllowed))
+				return
+			}
+			defer fileHeader.Close()
+
+			// 读取文件头部来判断文件类型
+			buffer := make([]byte, 512)
+			_, err = fileHeader.Read(buffer)
+			if err != nil {
+				c.AbortWithStatusJSON(200, response.NewError(errors.InvalidFileFormat))
+				return
+			}
+
+			fileType := http.DetectContentType(buffer)
+
+			// 检查文件类型
+			validType := false
+			for _, allowedType := range config.AllowedTypes {
+				if fileType == allowedType {
+					validType = true
+					break
+				}
+			}
+
+			if !validType {
+				c.AbortWithStatusJSON(200, response.NewError(errors.FileTypeNotAllowed))
+				return
+			}
+
+			// 检查文件扩展名
+			ext := filepath.Ext(file.Filename)
+			validExt := false
+			for _, allowedExt := range config.AllowedExts {
+				if strings.ToLower(ext) == strings.ToLower(allowedExt) {
+					validExt = true
+					break
+				}
+			}
+
+			if !validExt {
+				c.AbortWithStatusJSON(200, response.NewError(errors.FileTypeNotAllowed))
+				return
+			}
+		}
+
+		// 验证通过，继续处理
+		c.Next()
+	}
+}
+
+// ErrorHandler 错误处理中间件
+func ErrorHandler() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Next()
+
+		// 只处理已经设置的错误
+		if len(c.Errors) > 0 {
+			err := c.Errors.Last().Err
+			c.JSON(http.StatusOK, errors.Wrap(err, errors.InternalServerError))
+			return
 		}
 	}
 }
