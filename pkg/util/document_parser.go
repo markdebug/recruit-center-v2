@@ -43,7 +43,8 @@ func (p *PDFParser) Parse(reader io.Reader) (string, error) {
 	}
 
 	// 解析PDF
-	pdfReader, err := pdf.NewReader(bytes.NewReader(buf.Bytes()))
+	pdfBytes := buf.Bytes()
+	pdfReader, err := pdf.NewReader(bytes.NewReader(pdfBytes), int64(len(pdfBytes)))
 	if err != nil {
 		return "", err
 	}
@@ -53,7 +54,7 @@ func (p *PDFParser) Parse(reader io.Reader) (string, error) {
 
 	for pageIndex := 1; pageIndex <= numPages; pageIndex++ {
 		page := pdfReader.Page(pageIndex)
-		text, err := page.GetPlainText()
+		text, err := page.GetPlainText(make(map[string]*pdf.Font))
 		if err != nil {
 			return "", err
 		}
@@ -72,7 +73,8 @@ func (w *WordParser) Parse(reader io.Reader) (string, error) {
 	}
 
 	// 解析Word文档
-	doc, err := document.Read(bytes.NewReader(buf.Bytes()))
+	readerAt := bytes.NewReader(buf.Bytes())
+	doc, err := document.Read(readerAt, int64(readerAt.Len()))
 	if err != nil {
 		return "", err
 	}
