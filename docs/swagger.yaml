@@ -1,0 +1,1311 @@
+basePath: /api/v1
+definitions:
+  enums.JobType:
+    enum:
+    - 1
+    - 2
+    - 3
+    type: integer
+    x-enum-comments:
+      JobTypeFullTime: 全职
+      JobTypeIntern: 实习
+      JobTypePartTime: 兼职
+    x-enum-descriptions:
+    - 全职
+    - 兼职
+    - 实习
+    x-enum-varnames:
+    - JobTypeFullTime
+    - JobTypePartTime
+    - JobTypeIntern
+  errors.ErrorCode:
+    enum:
+    - 200
+    - 400
+    - 401
+    - 403
+    - 404
+    - 405
+    - 409
+    - 429
+    - 422
+    - 500
+    - 503
+    - 1001
+    - 1002
+    - 1003
+    - 2001
+    - 2002
+    - 2003
+    - 3001
+    - 3002
+    - 4001
+    - 4002
+    - 4003
+    - 4004
+    type: integer
+    x-enum-comments:
+      BadRequest: 请求参数错误
+      CompanyInactive: 公司未激活
+      CompanyNotFound: 公司不存在
+      Conflict: 资源冲突
+      FileTooLarge: 文件过大
+      FileTypeNotAllowed: 文件类型不允许
+      Forbidden: 禁止访问
+      InternalServerError: 服务器内部错误
+      InvalidFileFormat: 无效的文件格式
+      InvalidParams: 无效的请求参数
+      JobAlreadyApplied: 已经申请过该职位
+      JobExpired: 职位已过期
+      JobNotFound: 职位不存在
+      MethodNotAllowed: 方法不允许
+      NotFound: 资源不存在
+      PasswordIncorrect: 密码错误
+      ServiceUnavailable: 服务不可用
+      TooManyFiles: 文件数量超过限制
+      TooManyRequests: 请求过多
+      Unauthorized: 未授权
+      UserAlreadyExists: 用户已存在
+      UserNotFound: 用户不存在
+    x-enum-descriptions:
+    - ""
+    - 请求参数错误
+    - 未授权
+    - 禁止访问
+    - 资源不存在
+    - 方法不允许
+    - 资源冲突
+    - 请求过多
+    - 无效的请求参数
+    - 服务器内部错误
+    - 服务不可用
+    - 用户不存在
+    - 用户已存在
+    - 密码错误
+    - 职位不存在
+    - 职位已过期
+    - 已经申请过该职位
+    - 公司不存在
+    - 公司未激活
+    - 文件过大
+    - 文件类型不允许
+    - 无效的文件格式
+    - 文件数量超过限制
+    x-enum-varnames:
+    - Success
+    - BadRequest
+    - Unauthorized
+    - Forbidden
+    - NotFound
+    - MethodNotAllowed
+    - Conflict
+    - TooManyRequests
+    - InvalidParams
+    - InternalServerError
+    - ServiceUnavailable
+    - UserNotFound
+    - UserAlreadyExists
+    - PasswordIncorrect
+    - JobNotFound
+    - JobExpired
+    - JobAlreadyApplied
+    - CompanyNotFound
+    - CompanyInactive
+    - FileTooLarge
+    - FileTypeNotAllowed
+    - InvalidFileFormat
+    - TooManyFiles
+  model.Education:
+    properties:
+      createdAt:
+        type: string
+      degree:
+        type: string
+      endTime:
+        type: string
+      id:
+        type: integer
+      major:
+        type: string
+      resumeId:
+        type: integer
+      school:
+        type: string
+      startTime:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  model.Job:
+    properties:
+      applyCount:
+        description: 申请次数
+        type: integer
+      companyId:
+        type: integer
+      createTime:
+        type: string
+      deleteStatus:
+        type: integer
+      id:
+        type: integer
+      jobBenefit:
+        type: string
+      jobCategory:
+        type: string
+      jobContact:
+        type: string
+      jobDescribe:
+        type: string
+      jobEducation:
+        type: string
+      jobExperience:
+        type: string
+      jobExpireTime:
+        type: string
+      jobLocation:
+        type: string
+      jobSalary:
+        type: string
+      jobSkill:
+        type: string
+      jobSource:
+        type: string
+      jobType:
+        type: integer
+      name:
+        type: string
+      priority:
+        description: 优先级
+        type: integer
+      status:
+        type: integer
+      tags:
+        description: 职位标签
+        items:
+          type: string
+        type: array
+      updateTime:
+        type: string
+      viewCount:
+        description: 添加新的字段和方法
+        type: integer
+    type: object
+  model.JobApply:
+    properties:
+      applyProgress:
+        type: string
+      applyTime:
+        type: string
+      createTime:
+        type: string
+      id:
+        type: integer
+      jobId:
+        type: integer
+      status:
+        type: integer
+      updateTime:
+        type: string
+      userId:
+        type: integer
+    type: object
+  model.Project:
+    properties:
+      achievement:
+        type: string
+      createdAt:
+        type: string
+      description:
+        type: string
+      endTime:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      resumeId:
+        type: integer
+      role:
+        type: string
+      startTime:
+        type: string
+      technology:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  model.Resume:
+    properties:
+      accessStatus:
+        description: '1: 隐藏, 2: 公开'
+        type: integer
+      attachments:
+        description: 新增附件关联
+        items:
+          $ref: '#/definitions/model.ResumeAttachment'
+        type: array
+      avatar:
+        type: string
+      birthday:
+        type: string
+      createdAt:
+        type: string
+      deletedAt:
+        type: string
+      educations:
+        description: 关联
+        items:
+          $ref: '#/definitions/model.Education'
+        type: array
+      email:
+        type: string
+      expectedCity:
+        type: string
+      expectedJob:
+        type: string
+      experience:
+        type: integer
+      gender:
+        type: integer
+      id:
+        type: integer
+      introduction:
+        type: string
+      jobStatus:
+        type: integer
+      location:
+        type: string
+      name:
+        type: string
+      phone:
+        type: string
+      projects:
+        items:
+          $ref: '#/definitions/model.Project'
+        type: array
+      skills:
+        type: string
+      status:
+        description: '1: 正常, 0: 删除'
+        type: integer
+      updatedAt:
+        type: string
+      userId:
+        type: integer
+      workExperiences:
+        items:
+          $ref: '#/definitions/model.WorkExperience'
+        type: array
+      workingStatus:
+        description: '1: 在职, 2: 离职'
+        type: integer
+    type: object
+  model.ResumeAttachment:
+    properties:
+      createdAt:
+        type: string
+      deletedAt:
+        type: string
+      fileName:
+        description: 文件名
+        type: string
+      fileSize:
+        description: 文件大小(字节)
+        type: integer
+      fileType:
+        description: '文件类型(如: pdf, doc, docx等)'
+        type: string
+      fileUrl:
+        description: 文件URL
+        type: string
+      id:
+        type: integer
+      resumeId:
+        type: integer
+      status:
+        description: '状态(1: 正常, 0: 删除)'
+        type: integer
+      updatedAt:
+        type: string
+    type: object
+  model.WorkExperience:
+    properties:
+      achievement:
+        type: string
+      companyName:
+        type: string
+      createdAt:
+        type: string
+      department:
+        type: string
+      description:
+        type: string
+      endTime:
+        type: string
+      id:
+        type: integer
+      position:
+        type: string
+      resumeId:
+        type: integer
+      startTime:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  request.CreateJobRequest:
+    type: object
+  request.CreateResumeRequest:
+    properties:
+      avatar:
+        type: string
+      birthday:
+        type: string
+      educations:
+        items:
+          $ref: '#/definitions/request.EducationRequest'
+        type: array
+      email:
+        type: string
+      expectedCity:
+        type: string
+      expectedJob:
+        type: string
+      experience:
+        type: integer
+      gender:
+        type: integer
+      introduction:
+        type: string
+      jobStatus:
+        type: integer
+      location:
+        type: string
+      name:
+        type: string
+      phone:
+        type: string
+      projects:
+        items:
+          $ref: '#/definitions/request.ProjectRequest'
+        type: array
+      skills:
+        type: string
+      workExperiences:
+        items:
+          $ref: '#/definitions/request.WorkExperienceRequest'
+        type: array
+    required:
+    - email
+    - name
+    - phone
+    type: object
+  request.EducationRequest:
+    properties:
+      degree:
+        type: string
+      endTime:
+        type: string
+      major:
+        type: string
+      school:
+        type: string
+      startTime:
+        type: string
+    required:
+    - school
+    type: object
+  request.JobApply:
+    properties:
+      applyProgress:
+        description: 改为 applyProgress
+        type: string
+      applyTime:
+        description: 改为 applyTime
+        type: string
+      createTime:
+        description: 改为 createTime
+        type: string
+      id:
+        type: integer
+      jobId:
+        description: 改为 jobId
+        type: integer
+      status:
+        $ref: '#/definitions/request.JobApplyStatus'
+      updateTime:
+        description: 改为 updateTime
+        type: string
+      userId:
+        description: 改为 userId
+        type: integer
+    type: object
+  request.JobApplyStatus:
+    enum:
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
+    type: integer
+    x-enum-comments:
+      JobApplyStatusAccepted: 已接受
+      JobApplyStatusInProgress: 进行中
+      JobApplyStatusPending: 待处理
+      JobApplyStatusRejected: 已拒绝
+      JobApplyStatusWithdrawn: 已撤回
+    x-enum-descriptions:
+    - 待处理
+    - 进行中
+    - 已接受
+    - 已拒绝
+    - 已撤回
+    x-enum-varnames:
+    - JobApplyStatusPending
+    - JobApplyStatusInProgress
+    - JobApplyStatusAccepted
+    - JobApplyStatusRejected
+    - JobApplyStatusWithdrawn
+  request.ProjectRequest:
+    properties:
+      achievement:
+        type: string
+      description:
+        type: string
+      endTime:
+        type: string
+      name:
+        type: string
+      role:
+        type: string
+      startTime:
+        type: string
+      technology:
+        type: string
+    required:
+    - name
+    type: object
+  request.UpdateJobRequest:
+    properties:
+      id:
+        type: integer
+      jobBenefit:
+        maxLength: 500
+        type: string
+      jobCategory:
+        maxLength: 50
+        type: string
+      jobContact:
+        maxLength: 100
+        type: string
+      jobDescribe:
+        maxLength: 2000
+        type: string
+      jobEducation:
+        maxLength: 50
+        type: string
+      jobExperience:
+        maxLength: 50
+        type: string
+      jobExpireTime:
+        type: string
+      jobLocation:
+        maxLength: 200
+        type: string
+      jobSalary:
+        maxLength: 50
+        type: string
+      jobSkill:
+        maxLength: 500
+        type: string
+      jobSource:
+        maxLength: 100
+        type: string
+      jobType:
+        $ref: '#/definitions/enums.JobType'
+      name:
+        maxLength: 100
+        minLength: 1
+        type: string
+    required:
+    - id
+    type: object
+  request.UpdateResumeStatusRequest:
+    properties:
+      resumeId:
+        type: integer
+      status:
+        enum:
+        - 1
+        - 2
+        type: integer
+    required:
+    - resumeId
+    - status
+    type: object
+  request.WorkExperienceRequest:
+    properties:
+      achievement:
+        type: string
+      companyName:
+        type: string
+      department:
+        type: string
+      description:
+        type: string
+      endTime:
+        type: string
+      position:
+        type: string
+      startTime:
+        type: string
+    required:
+    - companyName
+    type: object
+  response.PageResponse:
+    properties:
+      code:
+        allOf:
+        - $ref: '#/definitions/errors.ErrorCode'
+        description: 状态码
+      data:
+        description: 响应数据
+      message:
+        description: 响应信息
+        type: string
+      page:
+        description: 当前页码
+        type: integer
+      size:
+        description: 每页大小
+        type: integer
+      total:
+        description: 总记录数
+        type: integer
+    type: object
+  response.Response:
+    properties:
+      code:
+        allOf:
+        - $ref: '#/definitions/errors.ErrorCode'
+        description: 状态码
+      data:
+        description: 响应数据
+      message:
+        description: 响应信息
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: 招聘中心系统 API 文档
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: 招聘中心 API
+  version: "1.0"
+paths:
+  /api/v1/applies:
+    get:
+      consumes:
+      - application/json
+      description: 分页获取所有职位申请记录
+      parameters:
+      - description: Bearer JWT
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - default: 1
+        description: '页码 (默认值: 1)'
+        in: query
+        minimum: 1
+        name: page
+        type: integer
+      - default: 10
+        description: '每页数量 (默认值: 10)'
+        in: query
+        maximum: 100
+        minimum: 1
+        name: size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.PageResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.JobApply'
+                  type: array
+              type: object
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/response.Response'
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - Bearer: []
+      summary: 获取申请列表
+      tags:
+      - 职位申请
+    post:
+      consumes:
+      - application/json
+      description: 创建一个新的职位申请
+      parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 申请信息
+        in: body
+        name: apply
+        required: true
+        schema:
+          $ref: '#/definitions/request.JobApply'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.JobApply'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: 创建职位申请
+      tags:
+      - 职位申请
+  /api/v1/applies/{id}:
+    get:
+      description: 获取指定ID的职位申请详情
+      parameters:
+      - description: 申请ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.JobApply'
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: 获取申请详情
+      tags:
+      - 职位申请
+  /api/v1/companies/{companyId}/jobs:
+    get:
+      consumes:
+      - application/json
+      description: 获取指定公司发布的所有职位
+      parameters:
+      - description: 公司ID
+        in: path
+        name: companyId
+        required: true
+        type: integer
+      - default: 1
+        description: 页码
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: 每页数量
+        in: query
+        name: size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.Job'
+                  type: array
+              type: object
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: 公司不存在
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: 获取公司职位
+      tags:
+      - 职位
+  /api/v1/jobs:
+    get:
+      description: 分页获取职位列表
+      parameters:
+      - default: 1
+        description: 页码
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: 每页数量
+        in: query
+        name: size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.PageResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.Job'
+                  type: array
+              type: object
+      summary: 获取职位列表
+      tags:
+      - 职位管理
+    post:
+      consumes:
+      - application/json
+      description: 创建新职位,需要提供职位相关信息
+      parameters:
+      - description: Bearer JWT
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 职位创建请求参数
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.CreateJobRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.Job'
+              type: object
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/response.Response'
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - Bearer: []
+      summary: 创建职位
+      tags:
+      - 职位
+  /api/v1/jobs/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: 删除指定ID的职位
+      parameters:
+      - description: Bearer JWT
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 职位ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/response.Response'
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: 职位不存在
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - Bearer: []
+      summary: 删除职位
+      tags:
+      - 职位
+    get:
+      description: 获取指定ID的职位详细信息
+      parameters:
+      - description: 职位ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.Job'
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: 获取职位详情
+      tags:
+      - 职位管理
+    put:
+      consumes:
+      - application/json
+      description: 更新指定ID的职位信息
+      parameters:
+      - description: Bearer JWT
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 职位ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 职位更新请求参数
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.UpdateJobRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.Job'
+              type: object
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/response.Response'
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: 职位不存在
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - Bearer: []
+      summary: 更新职位
+      tags:
+      - 职位
+  /api/v1/jobs/{id}/status:
+    put:
+      consumes:
+      - application/json
+      description: 更新指定职位的状态
+      parameters:
+      - description: Bearer JWT
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 职位ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 状态值
+        enum:
+        - 0
+        - 1
+        - 2
+        in: query
+        name: status
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/response.Response'
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: 职位不存在
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - Bearer: []
+      summary: 更新职位状态
+      tags:
+      - 职位
+  /api/v1/jobs/expired:
+    get:
+      consumes:
+      - application/json
+      description: 获取所有已过期的职位列表
+      parameters:
+      - description: Bearer JWT
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.Job'
+                  type: array
+              type: object
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - Bearer: []
+      summary: 获取已过期职位
+      tags:
+      - 职位
+  /api/v1/jobs/search:
+    get:
+      consumes:
+      - application/json
+      description: 根据关键词搜索职位信息
+      parameters:
+      - description: 搜索关键词
+        in: query
+        name: keyword
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.Job'
+                  type: array
+              type: object
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: 关键词搜索职位
+      tags:
+      - 职位
+  /api/v1/jobs/search/condition:
+    post:
+      consumes:
+      - application/json
+      description: 根据多个条件筛选职位
+      parameters:
+      - default: 1
+        description: 页码
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: 每页数量
+        in: query
+        name: size
+        type: integer
+      - description: 搜索条件
+        in: body
+        name: conditions
+        required: true
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.Job'
+                  type: array
+              type: object
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: 多条件搜索职位
+      tags:
+      - 职位
+  /api/v1/resumes:
+    post:
+      consumes:
+      - application/json
+      description: 创建用户简历信息
+      parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 简历信息
+        in: body
+        name: resume
+        required: true
+        schema:
+          $ref: '#/definitions/request.CreateResumeRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.Resume'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: 创建简历
+      tags:
+      - 简历管理
+  /api/v1/resumes/access-status:
+    put:
+      consumes:
+      - application/json
+      description: 更新用户简历的访问状态（公开/隐藏）
+      parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 访问状态
+        in: body
+        name: status
+        required: true
+        schema:
+          $ref: '#/definitions/request.UpdateResumeStatusRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: 更新简历访问状态
+      tags:
+      - 简历管理
+  /api/v1/resumes/my:
+    get:
+      description: 获取当前登录用户的简历信息
+      parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.Resume'
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: 获取用户简历
+      tags:
+      - 简历管理
+  /api/v1/resumes/upload:
+    post:
+      consumes:
+      - multipart/form-data
+      description: 上传用户简历文件
+      parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 简历文件
+        in: formData
+        name: resume
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  additionalProperties:
+                    type: string
+                  type: object
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: 上传简历文件
+      tags:
+      - 简历管理
+  /api/v1/resumes/working-status:
+    put:
+      consumes:
+      - application/json
+      description: 更新用户简历的工作状态（在职/离职）
+      parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 工作状态
+        in: body
+        name: status
+        required: true
+        schema:
+          $ref: '#/definitions/request.UpdateResumeStatusRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: 更新简历工作状态
+      tags:
+      - 简历管理
+swagger: "2.0"

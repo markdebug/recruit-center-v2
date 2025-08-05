@@ -4,24 +4,27 @@ import "time"
 
 // Resume 简历基本信息
 type Resume struct {
-	ID           uint      `gorm:"primarykey" json:"id"`
-	UserID       uint      `gorm:"not null;index" json:"userId"`
-	Name         string    `gorm:"size:50;not null" json:"name"`
-	Avatar       string    `gorm:"size:255" json:"avatar"`
-	Gender       int       `gorm:"default:0" json:"gender"`
-	Birthday     time.Time `json:"birthday"`
-	Phone        string    `gorm:"size:20" json:"phone"`
-	Email        string    `gorm:"size:100" json:"email"`
-	Location     string    `gorm:"size:100" json:"location"`
-	Experience   int       `json:"experience"`
-	JobStatus    int       `gorm:"default:0" json:"jobStatus"`
-	ExpectedJob  string    `gorm:"size:50" json:"expectedJob"`
-	ExpectedCity string    `gorm:"size:50" json:"expectedCity"`
-	Introduction string    `gorm:"type:text" json:"introduction"`
-	Skills       string    `gorm:"type:text" json:"skills"`
-	CreatedAt    time.Time
-	UpdatedAt    time.Time
-	DeletedAt    *time.Time `gorm:"index"`
+	ID            uint      `gorm:"primarykey" json:"id"`
+	UserID        uint      `gorm:"not null;index" json:"userId"`
+	Name          string    `gorm:"size:50;not null" json:"name"`
+	Avatar        string    `gorm:"size:255" json:"avatar"`
+	Gender        int       `gorm:"default:0" json:"gender"`
+	Birthday      time.Time `json:"birthday"`
+	Phone         string    `gorm:"size:20" json:"phone"`
+	Email         string    `gorm:"size:100" json:"email"`
+	Location      string    `gorm:"size:100" json:"location"`
+	Experience    int       `json:"experience"`
+	JobStatus     int       `gorm:"default:0" json:"jobStatus"`
+	ExpectedJob   string    `gorm:"size:50" json:"expectedJob"`
+	ExpectedCity  string    `gorm:"size:50" json:"expectedCity"`
+	Introduction  string    `gorm:"type:text" json:"introduction"`
+	Skills        string    `gorm:"type:text" json:"skills"`
+	AccessStatus  int       `gorm:"default:2" json:"accessStatus"`  // 1: 隐藏, 2: 公开
+	WorkingStatus int       `gorm:"default:1" json:"workingStatus"` // 1: 在职, 2: 离职
+	Status        int       `gorm:"default:1" json:"status"`        // 1: 正常, 0: 删除
+	CreatedAt     time.Time
+	UpdatedAt     time.Time
+	DeletedAt     *time.Time `gorm:"index"`
 
 	// 关联
 	Educations      []Education        `json:"educations"`

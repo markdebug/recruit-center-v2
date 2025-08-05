@@ -1,0 +1,17 @@
+env: "production"
+port: 80
+
+db:
+  host: "prod-db-host"
+  port: 5432
+  username: "prod_user"
+  password: "prod_password"
+  database: "recruit_center_prod"
+
+log:
+  level: "info"
+  filename: "logs/recruit-center-prod.log"
+
+oss:
+  endpoint: "prod-oss-endpoint"
+  use_ssl: true

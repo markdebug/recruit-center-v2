@@ -12,6 +12,7 @@ import (
 	"org.thinkinai.com/recruit-center/api/dto/request"
 	"org.thinkinai.com/recruit-center/internal/dao"
 	"org.thinkinai.com/recruit-center/internal/model"
+	"org.thinkinai.com/recruit-center/pkg/enums"
 	"org.thinkinai.com/recruit-center/pkg/oss"
 )
 
@@ -98,6 +99,36 @@ func (s *ResumeService) GetByUser(userID uint) (*model.Resume, error) {
 
 // Update 更新简历
 func (s *ResumeService) Update(resume *model.Resume) error {
+	return s.resumeDao.Update(resume)
+}
+
+// 更新简历访问状态
+func (s *ResumeService) UpdateAccessStatus(userID uint, status int) error {
+	if _, err := enums.ParseResumeAccess(2); err != nil {
+		return errors.New("无效的简历访问状态")
+	}
+
+	resume, err := s.resumeDao.GetByUser(userID)
+	if err != nil {
+		return fmt.Errorf("获取简历失败: %w", err)
+	}
+
+	resume.AccessStatus = status
+	return s.resumeDao.Update(resume)
+}
+
+// 更新简历工作状态
+func (s *ResumeService) UpdateWorkingStatus(userID uint, targetStatus int) error {
+	if _, err := enums.ParseWorkingStatus(1); err != nil {
+		return errors.New("无效的在职状态")
+	}
+
+	resume, err := s.resumeDao.GetByUser(userID)
+	if err != nil {
+		return fmt.Errorf("获取简历失败: %w", err)
+	}
+
+	resume.WorkingStatus = targetStatus
 	return s.resumeDao.Update(resume)
 }
 

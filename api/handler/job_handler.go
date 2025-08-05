@@ -20,15 +20,18 @@ func NewJobHandler(jobService *service.JobService) *JobHandler {
 }
 
 // Create 创建职位
-// @Summary 创建新职位
-// @Description 创建一个新的职位信息
-// @Tags 职位管理
-// @Accept json
-// @Produce json
-// @Param Authorization header string true "Bearer 用户令牌"
-// @Param job body request.CreateJobRequest true "职位信息"
-// @Success 200 {object} response.Response{data=model.Job}
-// @Failure 400 {object} response.Response
+// @Summary 创建职位
+// @Description 创建新职位,需要提供职位相关信息
+// @Tags 职位
+// @Accept application/json
+// @Produce application/json
+// @Security Bearer
+// @Param Authorization header string true "Bearer JWT"
+// @Param request body request.CreateJobRequest true "职位创建请求参数"
+// @Success 200 {object} response.Response{data=model.Job} "成功"
+// @Failure 400 {object} response.Response{} "请求参数错误"
+// @Failure 401 {object} response.Response{} "未授权"
+// @Failure 500 {object} response.Response{} "服务器内部错误"
 // @Router /api/v1/jobs [post]
 func (h *JobHandler) Create(c *gin.Context) {
 	var req request.CreateJobRequest
@@ -50,16 +53,20 @@ func (h *JobHandler) Create(c *gin.Context) {
 }
 
 // Update 更新职位
-// @Summary 更新职位信息
-// @Description 更新指定职位的信息
-// @Tags 职位管理
-// @Accept json
-// @Produce json
-// @Param Authorization header string true "Bearer 用户令牌"
-// @Param id path int true "职位ID"
-// @Param job body request.UpdateJobRequest true "职位信息"
-// @Success 200 {object} response.Response{data=model.Job}
-// @Failure 400 {object} response.Response
+// @Summary 更新职位
+// @Description 更新指定ID的职位信息
+// @Tags 职位
+// @Accept application/json
+// @Produce application/json
+// @Security Bearer
+// @Param Authorization header string true "Bearer JWT"
+// @Param id path integer true "职位ID"
+// @Param request body request.UpdateJobRequest true "职位更新请求参数"
+// @Success 200 {object} response.Response{data=model.Job} "成功"
+// @Failure 400 {object} response.Response{} "请求参数错误"
+// @Failure 401 {object} response.Response{} "未授权"
+// @Failure 404 {object} response.Response{} "职位不存在"
+// @Failure 500 {object} response.Response{} "服务器内部错误"
 // @Router /api/v1/jobs/{id} [put]
 func (h *JobHandler) Update(c *gin.Context) {
 	var req request.UpdateJobRequest
@@ -78,6 +85,19 @@ func (h *JobHandler) Update(c *gin.Context) {
 }
 
 // Delete 删除职位
+// @Summary 删除职位
+// @Description 删除指定ID的职位
+// @Tags 职位
+// @Accept application/json
+// @Produce application/json
+// @Security Bearer
+// @Param Authorization header string true "Bearer JWT"
+// @Param id path integer true "职位ID"
+// @Success 200 {object} response.Response{} "成功"
+// @Failure 401 {object} response.Response{} "未授权"
+// @Failure 404 {object} response.Response{} "职位不存在"
+// @Failure 500 {object} response.Response{} "服务器内部错误"
+// @Router /api/v1/jobs/{id} [delete]
 func (h *JobHandler) Delete(c *gin.Context) {
 	id, _ := strconv.ParseUint(c.Param("id"), 10, 32)
 	if err := h.jobService.Delete(uint(id)); err != nil {
@@ -131,6 +151,15 @@ func (h *JobHandler) List(c *gin.Context) {
 }
 
 // SearchByKeyword 关键词搜索职位
+// @Summary 关键词搜索职位
+// @Description 根据关键词搜索职位信息
+// @Tags 职位
+// @Accept application/json
+// @Produce application/json
+// @Param keyword query string true "搜索关键词"
+// @Success 200 {object} response.Response{data=[]model.Job} "成功"
+// @Failure 500 {object} response.Response{} "服务器内部错误"
+// @Router /api/v1/jobs/search [get]
 func (h *JobHandler) SearchByKeyword(c *gin.Context) {
 	keyword := c.Query("keyword")
 
@@ -144,6 +173,18 @@ func (h *JobHandler) SearchByKeyword(c *gin.Context) {
 }
 
 // SearchByCondition 多条件搜索职位
+// @Summary 多条件搜索职位
+// @Description 根据多个条件筛选职位
+// @Tags 职位
+// @Accept application/json
+// @Produce application/json
+// @Param page query integer false "页码" default(1)
+// @Param size query integer false "每页数量" default(10)
+// @Param conditions body object true "搜索条件"
+// @Success 200 {object} response.Response{data=[]model.Job} "成功"
+// @Failure 400 {object} response.Response{} "请求参数错误"
+// @Failure 500 {object} response.Response{} "服务器内部错误"
+// @Router /api/v1/jobs/search/condition [post]
 func (h *JobHandler) SearchByCondition(c *gin.Context) {
 	var conditions map[string]interface{}
 	if err := c.ShouldBindJSON(&conditions); err != nil {
@@ -164,6 +205,21 @@ func (h *JobHandler) SearchByCondition(c *gin.Context) {
 }
 
 // UpdateStatus 更新职位状态
+// @Summary 更新职位状态
+// @Description 更新指定职位的状态
+// @Tags 职位
+// @Accept application/json
+// @Produce application/json
+// @Security Bearer
+// @Param Authorization header string true "Bearer JWT"
+// @Param id path integer true "职位ID"
+// @Param status query integer true "状态值" Enums(0,1,2)
+// @Success 200 {object} response.Response{} "成功"
+// @Failure 400 {object} response.Response{} "请求参数错误"
+// @Failure 401 {object} response.Response{} "未授权"
+// @Failure 404 {object} response.Response{} "职位不存在"
+// @Failure 500 {object} response.Response{} "服务器内部错误"
+// @Router /api/v1/jobs/{id}/status [put]
 func (h *JobHandler) UpdateStatus(c *gin.Context) {
 	id, _ := strconv.ParseUint(c.Param("id"), 10, 32)
 	status, _ := strconv.Atoi(c.Query("status"))
@@ -177,6 +233,17 @@ func (h *JobHandler) UpdateStatus(c *gin.Context) {
 }
 
 // GetExpiredJobs 获取已过期职位
+// @Summary 获取已过期职位
+// @Description 获取所有已过期的职位列表
+// @Tags 职位
+// @Accept application/json
+// @Produce application/json
+// @Security Bearer
+// @Param Authorization header string true "Bearer JWT"
+// @Success 200 {object} response.Response{data=[]model.Job} "成功"
+// @Failure 401 {object} response.Response{} "未授权"
+// @Failure 500 {object} response.Response{} "服务器内部错误"
+// @Router /api/v1/jobs/expired [get]
 func (h *JobHandler) GetExpiredJobs(c *gin.Context) {
 	jobs, err := h.jobService.GetExpiredJobs()
 	if err != nil {
@@ -188,6 +255,19 @@ func (h *JobHandler) GetExpiredJobs(c *gin.Context) {
 }
 
 // SearchByCompany 获取公司发布的职位
+// @Summary 获取公司职位
+// @Description 获取指定公司发布的所有职位
+// @Tags 职位
+// @Accept application/json
+// @Produce application/json
+// @Param companyId path integer true "公司ID"
+// @Param page query integer false "页码" default(1)
+// @Param size query integer false "每页数量" default(10)
+// @Success 200 {object} response.Response{data=[]model.Job} "成功"
+// @Failure 400 {object} response.Response{} "请求参数错误"
+// @Failure 404 {object} response.Response{} "公司不存在"
+// @Failure 500 {object} response.Response{} "服务器内部错误"
+// @Router /api/v1/companies/{companyId}/jobs [get]
 func (h *JobHandler) SearchByCompany(c *gin.Context) {
 	companyID, _ := strconv.ParseUint(c.Param("companyId"), 10, 32)
 	page, _ := strconv.Atoi(c.Query("page"))

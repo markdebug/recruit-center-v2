@@ -1,0 +1,13 @@
+env: "development"
+port: 8080
+
+db:
+  host: "localhost"
+  port: 5432
+  username: "postgres"
+  password: "dev_password"
+  database: "recruit_center_dev"
+
+log:
+  level: "debug"
+  filename: "logs/recruit-center-dev.log"

@@ -26,6 +26,12 @@ type CreateResumeRequest struct {
 	Projects        []ProjectRequest        `json:"projects"`
 }
 
+// 更新简历状态请求
+type UpdateResumeStatusRequest struct {
+	Status   int  `json:"status" binding:"required,oneof=1 2"`
+	ResumeID uint `json:"resumeId" binding:"required"`
+}
+
 // ToModel 将请求转换为模型
 func (r *CreateResumeRequest) ToModel(userID uint) *model.Resume {
 	resume := &model.Resume{

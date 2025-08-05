@@ -107,3 +107,57 @@ func (h *ResumeHandler) UploadResume(c *gin.Context) {
 		"file_url": fileURL,
 	}))
 }
+
+// UpdateAccessStatus 更新简历访问状态
+// @Summary 更新简历访问状态
+// @Description 更新用户简历的访问状态（公开/隐藏）
+// @Tags 简历管理
+// @Accept json
+// @Produce json
+// @Param Authorization header string true "Bearer 用户令牌"
+// @Param status body request.UpdateResumeStatusRequest true "访问状态"
+// @Success 200 {object} response.Response
+// @Failure 400 {object} response.Response
+// @Router /api/v1/resumes/access-status [put]
+func (h *ResumeHandler) UpdateAccessStatus(c *gin.Context) {
+	var req request.UpdateResumeStatusRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusOK, response.NewError(errors.InvalidParams))
+		return
+	}
+
+	userID := c.GetUint("userId")
+	if err := h.resumeService.UpdateAccessStatus(userID, req.Status); err != nil {
+		c.JSON(http.StatusOK, response.NewErrorWithMsg(errors.InternalServerError, err.Error()))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.NewSuccess(nil))
+}
+
+// UpdateWorkingStatus 更新简历工作状态
+// @Summary 更新简历工作状态
+// @Description 更新用户简历的工作状态（在职/离职）
+// @Tags 简历管理
+// @Accept json
+// @Produce json
+// @Param Authorization header string true "Bearer 用户令牌"
+// @Param status body request.UpdateResumeStatusRequest true "工作状态"
+// @Success 200 {object} response.Response
+// @Failure 400 {object} response.Response
+// @Router /api/v1/resumes/working-status [put]
+func (h *ResumeHandler) UpdateWorkingStatus(c *gin.Context) {
+	var req request.UpdateResumeStatusRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusOK, response.NewError(errors.InvalidParams))
+		return
+	}
+
+	userID := c.GetUint("userId")
+	if err := h.resumeService.UpdateWorkingStatus(userID, req.Status); err != nil {
+		c.JSON(http.StatusOK, response.NewErrorWithMsg(errors.InternalServerError, err.Error()))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.NewSuccess(nil))
+}

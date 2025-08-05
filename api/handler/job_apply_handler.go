@@ -27,7 +27,7 @@ func NewJobApplyHandler(service *service.JobApplyService) *JobApplyHandler {
 // @Accept json
 // @Produce json
 // @Param Authorization header string true "Bearer 用户令牌"
-// @Param apply body request.CreateJobApplyRequest true "申请信息"
+// @Param apply body request.JobApply true "申请信息"
 // @Success 200 {object} response.Response{data=model.JobApply}
 // @Failure 400 {object} response.Response
 // @Router /api/v1/applies [post]
@@ -96,12 +96,18 @@ func (h *JobApplyHandler) GetByID(c *gin.Context) {
 
 // List 获取职位申请列表
 // @Summary 获取申请列表
-// @Description 分页获取职位申请列表
+// @Description 分页获取所有职位申请记录
 // @Tags 职位申请
-// @Produce json
-// @Param page query int false "页码" default(1)
-// @Param size query int false "每页数量" default(10)
-// @Success 200 {object} response.PageResponse{data=[]model.JobApply}
+// @Accept application/json
+// @Produce application/json
+// @Security Bearer
+// @Param Authorization header string true "Bearer JWT"
+// @Param page query integer false "页码 (默认值: 1)" minimum(1) default(1)
+// @Param size query integer false "每页数量 (默认值: 10)" minimum(1) maximum(100) default(10)
+// @Success 200 {object} response.PageResponse{data=[]model.JobApply} "成功"
+// @Failure 400 {object} response.Response{} "请求参数错误"
+// @Failure 401 {object} response.Response{} "未授权"
+// @Failure 500 {object} response.Response{} "服务器内部错误"
 // @Router /api/v1/applies [get]
 func (h *JobApplyHandler) List(c *gin.Context) {
 	page, size := parsePageSize(c)

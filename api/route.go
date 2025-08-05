@@ -80,6 +80,8 @@ func setupResumeRoutes(resumes *gin.RouterGroup, handler *handler.ResumeHandler)
 		middleware.FileUploadValidator(middleware.FileUploadConfig(config.GetConfig().FileUploadConfig)),
 		handler.UploadResume,
 	)
+	resumes.PUT("/access-status", middleware.AuthRequired(), handler.UpdateAccessStatus)
+	resumes.PUT("/working-status", middleware.AuthRequired(), handler.UpdateWorkingStatus)
 }
 
 // setupToolRoutes 配置工具相关路由

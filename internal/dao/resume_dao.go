@@ -1,6 +1,8 @@
 package dao
 
 import (
+	"time"
+
 	"gorm.io/gorm"
 	"org.thinkinai.com/recruit-center/internal/model"
 )
@@ -21,6 +23,7 @@ func (d *ResumeDAO) Create(resume *model.Resume) error {
 
 // Update 更新简历
 func (d *ResumeDAO) Update(resume *model.Resume) error {
+	resume.UpdatedAt = time.Now()
 	return d.db.Save(resume).Error
 }
 

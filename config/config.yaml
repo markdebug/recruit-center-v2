@@ -1,0 +1,45 @@
+name: "recruit-center"
+version: "1.0.0"
+env: "development"
+port: 8080
+
+# 数据库配置
+db:
+  host: "localhost"
+  port: 5432
+  username: "postgres"
+  password: "your_password"
+  database: "recruit_center"
+
+# 日志配置
+log:
+  level: "info"
+  filename: "logs/recruit-center.log"
+  maxsize: 100 # MB
+  maxage: 30 # 天
+  maxbackups: 10 # 保留文件个数
+
+# OSS配置
+oss:
+  endpoint: "your-oss-endpoint"
+  access_key_id: "your-access-key"
+  secret_access_key: "your-secret-key"
+  use_ssl: true
+
+# 文件上传配置
+file_upload:
+  max_size: 10485760 # 10MB in bytes
+  max_files: 5
+  allowed_types:
+    - "image/jpeg"
+    - "image/png"
+    - "application/pdf"
+    - "application/msword"
+    - "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+  allowed_exts:
+    - ".jpg"
+    - ".jpeg"
+    - ".png"
+    - ".pdf"
+    - ".doc"
+    - ".docx"
