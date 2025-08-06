@@ -18,12 +18,31 @@ func NewResumeDAO(db *gorm.DB) *ResumeDAO {
 
 // Create 创建简历
 func (d *ResumeDAO) Create(resume *model.Resume) error {
+	// BeforeSave 钩子会自动处理加密
 	return d.db.Create(resume).Error
 }
 
 // Update 更新简历
 func (d *ResumeDAO) UpdateBasic(resume *model.Resume) error {
+	// 获取原有数据，用于处理部分更新场景
+	oldResume, err := d.GetByID(resume.ID)
+	if err != nil {
+		return err
+	}
+
+	// 如果敏感字段为空，保留原有加密数据
+	if resume.Phone == "" {
+		resume.Phone = oldResume.Phone
+	}
+	if resume.Email == "" {
+		resume.Email = oldResume.Email
+	}
+	if resume.Location == "" {
+		resume.Location = oldResume.Location
+	}
+
 	resume.UpdatedAt = time.Now()
+	// BeforeSave 钩子会自动处理加密
 	return d.db.Save(resume).Error
 }
 
@@ -33,8 +52,9 @@ func (d *ResumeDAO) GetByID(id uint) (*model.Resume, error) {
 	err := d.db.Preload("Educations").
 		Preload("WorkExperiences").
 		Preload("Projects").
-		Preload("Attachments"). // 添加附件预加载
+		Preload("Attachments").
 		First(&resume, id).Error
+	// AfterFind 钩子会自动处理解密
 	if err != nil {
 		return nil, err
 	}
@@ -47,9 +67,10 @@ func (d *ResumeDAO) GetByUser(userID uint) (*model.Resume, error) {
 	err := d.db.Preload("Educations").
 		Preload("WorkExperiences").
 		Preload("Projects").
-		Preload("Attachments"). // 添加附件预加载
+		Preload("Attachments").
 		Where("user_id = ?", userID).
 		First(&resume).Error
+	// AfterFind 钩子会自动处理解密
 	if err != nil {
 		return nil, err
 	}
@@ -62,9 +83,10 @@ func (d *ResumeDAO) GetByShareToken(token string) (*model.Resume, error) {
 	err := d.db.Preload("Educations").
 		Preload("WorkExperiences").
 		Preload("Projects").
-		Preload("Attachments"). // 添加附件预加载
-		Where("share_token = ?", token).
+		Preload("Attachments").
+		Where("share_token = ? AND status = 1", token).
 		First(&resume).Error
+	// AfterFind 钩子会自动处理解密
 	if err != nil {
 		return nil, err
 	}
@@ -165,10 +187,11 @@ func (d *ResumeDAO) List(page, size int) ([]model.Resume, int64, error) {
 	err := d.db.Preload("Educations").
 		Preload("WorkExperiences").
 		Preload("Projects").
-		Preload("Attachments"). // 添加附件预加载
+		Preload("Attachments").
 		Offset(offset).
 		Limit(size).
 		Find(&resumes).Error
+	// AfterFind 钩子会自动处理解密
 
 	return resumes, total, err
 }
