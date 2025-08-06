@@ -1,10 +1,6 @@
 package model
 
-import (
-	"time"
-
-	"gorm.io/gorm"
-)
+import "time"
 
 // InteractionType 定义交互类型
 type InteractionType string
@@ -16,11 +12,12 @@ const (
 
 // ResumeInteraction 简历交互记录
 type ResumeInteraction struct {
-	gorm.Model
-	ResumeID uint            `gorm:"index:idx_resume_user_type"`
-	UserID   uint            `gorm:"index:idx_resume_user_type"`
-	Type     InteractionType `gorm:"index:idx_resume_user_type;type:varchar(20)"`
-	LastTime time.Time       // 最后交互时间
+	Id        uint            `gorm:"primarykey"`
+	ResumeID  uint            `gorm:"index:idx_resume_user_type"`
+	UserID    uint            `gorm:"index:idx_resume_user_type"`
+	Type      InteractionType `gorm:"index:idx_resume_user_type;type:varchar(20)"`
+	CreatedAt time.Time       `gorm:"autoCreateTime"`
+	UpdatedAt time.Time
 }
 
 // TableName 设置 ResumeInteraction 的表名

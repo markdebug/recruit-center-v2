@@ -48,6 +48,18 @@ func (h *ResumeHandler) Create(c *gin.Context) {
 	c.JSON(http.StatusOK, response.NewSuccess(resume))
 }
 
+// Update 更新简历
+// @Summary 更新简历
+// @Description 更新用户简历信息
+// @Tags 简历管理
+// @Accept json
+// @Produce json
+// @Param Authorization header string true "Bearer 用户令牌"
+// @Param id path int true "简历ID"
+// @Param resume body request.UpdateResumeRequest true "更新简历信息"
+// @Success 200 {object} response.Response
+// @Failure 400 {object} response.Response
+// @Router /api/v1/resumes/{id} [put]
 func (h *ResumeHandler) Update(c *gin.Context) {
 	var req request.UpdateResumeRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -112,6 +124,31 @@ func (h *ResumeHandler) Update(c *gin.Context) {
 func (h *ResumeHandler) GetByUser(c *gin.Context) {
 	userID := c.GetUint("userId")
 	resume, err := h.resumeService.GetByUser(userID)
+	if err != nil {
+		c.JSON(http.StatusOK, response.NewError(errors.NotFound))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.NewSuccess(resume))
+}
+
+// 根据分享token获取用户简历
+// @Summary 根据分享token获取简历
+// @Description 根据分享token获取简历信息
+// @Tags 简历管理
+// @Produce json
+// @Param token path string true "分享Token"
+// @Success 200 {object} response.Response{data=model.Resume}
+// @Failure 404 {object} response.Response
+// @Router /api/v1/resumes/share/{token} [get]
+func (h *ResumeHandler) GetByShareToken(c *gin.Context) {
+	token := c.Param("token")
+	if token == "" {
+		c.JSON(http.StatusOK, response.NewError(errors.InvalidParams))
+		return
+	}
+
+	resume, err := h.resumeService.GetByShareToken(token)
 	if err != nil {
 		c.JSON(http.StatusOK, response.NewError(errors.NotFound))
 		return
@@ -272,6 +309,28 @@ func (h *ResumeHandler) ToggleFavorite(c *gin.Context) {
 		c.JSON(http.StatusOK, response.NewErrorWithMsg(errors.InternalServerError, err.Error()))
 		return
 	}
+
+	stats, err := h.interactionService.GetInteractionStats(resumeID)
+	if err != nil {
+		c.JSON(http.StatusOK, response.NewErrorWithMsg(errors.InternalServerError, err.Error()))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.NewSuccess(stats))
+}
+
+// 获取简历的统计信息
+// @Summary 获取简历统计信息
+// @Description 获取简历的查看和收藏统计信息
+// @Tags 简历管理
+// @Produce json
+// @Param Authorization header string true "Bearer 用户令牌"
+// @Param id path int true "简历ID"
+// @Success 200 {object} response.Response{data=map[string]int64}
+// @Failure 404 {object} response.Response
+// @Router /api/v1/resumes/{id}/stats [get]
+func (h *ResumeHandler) GetStats(c *gin.Context) {
+	resumeID := c.GetUint("id")
 
 	stats, err := h.interactionService.GetInteractionStats(resumeID)
 	if err != nil {

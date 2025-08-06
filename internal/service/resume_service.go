@@ -8,11 +8,13 @@ import (
 	"time"
 
 	"github.com/minio/minio-go/v7"
+	"go.uber.org/zap"
 	"org.thinkinai.com/recruit-center/api/dto/request"
 	"org.thinkinai.com/recruit-center/internal/dao"
 	"org.thinkinai.com/recruit-center/internal/model"
 	"org.thinkinai.com/recruit-center/pkg/enums"
 	"org.thinkinai.com/recruit-center/pkg/errors"
+	"org.thinkinai.com/recruit-center/pkg/logger"
 	"org.thinkinai.com/recruit-center/pkg/oss"
 	"org.thinkinai.com/recruit-center/pkg/utils"
 )
@@ -29,6 +31,7 @@ func NewResumeService(resumeDao *dao.ResumeDAO) *ResumeService {
 func (s *ResumeService) Create(userID uint, req *request.CreateResumeRequest) (*model.Resume, error) {
 	// 检查用户是否已有简历
 	if _, err := s.resumeDao.GetByUser(userID); err == nil {
+		logger.L.Warn("用户已存在简历", zap.Uint("userID", userID))
 		return nil, errors.New(errors.ResumeExists)
 	}
 
@@ -95,6 +98,28 @@ func (s *ResumeService) Create(userID uint, req *request.CreateResumeRequest) (*
 		return nil, err
 	}
 
+	return resume, nil
+}
+
+// 根据分享token查询用户简历
+func (s *ResumeService) GetByShareToken(token string) (*model.Resume, error) {
+	if token == "" {
+		return nil, errors.New(errors.InvalidParams)
+	}
+	resume, err := s.resumeDao.GetByShareToken(token)
+	if err != nil {
+		logger.L.Warn("获取简历失败", zap.String("token", token), zap.Error(err))
+		return nil, fmt.Errorf("获取简历失败: %w", err)
+	}
+	if resume == nil {
+		logger.L.Warn("简历不存在", zap.String("token", token))
+		return nil, errors.New(errors.ResumeNotFound)
+	}
+	// 检查简历隐私设置
+	if resume.AccessStatus == int(enums.Hide) {
+		logger.L.Warn("简历访问被拒绝", zap.Uint("resumeID", resume.ID), zap.Uint("userID", resume.UserID))
+		return nil, errors.New(errors.ResumeAccessDenied)
+	}
 	return resume, nil
 }
 

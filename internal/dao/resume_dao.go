@@ -56,6 +56,21 @@ func (d *ResumeDAO) GetByUser(userID uint) (*model.Resume, error) {
 	return &resume, nil
 }
 
+// 通过分享token获取简历
+func (d *ResumeDAO) GetByShareToken(token string) (*model.Resume, error) {
+	var resume model.Resume
+	err := d.db.Preload("Educations").
+		Preload("WorkExperiences").
+		Preload("Projects").
+		Preload("Attachments"). // 添加附件预加载
+		Where("share_token = ?", token).
+		First(&resume).Error
+	if err != nil {
+		return nil, err
+	}
+	return &resume, nil
+}
+
 // AddEducation 添加教育经历
 func (d *ResumeDAO) AddEducation(education *model.Education) error {
 	return d.db.Create(education).Error

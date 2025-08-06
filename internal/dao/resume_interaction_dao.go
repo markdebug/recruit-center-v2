@@ -1,10 +1,7 @@
 package dao
 
 import (
-	"time"
-
 	"gorm.io/gorm"
-	"gorm.io/gorm/clause"
 	"org.thinkinai.com/recruit-center/internal/model"
 )
 
@@ -22,18 +19,19 @@ func (d *ResumeInteractionDAO) AddInteraction(resumeID, userID uint, interType m
 		ResumeID: resumeID,
 		UserID:   userID,
 		Type:     interType,
-		LastTime: time.Now(),
 	}
 
 	// 使用upsert确保记录唯一性
-	return d.db.Clauses(clause.OnConflict{
-		Columns:   []clause.Column{{Name: "resume_id"}, {Name: "user_id"}, {Name: "type"}},
-		DoUpdates: clause.AssignmentColumns([]string{"last_time"}),
-	}).Create(interaction).Error
+	// return d.db.Clauses(clause.OnConflict{
+	// 	Columns:   []clause.Column{{Name: "resume_id"}, {Name: "user_id"}, {Name: "type"}},
+	// 	DoUpdates: clause.AssignmentColumns([]string{"last_time"}),
+	// }).Create(interaction).Error
+	return d.db.Save(interaction).Error
 }
 
 // RemoveInteraction 移除交互记录
 func (d *ResumeInteractionDAO) RemoveInteraction(resumeID, userID uint, interType model.InteractionType) error {
+
 	return d.db.Where("resume_id = ? AND user_id = ? AND type = ?",
 		resumeID, userID, interType).Delete(&model.ResumeInteraction{}).Error
 }
@@ -45,6 +43,13 @@ func (d *ResumeInteractionDAO) GetStats(resumeID uint, interType model.Interacti
 		Where("resume_id = ? AND type = ?", resumeID, interType).
 		Count(&count).Error
 	return count, err
+}
+
+// GetAllByResumeID 获取指定简历的所有信息
+func (d *ResumeInteractionDAO) GetAllByResumeID(resumeID uint) ([]model.ResumeInteraction, error) {
+	var interactions []model.ResumeInteraction
+	err := d.db.Where("resume_id = ?", resumeID).Find(&interactions).Error
+	return interactions, err
 }
 
 // HasInteraction 检查是否有交互记录

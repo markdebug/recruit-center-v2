@@ -28,6 +28,20 @@ func (s *ResumeInteractionService) RemoveFavorite(resumeID, userID uint) error {
 	return s.interactionDAO.RemoveInteraction(resumeID, userID, model.InteractionFavorite)
 }
 
+// GetAllInteractions 查询简历的所有信息，并进行分组统计返回
+func (s *ResumeInteractionService) GetAllInteractions(resumeID uint) (map[string]int, error) {
+	interactions, err := s.interactionDAO.GetAllByResumeID(resumeID)
+	if err != nil {
+		return nil, err
+	}
+	mapStats := make(map[string]int)
+	//使用lambda函数进行分组统计
+	for _, interaction := range interactions {
+		mapStats[string(interaction.Type)]++
+	}
+	return mapStats, nil
+}
+
 // GetInteractionStats 获取交互统计
 func (s *ResumeInteractionService) GetInteractionStats(resumeID uint) (map[string]int64, error) {
 	viewCount, err := s.interactionDAO.GetStats(resumeID, model.InteractionView)
