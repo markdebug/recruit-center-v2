@@ -19,9 +19,10 @@ type Resume struct {
 	ExpectedCity  string    `gorm:"size:50" json:"expectedCity"`
 	Introduction  string    `gorm:"type:text" json:"introduction"`
 	Skills        string    `gorm:"type:text" json:"skills"`
-	AccessStatus  int       `gorm:"default:2" json:"accessStatus"`  // 1: 隐藏, 2: 公开
-	WorkingStatus int       `gorm:"default:1" json:"workingStatus"` // 1: 在职, 2: 离职
-	Status        int       `gorm:"default:1" json:"status"`        // 1: 正常, 0: 删除
+	ShareToken    string    `gorm:"size:100;uniqueIndex" json:"shareToken"` // 用于分享简历的唯一标识
+	AccessStatus  int       `gorm:"default:2" json:"accessStatus"`          // 1: 隐藏, 2: 公开
+	WorkingStatus int       `gorm:"default:1" json:"workingStatus"`         // 1: 在职, 2: 离职
+	Status        int       `gorm:"default:1" json:"status"`                // 1: 正常, 0: 删除
 	CreatedAt     time.Time
 	UpdatedAt     time.Time
 	DeletedAt     *time.Time `gorm:"index"`

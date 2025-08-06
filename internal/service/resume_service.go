@@ -14,6 +14,7 @@ import (
 	"org.thinkinai.com/recruit-center/pkg/enums"
 	"org.thinkinai.com/recruit-center/pkg/errors"
 	"org.thinkinai.com/recruit-center/pkg/oss"
+	"org.thinkinai.com/recruit-center/pkg/utils"
 )
 
 type ResumeService struct {
@@ -84,7 +85,12 @@ func (s *ResumeService) Create(userID uint, req *request.CreateResumeRequest) (*
 			Achievement: proj.Achievement,
 		})
 	}
-
+	// 生成分享令牌
+	shareToken, err := utils.GenerateNanoID(10) // 生成10位的友好URL
+	if err != nil {
+		return nil, fmt.Errorf("生成分享令牌失败: %w", err)
+	}
+	resume.ShareToken = shareToken
 	if err := s.resumeDao.Create(resume); err != nil {
 		return nil, err
 	}

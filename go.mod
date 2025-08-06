@@ -6,6 +6,7 @@ require (
 	github.com/fsnotify/fsnotify v1.8.0
 	github.com/gin-gonic/gin v1.10.1
 	github.com/ledongthuc/pdf v0.0.0-20250511090121-5959a4027728
+	github.com/matoous/go-nanoid/v2 v2.1.0
 	github.com/spf13/viper v1.20.1
 	github.com/stretchr/testify v1.10.0
 	github.com/swaggo/files v1.0.1
@@ -14,9 +15,7 @@ require (
 	go.uber.org/zap v1.27.0
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1
 	gorm.io/driver/postgres v1.6.0
-	gorm.io/driver/sqlite v1.6.0
 	gorm.io/gorm v1.30.1
-	modernc.org/sqlite v1.38.2
 )
 
 require (
@@ -25,21 +24,14 @@ require (
 	github.com/go-ini/ini v1.67.0 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/klauspost/compress v1.18.0 // indirect
-	github.com/mattn/go-sqlite3 v1.14.22 // indirect
 	github.com/minio/crc64nvme v1.0.2 // indirect
 	github.com/minio/md5-simd v1.1.2 // indirect
-	github.com/ncruces/go-strftime v0.1.9 // indirect
 	github.com/philhofer/fwd v1.2.0 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
-	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect
 	github.com/richardlehane/msoleps v1.0.3 // indirect
 	github.com/rs/xid v1.6.0 // indirect
 	github.com/tinylib/msgp v1.3.0 // indirect
-	golang.org/x/exp v0.0.0-20250620022241-b7579e27df2b // indirect
 	golang.org/x/mod v0.26.0 // indirect
-	modernc.org/libc v1.66.3 // indirect
-	modernc.org/mathutil v1.7.1 // indirect
-	modernc.org/memory v1.11.0 // indirect
 )
 
 require (

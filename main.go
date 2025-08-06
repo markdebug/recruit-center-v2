@@ -167,17 +167,19 @@ func (a *App) initializeDependencies(db *gorm.DB) (*Handlers, error) {
 	jobDao := dao.NewJobDAO(db)
 	jobApplyDao := dao.NewJobApplyDAO(db)
 	resumeDao := dao.NewResumeDAO(db)
+	resumeInteractionDao := dao.NewResumeInteractionDAO(db)
 
 	// 初始化 Service 层
 	jobService := service.NewJobService(jobDao)
 	jobApplyService := service.NewJobApplyService(jobApplyDao, jobService)
 	resumeService := service.NewResumeService(resumeDao)
+	resumeInteractionService := service.NewResumeInteractionService(resumeInteractionDao)
 
 	// 初始化 Handler 层
 	return &Handlers{
 		job:      handler.NewJobHandler(jobService),
 		jobApply: handler.NewJobApplyHandler(jobApplyService),
-		resume:   handler.NewResumeHandler(resumeService),
+		resume:   handler.NewResumeHandler(resumeService, resumeInteractionService),
 	}, nil
 }
 

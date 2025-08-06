@@ -11,11 +11,12 @@ import (
 )
 
 type ResumeHandler struct {
-	resumeService *service.ResumeService
+	resumeService      *service.ResumeService
+	interactionService *service.ResumeInteractionService
 }
 
-func NewResumeHandler(resumeService *service.ResumeService) *ResumeHandler {
-	return &ResumeHandler{resumeService: resumeService}
+func NewResumeHandler(resumeService *service.ResumeService, interactionService *service.ResumeInteractionService) *ResumeHandler {
+	return &ResumeHandler{resumeService: resumeService, interactionService: interactionService}
 }
 
 // Create 创建简历
@@ -56,7 +57,7 @@ func (h *ResumeHandler) Create(c *gin.Context) {
 // @Failure 404 {object} response.Response
 // @Router /api/v1/resumes/my [get]
 func (h *ResumeHandler) GetByUser(c *gin.Context) {
-	userID := c.GetUint("user_id")
+	userID := c.GetUint("userId")
 	resume, err := h.resumeService.GetByUser(userID)
 	if err != nil {
 		c.JSON(http.StatusOK, response.NewError(errors.NotFound))
@@ -79,7 +80,7 @@ func (h *ResumeHandler) GetByUser(c *gin.Context) {
 // @Router /api/v1/resumes/upload [post]
 func (h *ResumeHandler) UploadResume(c *gin.Context) {
 	// 从上下文获取用户ID
-	userID := c.GetUint("user_id")
+	userID := c.GetUint("userId")
 
 	// 获取上传的文件
 	file, err := c.FormFile("resume")
@@ -160,4 +161,70 @@ func (h *ResumeHandler) UpdateWorkingStatus(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, response.NewSuccess(nil))
+}
+
+// ViewResume 查看简历收藏相关信息
+// @Summary 查看简历收藏相关信息
+// @Description 记录简历查看行为
+// @Tags 简历管理
+// @Produce json
+// @Param Authorization header string true "Bearer 用户令牌"
+// @Param id path int true "简历ID"
+// @Success 200 {object} response.Response
+// @Router /api/v1/resumes/{id}/view [post]
+func (h *ResumeHandler) ViewResume(c *gin.Context) {
+	resumeID := c.GetUint("id")
+	userID := c.GetUint("userId")
+
+	if err := h.interactionService.RecordView(resumeID, userID); err != nil {
+		c.JSON(http.StatusOK, response.NewErrorWithMsg(errors.InternalServerError, err.Error()))
+		return
+	}
+
+	stats, err := h.interactionService.GetInteractionStats(resumeID)
+	if err != nil {
+		c.JSON(http.StatusOK, response.NewErrorWithMsg(errors.InternalServerError, err.Error()))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.NewSuccess(stats))
+}
+
+// ToggleFavorite 切换简历收藏状态
+// @Summary 收藏/取消收藏简历
+// @Description 切换简历的收藏状态
+// @Tags 简历管理
+// @Produce json
+// @Param Authorization header string true "Bearer 用户令牌"
+// @Param id path int true "简历ID"
+// @Success 200 {object} response.Response
+// @Router /api/v1/resumes/{id}/favorite [post]
+func (h *ResumeHandler) ToggleFavorite(c *gin.Context) {
+	resumeID := c.GetUint("id")
+	userID := c.GetUint("userId")
+
+	isFavorited, err := h.interactionService.IsFavorited(resumeID, userID)
+	if err != nil {
+		c.JSON(http.StatusOK, response.NewErrorWithMsg(errors.InternalServerError, err.Error()))
+		return
+	}
+
+	if isFavorited {
+		err = h.interactionService.RemoveFavorite(resumeID, userID)
+	} else {
+		err = h.interactionService.AddFavorite(resumeID, userID)
+	}
+
+	if err != nil {
+		c.JSON(http.StatusOK, response.NewErrorWithMsg(errors.InternalServerError, err.Error()))
+		return
+	}
+
+	stats, err := h.interactionService.GetInteractionStats(resumeID)
+	if err != nil {
+		c.JSON(http.StatusOK, response.NewErrorWithMsg(errors.InternalServerError, err.Error()))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.NewSuccess(stats))
 }

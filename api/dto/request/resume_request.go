@@ -30,6 +30,7 @@ type CreateResumeRequest struct {
 type UpdateResumeStatusRequest struct {
 	Status   int  `json:"status" binding:"required,oneof=1 2"`
 	ResumeID uint `json:"resumeId" binding:"required"`
+	UserID   uint `json:"userId" binding:"required"`
 }
 
 // ToModel 将请求转换为模型
