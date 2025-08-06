@@ -2,6 +2,7 @@ package handler
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-viper/mapstructure/v2"
@@ -132,6 +133,26 @@ func (h *ResumeHandler) GetByUser(c *gin.Context) {
 		return
 	}
 
+	c.JSON(http.StatusOK, response.NewSuccess(resume))
+}
+
+// GetByID 获取简历详情
+//
+//	@Summary		获取简历详情
+//	@Description	获取指定ID的简历详细信息
+//	@Tags			简历管理
+//	@Produce		json
+//	@Param			id	path		int										true	"简历ID"
+//	@Success		200	{object}	response.Response{data=model.Resume}
+//	@Failure		404	{object}	response.Response
+//	@Router			/api/v1/resumes/{id} [get]
+func (h *ResumeHandler) GetByID(c *gin.Context) {
+	id, _ := strconv.ParseUint(c.Param("id"), 10, 32)
+	resume, err := h.resumeService.GetResumeByID(uint(id))
+	if err != nil {
+		c.JSON(http.StatusOK, response.NewError(errors.ResumeNotFound))
+		return
+	}
 	c.JSON(http.StatusOK, response.NewSuccess(resume))
 }
 

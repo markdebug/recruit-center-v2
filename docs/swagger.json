@@ -1044,6 +1044,51 @@
             }
         },
         "/api/v1/resumes/{id}": {
+            "get": {
+                "description": "获取指定ID的简历详细信息",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "简历管理"
+                ],
+                "summary": "获取简历详情",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "简历ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/model.Resume"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            },
             "put": {
                 "description": "更新用户简历信息",
                 "consumes": [

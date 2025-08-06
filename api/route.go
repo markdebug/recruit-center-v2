@@ -86,6 +86,15 @@ func setupResumeRoutes(resumes *gin.RouterGroup, handler *handler.ResumeHandler)
 	)
 	resumes.PUT("/access-status", middleware.AuthRequired(), handler.UpdateAccessStatus)
 	resumes.PUT("/working-status", middleware.AuthRequired(), handler.UpdateWorkingStatus)
+	resumes.GET("/:id", handler.GetByID)
+	//格局share token获取简历
+	resumes.GET("/share/:token", handler.GetByShareToken)
+	//查看简历收藏相关信息
+	resumes.GET("/:id/view", middleware.AuthRequired(), handler.ViewResume)
+	//切换简历收藏状态
+	resumes.PUT("/:id/favorite", middleware.AuthRequired(), handler.ToggleFavorite)
+	//获取简历的统计信息
+	resumes.GET("/:id/stats", middleware.AuthRequired(), handler.GetStats)
 }
 
 // setupToolRoutes 配置工具相关路由

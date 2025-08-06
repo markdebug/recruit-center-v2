@@ -1259,6 +1259,33 @@ paths:
       tags:
       - 简历管理
   /api/v1/resumes/{id}:
+    get:
+      description: 获取指定ID的简历详细信息
+      parameters:
+      - description: 简历ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.Resume'
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: 获取简历详情
+      tags:
+      - 简历管理
     put:
       consumes:
       - application/json
