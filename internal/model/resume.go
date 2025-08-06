@@ -1,6 +1,10 @@
 package model
 
-import "time"
+import (
+	"time"
+
+	"org.thinkinai.com/recruit-center/pkg/utils"
+)
 
 // Resume 简历基本信息
 type Resume struct {
@@ -10,9 +14,9 @@ type Resume struct {
 	Avatar        string    `gorm:"size:255" json:"avatar"`
 	Gender        int       `gorm:"default:0" json:"gender"`
 	Birthday      time.Time `json:"birthday"`
-	Phone         string    `gorm:"size:20" json:"phone"`
-	Email         string    `gorm:"size:100" json:"email"`
-	Location      string    `gorm:"size:100" json:"location"`
+	Phone         string    `gorm:"size:100" json:"phone"`    // 修改size以适应加密后的长度
+	Email         string    `gorm:"size:200" json:"email"`    // 修改size以适应加密后的长度
+	Location      string    `gorm:"size:200" json:"location"` // 修改size以适应加密后的长度
 	Experience    int       `json:"experience"`
 	JobStatus     int       `gorm:"default:0" json:"jobStatus"`
 	ExpectedJob   string    `gorm:"size:50" json:"expectedJob"`
@@ -114,4 +118,52 @@ func (Project) TableName() string {
 // TableName 指定表名
 func (ResumeAttachment) TableName() string {
 	return "t_rc_resume_attachment"
+}
+
+// BeforeSave 保存前加密敏感信息
+func (r *Resume) BeforeSave() error {
+	var err error
+	if r.Phone != "" {
+		r.Phone, err = utils.Encrypt(r.Phone)
+		if err != nil {
+			return err
+		}
+	}
+	if r.Email != "" {
+		r.Email, err = utils.Encrypt(r.Email)
+		if err != nil {
+			return err
+		}
+	}
+	if r.Location != "" {
+		r.Location, err = utils.Encrypt(r.Location)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// AfterFind 查询后解密敏感信息
+func (r *Resume) AfterFind() error {
+	var err error
+	if r.Phone != "" {
+		r.Phone, err = utils.Decrypt(r.Phone)
+		if err != nil {
+			return err
+		}
+	}
+	if r.Email != "" {
+		r.Email, err = utils.Decrypt(r.Email)
+		if err != nil {
+			return err
+		}
+	}
+	if r.Location != "" {
+		r.Location, err = utils.Decrypt(r.Location)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
