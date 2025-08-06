@@ -98,14 +98,75 @@ func (s *ResumeService) Create(userID uint, req *request.CreateResumeRequest) (*
 	return resume, nil
 }
 
+// UpdateBasic 更新基本信息
+func (s *ResumeService) UpdateBasic(resumeID uint, req *request.UpdateResumeBasicRequest) error {
+	resume := &model.Resume{
+		ID:           resumeID,
+		Name:         req.Name,
+		Avatar:       req.Avatar,
+		Gender:       req.Gender,
+		Birthday:     req.Birthday,
+		Phone:        req.Phone,
+		Email:        req.Email,
+		Location:     req.Location,
+		Introduction: req.Introduction,
+	}
+	return s.resumeDao.UpdateBasic(resume)
+}
+
+// UpdateEducation 更新教育经历
+func (s *ResumeService) UpdateEducation(resumeID uint, req *request.UpdateResumeEducationRequest) error {
+	edu := &model.Education{
+		ResumeID:  resumeID,
+		School:    req.School,
+		Major:     req.Major,
+		Degree:    req.Degree,
+		StartTime: req.StartTime,
+		EndTime:   req.EndTime,
+	}
+
+	if req.ID > 0 {
+		edu.ID = req.ID
+		return s.resumeDao.UpdateEducation(edu)
+	}
+	return s.resumeDao.AddEducation(edu)
+}
+
+// UpdateWork 更新工作经历
+func (s *ResumeService) UpdateWork(resumeID uint, req *request.UpdateResumeWorkRequest) error {
+	work := &model.WorkExperience{
+		ResumeID:    resumeID,
+		CompanyName: req.CompanyName,
+		Position:    req.Position,
+		Department:  req.Department,
+		StartTime:   req.StartTime,
+		EndTime:     req.EndTime,
+		Description: req.Description,
+		Achievement: req.Achievement,
+	}
+
+	if req.ID > 0 {
+		work.ID = req.ID
+		return s.resumeDao.UpdateWorkExperience(work)
+	}
+	return s.resumeDao.AddWorkExperience(work)
+}
+
 // GetByUser 获取用户简历
 func (s *ResumeService) GetByUser(userID uint) (*model.Resume, error) {
 	return s.resumeDao.GetByUser(userID)
 }
 
-// Update 更新简历
-func (s *ResumeService) Update(resume *model.Resume) error {
-	return s.resumeDao.Update(resume)
+// 根据用户id和简历id获取简历
+func (s *ResumeService) GetByUserIDAndResumeID(userID uint, resumeID uint) (*model.Resume, error) {
+	resume, err := s.resumeDao.GetByID(resumeID)
+	if err != nil {
+		return nil, fmt.Errorf("获取简历失败: %w", err)
+	}
+	if resume.UserID != userID {
+		return nil, errors.New(errors.ResumeAccessDenied)
+	}
+	return resume, nil
 }
 
 // 更新简历访问状态
@@ -120,7 +181,7 @@ func (s *ResumeService) UpdateAccessStatus(userID uint, status int) error {
 	}
 
 	resume.AccessStatus = status
-	return s.resumeDao.Update(resume)
+	return s.resumeDao.UpdateBasic(resume)
 }
 
 // 更新简历工作状态
@@ -135,7 +196,7 @@ func (s *ResumeService) UpdateWorkingStatus(userID uint, targetStatus int) error
 	}
 
 	resume.WorkingStatus = targetStatus
-	return s.resumeDao.Update(resume)
+	return s.resumeDao.UpdateBasic(resume)
 }
 
 // UploadResumeFile 上传简历文件到MinIO

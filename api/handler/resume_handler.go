@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-viper/mapstructure/v2"
 	"org.thinkinai.com/recruit-center/api/dto/request"
 	"org.thinkinai.com/recruit-center/api/dto/response"
 	"org.thinkinai.com/recruit-center/internal/service"
@@ -45,6 +46,58 @@ func (h *ResumeHandler) Create(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, response.NewSuccess(resume))
+}
+
+func (h *ResumeHandler) Update(c *gin.Context) {
+	var req request.UpdateResumeRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusOK, response.NewError(errors.InvalidParams))
+		return
+	}
+
+	resumeID := c.GetUint("id")
+	userID := c.GetUint("userId")
+
+	// 判断简历是否存在
+	_, err := h.resumeService.GetByUserIDAndResumeID(userID, resumeID)
+	if err != nil {
+		c.JSON(http.StatusOK, response.NewErrorWithMsg(errors.InternalServerError, err.Error()))
+		return
+	}
+
+	// 根据模块类型分别处理更新
+	switch req.Module {
+	case request.ModuleBasic:
+		var basicData request.UpdateResumeBasicRequest
+		if err := mapstructure.Decode(req.Data, &basicData); err != nil {
+			c.JSON(http.StatusOK, response.NewError(errors.InvalidParams))
+			return
+		}
+		err = h.resumeService.UpdateBasic(resumeID, &basicData)
+
+	case request.ModuleEducation:
+		var eduData request.UpdateResumeEducationRequest
+		if err := mapstructure.Decode(req.Data, &eduData); err != nil {
+			c.JSON(http.StatusOK, response.NewError(errors.InvalidParams))
+			return
+		}
+		err = h.resumeService.UpdateEducation(resumeID, &eduData)
+
+	case request.ModuleWorkExperience:
+		var workData request.UpdateResumeWorkRequest
+		if err := mapstructure.Decode(req.Data, &workData); err != nil {
+			c.JSON(http.StatusOK, response.NewError(errors.InvalidParams))
+			return
+		}
+		err = h.resumeService.UpdateWork(resumeID, &workData)
+	}
+
+	if err != nil {
+		c.JSON(http.StatusOK, response.NewErrorWithMsg(errors.InternalServerError, err.Error()))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.NewSuccess(nil))
 }
 
 // GetByUser 获取当前用户的简历

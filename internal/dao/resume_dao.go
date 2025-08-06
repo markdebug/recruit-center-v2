@@ -22,7 +22,7 @@ func (d *ResumeDAO) Create(resume *model.Resume) error {
 }
 
 // Update 更新简历
-func (d *ResumeDAO) Update(resume *model.Resume) error {
+func (d *ResumeDAO) UpdateBasic(resume *model.Resume) error {
 	resume.UpdatedAt = time.Now()
 	return d.db.Save(resume).Error
 }

@@ -73,6 +73,7 @@ func setupApplyRoutes(applies *gin.RouterGroup, handler *handler.JobApplyHandler
 // setupResumeRoutes 配置简历相关路由
 func setupResumeRoutes(resumes *gin.RouterGroup, handler *handler.ResumeHandler) {
 	resumes.POST("/", middleware.AuthRequired(), handler.Create)
+	resumes.PUT("/:id", middleware.AuthRequired(), handler.Update)
 	resumes.GET("/my", middleware.AuthRequired(), handler.GetByUser)
 	// 添加文件上传路由
 	resumes.POST("/upload",

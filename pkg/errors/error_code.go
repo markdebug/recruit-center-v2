@@ -56,7 +56,7 @@ const (
 	ResumeFormat            ErrorCode = 5005 // 简历格式错误
 	ResumeUpload            ErrorCode = 5006 // 简历上传失败
 	ResumeDelete            ErrorCode = 5007 // 简历删除失败
-	ResumeAccess            ErrorCode = 5008 // 无权限访问简历
+	ResumeAccessDenied      ErrorCode = 5008 // 无权限访问简历
 	ResumeParse             ErrorCode = 5009 // 简历解析失败
 	ResumeUpdate            ErrorCode = 5010 // 简历更新失败
 	ResumeUpdateTooFrequent ErrorCode = 5011 // 简历更新过于频繁
