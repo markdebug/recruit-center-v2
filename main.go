@@ -1,19 +1,19 @@
 package main
 
-// @title           招聘中心 API
-// @version         1.0
-// @description     招聘中心系统 API 文档
-// @termsOfService  http://swagger.io/terms/
+//	@title			招聘中心 API
+//	@version		1.0
+//	@description	招聘中心系统 API 文档
+//	@termsOfService	http://swagger.io/terms/
 
-// @contact.name   API Support
-// @contact.url    http://www.swagger.io/support
-// @contact.email  support@swagger.io
+//	@contact.name	API Support
+//	@contact.url	http://www.swagger.io/support
+//	@contact.email	support@swagger.io
 
-// @license.name  Apache 2.0
-// @license.url   http://www.apache.org/licenses/LICENSE-2.0.html
+//	@license.name	Apache 2.0
+//	@license.url	http://www.apache.org/licenses/LICENSE-2.0.html
 
-// @host      localhost:8080
-// @BasePath  /api/v1
+//	@host		localhost:8080
+//	@BasePath	/api/v1
 import (
 	"context"
 	"flag"
@@ -28,6 +28,7 @@ import (
 	"gorm.io/gorm"
 	"org.thinkinai.com/recruit-center/api"
 	"org.thinkinai.com/recruit-center/api/handler"
+	_ "org.thinkinai.com/recruit-center/docs"
 	"org.thinkinai.com/recruit-center/internal/dao"
 	"org.thinkinai.com/recruit-center/internal/service"
 	"org.thinkinai.com/recruit-center/pkg/config"
@@ -42,7 +43,7 @@ var (
 
 func init() {
 	// 添加命令行参数支持
-	flag.StringVar(&configPath, "config", "", "配置文件路径")
+	flag.StringVar(&configPath, "config", "config/config.yaml", "配置文件路径")
 	flag.StringVar(&env, "env", "dev", "运行环境(dev/prod)")
 	flag.Parse()
 }

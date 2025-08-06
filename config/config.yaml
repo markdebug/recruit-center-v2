@@ -5,11 +5,11 @@ port: 8080
 
 # 数据库配置
 db:
-  host: "localhost"
+  host: "192.168.10.153"
   port: 5432
-  username: "postgres"
-  password: "your_password"
-  database: "recruit_center"
+  username: "pgtest"
+  password: "123456"
+  database: "testdb"
 
 # 日志配置
 log:

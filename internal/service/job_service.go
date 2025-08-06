@@ -88,35 +88,101 @@ func (s *JobService) Delete(id uint) error {
 	return s.jobDao.Delete(id)
 }
 
+// ConvertToJobResponse 将 model.Job 转换为 response.JobResponse
+func (s *JobService) ConvertToJobResponse(job *model.Job) *response.JobResponse {
+	if job == nil {
+		return nil
+	}
+	return &response.JobResponse{
+		ID:            job.ID,
+		Name:          job.Name,
+		CompanyID:     job.CompanyID,
+		JobSkill:      job.JobSkill,
+		JobSalary:     job.JobSalary,
+		JobDescribe:   job.JobDescribe,
+		JobLocation:   job.JobLocation,
+		JobExpireTime: job.JobExpireTime,
+		Status:        job.Status,
+		JobType:       job.JobType,
+		JobCategory:   job.JobCategory,
+		JobExperience: job.JobExperience,
+		JobEducation:  job.JobEducation,
+		JobBenefit:    job.JobBenefit,
+		JobContact:    job.JobContact,
+		JobSource:     job.JobSource,
+		ViewCount:     job.ViewCount,
+		ApplyCount:    job.ApplyCount,
+		Priority:      job.Priority,
+		Tags:          job.Tags,
+	}
+}
+
 // GetByID 获取职位详情
-func (s *JobService) GetByID(id uint) (*model.Job, error) {
+func (s *JobService) GetByID(id uint) (*response.JobResponse, error) {
 	// 从数据库获取
 	job, err := s.jobDao.GetByID(id)
 	if err != nil {
 		return nil, errors.Wrap(err, errors.JobNotFound)
 	}
 
-	return job, nil
+	return s.ConvertToJobResponse(job), nil
 }
 
 // List 获取职位列表
-func (s *JobService) List(page, size int) ([]model.Job, int64, error) {
-	return s.jobDao.List(page, size)
+func (s *JobService) List(page, size int) (*response.JobListResponse, error) {
+	jobs, total, err := s.jobDao.List(page, size)
+	if err != nil {
+		return nil, err
+	}
+
+	resp := &response.JobListResponse{
+		Total:   total,
+		Records: make([]response.JobResponse, len(jobs)),
+	}
+
+	for i, job := range jobs {
+		resp.Records[i] = *s.ConvertToJobResponse(&job)
+	}
+
+	return resp, nil
 }
 
 // SearchByKeyword 关键词搜索职位
-func (s *JobService) SearchByKeyword(keyword string) ([]model.Job, error) {
-	return s.jobDao.SearchByKeyword(keyword)
+func (s *JobService) SearchByKeyword(keyword string) (*response.JobListResponse, error) {
+	jobs, err := s.jobDao.SearchByKeyword(keyword)
+	if err != nil {
+		return nil, err
+	}
+
+	resp := &response.JobListResponse{
+		Total:   int64(len(jobs)),
+		Records: make([]response.JobResponse, len(jobs)),
+	}
+
+	for i, job := range jobs {
+		resp.Records[i] = *s.ConvertToJobResponse(&job)
+	}
+
+	return resp, nil
 }
 
 // SearchByCondition 多条件搜索职位
-func (s *JobService) SearchByCondition(conditions map[string]interface{}, page, size int) (*response.PageResponse, error) {
+func (s *JobService) SearchByCondition(conditions map[string]interface{}, page, size int) (*response.JobListResponse, error) {
 	jobs, total, err := s.jobDao.SearchByCondition(conditions, page, size)
 	if err != nil {
 		return nil, err
 	}
 
-	return response.NewPage(jobs, total, page, size), nil
+	resp := &response.JobListResponse{
+		Total:   total,
+		Records: make([]response.JobResponse, len(jobs)),
+	}
+
+	for i, job := range jobs {
+		resp.Records[i] = *s.ConvertToJobResponse(&job)
+	}
+
+	return resp, nil
 }
 
 // UpdateStatus 更新职位状态
@@ -130,18 +196,41 @@ func (s *JobService) UpdateStatus(id uint, status int) error {
 }
 
 // GetExpiredJobs 获取已过期职位
-func (s *JobService) GetExpiredJobs() ([]model.Job, error) {
-	return s.jobDao.GetExpiredJobs()
+func (s *JobService) GetExpiredJobs() (*response.JobListResponse, error) {
+	jobs, err := s.jobDao.GetExpiredJobs()
+	if err != nil {
+		return nil, err
+	}
+
+	resp := &response.JobListResponse{
+		Total:   int64(len(jobs)),
+		Records: make([]response.JobResponse, len(jobs)),
+	}
+
+	for i, job := range jobs {
+		resp.Records[i] = *s.ConvertToJobResponse(&job)
+	}
+
+	return resp, nil
 }
 
 // SearchByCompany 获取公司发布的职位
-func (s *JobService) SearchByCompany(companyID uint, page, size int) (*response.PageResponse, error) {
+func (s *JobService) SearchByCompany(companyID uint, page, size int) (*response.JobListResponse, error) {
 	jobs, total, err := s.jobDao.SearchByCompany(companyID, page, size)
 	if err != nil {
 		return nil, err
 	}
 
-	return response.NewPage(jobs, total, page, size), nil
+	resp := &response.JobListResponse{
+		Total:   total,
+		Records: make([]response.JobResponse, len(jobs)),
+	}
+
+	for i, job := range jobs {
+		resp.Records[i] = *s.ConvertToJobResponse(&job)
+	}
+
+	return resp, nil
 }
 
 // 其他辅助方法...

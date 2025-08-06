@@ -2,7 +2,7 @@ package enums
 
 import "fmt"
 
-//简历隐私枚举
+// 简历隐私枚举
 type ResumeAccessEnum int
 
 const (
@@ -21,7 +21,7 @@ func (e ResumeAccessEnum) String() string {
 	}
 }
 
-//在职状态枚举
+// 在职状态枚举
 type WorkingStatusEnum int
 
 const (

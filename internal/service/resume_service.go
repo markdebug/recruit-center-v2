@@ -10,6 +10,7 @@ import (
 	"github.com/minio/minio-go/v7"
 	"go.uber.org/zap"
 	"org.thinkinai.com/recruit-center/api/dto/request"
+	"org.thinkinai.com/recruit-center/api/dto/response"
 	"org.thinkinai.com/recruit-center/internal/dao"
 	"org.thinkinai.com/recruit-center/internal/model"
 	"org.thinkinai.com/recruit-center/pkg/enums"
@@ -25,6 +26,97 @@ type ResumeService struct {
 
 func NewResumeService(resumeDao *dao.ResumeDAO) *ResumeService {
 	return &ResumeService{resumeDao: resumeDao}
+}
+
+// convertToResumeResponse 将 model.Resume 转换为 response.ResumeResponse
+func (s *ResumeService) convertToResumeResponse(resume *model.Resume) *response.ResumeResponse {
+	if resume == nil {
+		return nil
+	}
+
+	resp := &response.ResumeResponse{
+		ID:            resume.ID,
+		UserID:        resume.UserID,
+		Name:          resume.Name,
+		Avatar:        resume.Avatar,
+		Gender:        resume.Gender,
+		Birthday:      resume.Birthday,
+		Phone:         resume.Phone,
+		Email:         resume.Email,
+		Location:      resume.Location,
+		Experience:    resume.Experience,
+		JobStatus:     resume.JobStatus,
+		ExpectedJob:   resume.ExpectedJob,
+		ExpectedCity:  resume.ExpectedCity,
+		Introduction:  resume.Introduction,
+		Skills:        resume.Skills,
+		ShareToken:    resume.ShareToken,
+		AccessStatus:  resume.AccessStatus,
+		WorkingStatus: resume.WorkingStatus,
+		Status:        resume.Status,
+	}
+
+	// 转换教育经历
+	resp.Educations = make([]response.EducationResponse, len(resume.Educations))
+	for i, edu := range resume.Educations {
+		resp.Educations[i] = response.EducationResponse{
+			ID:        edu.ID,
+			ResumeID:  edu.ResumeID,
+			School:    edu.School,
+			Major:     edu.Major,
+			Degree:    edu.Degree,
+			StartTime: edu.StartTime,
+			EndTime:   edu.EndTime,
+		}
+	}
+
+	// 转换工作经历
+	resp.WorkExperiences = make([]response.WorkExperienceResponse, len(resume.WorkExperiences))
+	for i, work := range resume.WorkExperiences {
+		resp.WorkExperiences[i] = response.WorkExperienceResponse{
+			ID:          work.ID,
+			ResumeID:    work.ResumeID,
+			CompanyName: work.CompanyName,
+			Position:    work.Position,
+			Department:  work.Department,
+			StartTime:   work.StartTime,
+			EndTime:     work.EndTime,
+			Description: work.Description,
+			Achievement: work.Achievement,
+		}
+	}
+
+	// 转换项目经历
+	resp.Projects = make([]response.ProjectResponse, len(resume.Projects))
+	for i, proj := range resume.Projects {
+		resp.Projects[i] = response.ProjectResponse{
+			ID:          proj.ID,
+			ResumeID:    proj.ResumeID,
+			Name:        proj.Name,
+			Role:        proj.Role,
+			StartTime:   proj.StartTime,
+			EndTime:     proj.EndTime,
+			Description: proj.Description,
+			Technology:  proj.Technology,
+			Achievement: proj.Achievement,
+		}
+	}
+
+	// 转换附件
+	resp.Attachments = make([]response.AttachmentResponse, len(resume.Attachments))
+	for i, att := range resume.Attachments {
+		resp.Attachments[i] = response.AttachmentResponse{
+			ID:       att.ID,
+			ResumeID: att.ResumeID,
+			FileName: att.FileName,
+			FileURL:  att.FileURL,
+			FileSize: att.FileSize,
+			FileType: att.FileType,
+			Status:   att.Status,
+		}
+	}
+
+	return resp
 }
 
 // Create 创建简历
@@ -256,4 +348,32 @@ func (s *ResumeService) UploadResumeFile(userID uint, file io.Reader, filename s
 	}
 
 	return fileURL, nil
+}
+
+// GetResumeByID 获取简历详情
+func (s *ResumeService) GetResumeByID(id uint) (*response.ResumeResponse, error) {
+	resume, err := s.resumeDao.GetByID(id)
+	if err != nil {
+		return nil, err
+	}
+	return s.convertToResumeResponse(resume), nil
+}
+
+// ListResumes 获取简历列表
+func (s *ResumeService) ListResumes(page, pageSize int) (*response.ResumeListResponse, error) {
+	resumes, total, err := s.resumeDao.List(page, pageSize)
+	if err != nil {
+		return nil, err
+	}
+
+	resp := &response.ResumeListResponse{
+		Total:   total,
+		Records: make([]response.ResumeResponse, len(resumes)),
+	}
+
+	for i, resume := range resumes {
+		resp.Records[i] = *s.convertToResumeResponse(&resume)
+	}
+
+	return resp, nil
 }

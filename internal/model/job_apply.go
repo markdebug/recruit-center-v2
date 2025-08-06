@@ -7,6 +7,7 @@ type JobApply struct {
 	ID            uint      `gorm:"primarykey" json:"id"`
 	JobID         uint      `gorm:"not null;index" json:"jobId"`
 	UserID        uint      `gorm:"not null;index" json:"userId"`
+	ResumeID      uint      `gorm:"not null;index" json:"resumeId"`
 	ApplyTime     time.Time `gorm:"not null" json:"applyTime"`
 	ApplyProgress string    `gorm:"size:50" json:"applyProgress"`
 	Status        int       `gorm:"default:1" json:"status"`

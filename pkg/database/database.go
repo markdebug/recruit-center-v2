@@ -13,7 +13,7 @@ import (
 // Init 初始化数据库连接
 func Init(cfg *config.DB) (*gorm.DB, error) {
 	// 构建 DSN
-	dsn := fmt.Sprintf("host=%s&port=%d&user=%s&password=%s&dbname=%s&sslmode=disable&TimeZone=Asia/Shanghai",
+	dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable TimeZone=Asia/Shanghai",
 		cfg.Host,
 		cfg.Port,
 		cfg.Username,

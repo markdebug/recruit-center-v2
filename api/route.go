@@ -18,6 +18,9 @@ const APIVersion = "v1"
 
 // SetupRouter 初始化路由配置
 func SetupRouter(jobHandler *handler.JobHandler, jobApplyHandler *handler.JobApplyHandler, resumeHandler *handler.ResumeHandler) *gin.Engine {
+	if gin.Mode() != gin.ReleaseMode {
+		gin.SetMode(gin.DebugMode)
+	}
 	r := gin.Default()
 
 	// 配置全局中间件
@@ -96,5 +99,9 @@ func setupToolRoutes(r *gin.Engine) {
 	})
 
 	// Swagger文档
-	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
+	// Swagger配置
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler,
+		ginSwagger.URL("http://localhost:8080/swagger/doc.json"),
+		ginSwagger.DefaultModelsExpandDepth(-1),
+	))
 }

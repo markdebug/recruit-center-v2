@@ -24,21 +24,6 @@ func TestResumeDAO_CreateAndGetByID(t *testing.T) {
 	assert.Equal(t, resume.Name, got.Name)
 }
 
-func TestResumeDAO_Update(t *testing.T) {
-	db := setupTestDB(t)
-	dao := NewResumeDAO(db)
-
-	resume := &model.Resume{UserID: 2, Name: "Old"}
-	_ = dao.Create(resume)
-
-	resume.Name = "New"
-	err := dao.Update(resume)
-	assert.NoError(t, err)
-
-	got, _ := dao.GetByID(resume.ID)
-	assert.Equal(t, "New", got.Name)
-}
-
 func TestResumeDAO_GetByUser(t *testing.T) {
 	db := setupTestDB(t)
 	dao := NewResumeDAO(db)

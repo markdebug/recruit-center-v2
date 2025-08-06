@@ -68,7 +68,7 @@ func LoadConfig(filePath string) (*Config, error) {
 		}
 		fmt.Println("配置已更新")
 	})
-
+	globalConfig = config
 	return config, nil
 }
 

@@ -218,9 +218,6 @@ const docTemplate = `{
         "/api/v1/companies/{companyId}/jobs": {
             "get": {
                 "description": "获取指定公司发布的所有职位",
-                "consumes": [
-                    "application/json"
-                ],
                 "produces": [
                     "application/json"
                 ],
@@ -263,32 +260,11 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/model.Job"
-                                            }
+                                            "$ref": "#/definitions/response.JobListResponse"
                                         }
                                     }
                                 }
                             ]
-                        }
-                    },
-                    "400": {
-                        "description": "请求参数错误",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
-                        }
-                    },
-                    "404": {
-                        "description": "公司不存在",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
-                        }
-                    },
-                    "500": {
-                        "description": "服务器内部错误",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
                         }
                     }
                 }
@@ -301,7 +277,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "职位管理"
+                    "职位"
                 ],
                 "summary": "获取职位列表",
                 "parameters": [
@@ -326,16 +302,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.PageResponse"
+                                    "$ref": "#/definitions/response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/model.Job"
-                                            }
+                                            "$ref": "#/definitions/response.JobListResponse"
                                         }
                                     }
                                 }
@@ -391,7 +364,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/model.Job"
+                                            "$ref": "#/definitions/response.JobResponse"
                                         }
                                     }
                                 }
@@ -427,9 +400,6 @@ const docTemplate = `{
                     }
                 ],
                 "description": "获取所有已过期的职位列表",
-                "consumes": [
-                    "application/json"
-                ],
                 "produces": [
                     "application/json"
                 ],
@@ -458,26 +428,11 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/model.Job"
-                                            }
+                                            "$ref": "#/definitions/response.JobListResponse"
                                         }
                                     }
                                 }
                             ]
-                        }
-                    },
-                    "401": {
-                        "description": "未授权",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
-                        }
-                    },
-                    "500": {
-                        "description": "服务器内部错误",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
                         }
                     }
                 }
@@ -486,9 +441,6 @@ const docTemplate = `{
         "/api/v1/jobs/search": {
             "get": {
                 "description": "根据关键词搜索职位信息",
-                "consumes": [
-                    "application/json"
-                ],
                 "produces": [
                     "application/json"
                 ],
@@ -517,10 +469,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/model.Job"
-                                            }
+                                            "$ref": "#/definitions/response.JobListResponse"
                                         }
                                     }
                                 }
@@ -539,9 +488,6 @@ const docTemplate = `{
         "/api/v1/jobs/search/condition": {
             "post": {
                 "description": "根据多个条件筛选职位",
-                "consumes": [
-                    "application/json"
-                ],
                 "produces": [
                     "application/json"
                 ],
@@ -586,10 +532,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/model.Job"
-                                            }
+                                            "$ref": "#/definitions/response.JobListResponse"
                                         }
                                     }
                                 }
@@ -598,12 +541,6 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "请求参数错误",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
-                        }
-                    },
-                    "500": {
-                        "description": "服务器内部错误",
                         "schema": {
                             "$ref": "#/definitions/response.Response"
                         }
@@ -618,7 +555,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "职位管理"
+                    "职位"
                 ],
                 "summary": "获取职位详情",
                 "parameters": [
@@ -642,7 +579,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/model.Job"
+                                            "$ref": "#/definitions/response.JobResponse"
                                         }
                                     }
                                 }
@@ -780,86 +717,6 @@ const docTemplate = `{
                 "responses": {
                     "200": {
                         "description": "成功",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
-                        }
-                    },
-                    "401": {
-                        "description": "未授权",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
-                        }
-                    },
-                    "404": {
-                        "description": "职位不存在",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
-                        }
-                    },
-                    "500": {
-                        "description": "服务器内部错误",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/jobs/{id}/status": {
-            "put": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "更新指定职位的状态",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "职位"
-                ],
-                "summary": "更新职位状态",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bearer JWT",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "职位ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "enum": [
-                            0,
-                            1,
-                            2
-                        ],
-                        "type": "integer",
-                        "description": "状态值",
-                        "name": "status",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "成功",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
-                        }
-                    },
-                    "400": {
-                        "description": "请求参数错误",
                         "schema": {
                             "$ref": "#/definitions/response.Response"
                         }
@@ -1038,6 +895,53 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/resumes/share/{token}": {
+            "get": {
+                "description": "根据分享token获取简历信息",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "简历管理"
+                ],
+                "summary": "根据分享token获取简历",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "分享Token",
+                        "name": "token",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/model.Resume"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/resumes/upload": {
             "post": {
                 "description": "上传用户简历文件",
@@ -1144,6 +1048,190 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/api/v1/resumes/{id}": {
+            "put": {
+                "description": "更新用户简历信息",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "简历管理"
+                ],
+                "summary": "更新简历",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer 用户令牌",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "简历ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "更新简历信息",
+                        "name": "resume",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.UpdateResumeRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/resumes/{id}/favorite": {
+            "post": {
+                "description": "切换简历的收藏状态",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "简历管理"
+                ],
+                "summary": "收藏/取消收藏简历",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer 用户令牌",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "简历ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/resumes/{id}/stats": {
+            "get": {
+                "description": "获取简历的查看和收藏统计信息",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "简历管理"
+                ],
+                "summary": "获取简历统计信息",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer 用户令牌",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "简历ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "additionalProperties": {
+                                                "type": "integer",
+                                                "format": "int64"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/resumes/{id}/view": {
+            "post": {
+                "description": "记录简历查看行为",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "简历管理"
+                ],
+                "summary": "查看简历收藏相关信息",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer 用户令牌",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "简历ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -1190,12 +1278,30 @@ const docTemplate = `{
                 2001,
                 2002,
                 2003,
+                2004,
+                2005,
+                2006,
+                2007,
+                2008,
+                2009,
                 3001,
                 3002,
                 4001,
                 4002,
                 4003,
-                4004
+                4004,
+                5001,
+                5002,
+                5003,
+                5004,
+                5005,
+                5006,
+                5007,
+                5008,
+                5009,
+                5010,
+                5011,
+                5012
             ],
             "x-enum-comments": {
                 "BadRequest": "请求参数错误",
@@ -1209,11 +1315,29 @@ const docTemplate = `{
                 "InvalidFileFormat": "无效的文件格式",
                 "InvalidParams": "无效的请求参数",
                 "JobAlreadyApplied": "已经申请过该职位",
+                "JobApplicationAlreadyReviewed": "职位申请已被审核",
+                "JobApplicationLimitReached": "职位申请次数已达上限",
+                "JobApplicationNotFound": "职位申请不存在",
+                "JobCreationLimitReached": "职位创建次数已达上限",
+                "JobDeleteNotAllowed": "职位删除不允许",
                 "JobExpired": "职位已过期",
                 "JobNotFound": "职位不存在",
+                "JobUpdateNotAllowed": "职位更新不允许",
                 "MethodNotAllowed": "方法不允许",
                 "NotFound": "资源不存在",
                 "PasswordIncorrect": "密码错误",
+                "ResumeAccessDenied": "无权限访问简历",
+                "ResumeDelete": "简历删除失败",
+                "ResumeExists": "简历已存在",
+                "ResumeFormat": "简历格式错误",
+                "ResumeInvalid": "简历无效",
+                "ResumeNotFound": "简历不存在",
+                "ResumeParse": "简历解析失败",
+                "ResumeTooLarge": "简历文件过大",
+                "ResumeUpdate": "简历更新失败",
+                "ResumeUpdateStatus": "简历更新状态错误",
+                "ResumeUpdateTooFrequent": "简历更新过于频繁",
+                "ResumeUpload": "简历上传失败",
                 "ServiceUnavailable": "服务不可用",
                 "TooManyFiles": "文件数量超过限制",
                 "TooManyRequests": "请求过多",
@@ -1239,12 +1363,30 @@ const docTemplate = `{
                 "职位不存在",
                 "职位已过期",
                 "已经申请过该职位",
+                "职位申请次数已达上限",
+                "职位创建次数已达上限",
+                "职位更新不允许",
+                "职位删除不允许",
+                "职位申请不存在",
+                "职位申请已被审核",
                 "公司不存在",
                 "公司未激活",
                 "文件过大",
                 "文件类型不允许",
                 "无效的文件格式",
-                "文件数量超过限制"
+                "文件数量超过限制",
+                "简历不存在",
+                "简历无效",
+                "简历已存在",
+                "简历文件过大",
+                "简历格式错误",
+                "简历上传失败",
+                "简历删除失败",
+                "无权限访问简历",
+                "简历解析失败",
+                "简历更新失败",
+                "简历更新过于频繁",
+                "简历更新状态错误"
             ],
             "x-enum-varnames": [
                 "Success",
@@ -1264,12 +1406,30 @@ const docTemplate = `{
                 "JobNotFound",
                 "JobExpired",
                 "JobAlreadyApplied",
+                "JobApplicationLimitReached",
+                "JobCreationLimitReached",
+                "JobUpdateNotAllowed",
+                "JobDeleteNotAllowed",
+                "JobApplicationNotFound",
+                "JobApplicationAlreadyReviewed",
                 "CompanyNotFound",
                 "CompanyInactive",
                 "FileTooLarge",
                 "FileTypeNotAllowed",
                 "InvalidFileFormat",
-                "TooManyFiles"
+                "TooManyFiles",
+                "ResumeNotFound",
+                "ResumeInvalid",
+                "ResumeExists",
+                "ResumeTooLarge",
+                "ResumeFormat",
+                "ResumeUpload",
+                "ResumeDelete",
+                "ResumeAccessDenied",
+                "ResumeParse",
+                "ResumeUpdate",
+                "ResumeUpdateTooFrequent",
+                "ResumeUpdateStatus"
             ]
         },
         "model.Education": {
@@ -1403,6 +1563,9 @@ const docTemplate = `{
                 "jobId": {
                     "type": "integer"
                 },
+                "resumeId": {
+                    "type": "integer"
+                },
                 "status": {
                     "type": "integer"
                 },
@@ -1523,6 +1686,10 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/model.Project"
                     }
+                },
+                "shareToken": {
+                    "description": "用于分享简历的唯一标识",
+                    "type": "string"
                 },
                 "skills": {
                     "type": "string"
@@ -1877,11 +2044,63 @@ const docTemplate = `{
                 }
             }
         },
+        "request.UpdateResumeModuleType": {
+            "type": "string",
+            "enum": [
+                "basic",
+                "education",
+                "work",
+                "project",
+                "skills"
+            ],
+            "x-enum-comments": {
+                "ModuleBasic": "基本信息",
+                "ModuleEducation": "教育经历",
+                "ModuleProject": "项目经历",
+                "ModuleSkills": "技能特长",
+                "ModuleWorkExperience": "工作经历"
+            },
+            "x-enum-descriptions": [
+                "基本信息",
+                "教育经历",
+                "工作经历",
+                "项目经历",
+                "技能特长"
+            ],
+            "x-enum-varnames": [
+                "ModuleBasic",
+                "ModuleEducation",
+                "ModuleWorkExperience",
+                "ModuleProject",
+                "ModuleSkills"
+            ]
+        },
+        "request.UpdateResumeRequest": {
+            "type": "object",
+            "required": [
+                "data",
+                "module"
+            ],
+            "properties": {
+                "data": {
+                    "description": "更新数据"
+                },
+                "module": {
+                    "description": "更新模块",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/request.UpdateResumeModuleType"
+                        }
+                    ]
+                }
+            }
+        },
         "request.UpdateResumeStatusRequest": {
             "type": "object",
             "required": [
                 "resumeId",
-                "status"
+                "status",
+                "userId"
             ],
             "properties": {
                 "resumeId": {
@@ -1893,6 +2112,9 @@ const docTemplate = `{
                         1,
                         2
                     ]
+                },
+                "userId": {
+                    "type": "integer"
                 }
             }
         },
@@ -1922,6 +2144,88 @@ const docTemplate = `{
                 },
                 "startTime": {
                     "type": "string"
+                }
+            }
+        },
+        "response.JobListResponse": {
+            "type": "object",
+            "properties": {
+                "records": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.JobResponse"
+                    }
+                },
+                "total": {
+                    "type": "integer"
+                }
+            }
+        },
+        "response.JobResponse": {
+            "type": "object",
+            "properties": {
+                "applyCount": {
+                    "type": "integer"
+                },
+                "companyId": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "jobBenefit": {
+                    "type": "string"
+                },
+                "jobCategory": {
+                    "type": "string"
+                },
+                "jobContact": {
+                    "type": "string"
+                },
+                "jobDescribe": {
+                    "type": "string"
+                },
+                "jobEducation": {
+                    "type": "string"
+                },
+                "jobExperience": {
+                    "type": "string"
+                },
+                "jobExpireTime": {
+                    "type": "string"
+                },
+                "jobLocation": {
+                    "type": "string"
+                },
+                "jobSalary": {
+                    "type": "string"
+                },
+                "jobSkill": {
+                    "type": "string"
+                },
+                "jobSource": {
+                    "type": "string"
+                },
+                "jobType": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "priority": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "tags": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "viewCount": {
+                    "type": "integer"
                 }
             }
         },
