@@ -23,7 +23,12 @@ type Config struct {
 	Env              string           `mapstructure:"env"`         // Application environment (e.g., development, production)
 	Log              LogConfig        `mapstructure:"log"`         // Logging configuration
 	Version          string           `mapstructure:"version"`     // Application version
+	System           SystemConfig     `mapstructure:"system"`      // System configuration
 	v                *viper.Viper     `mapstructure:"-"`
+}
+
+type SystemConfig struct {
+	UserTagLimit int `mapstructure:"user_tag_limit"` // 用户标签限制
 }
 
 type DB struct {
