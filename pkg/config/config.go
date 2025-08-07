@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"sync"
+	"time"
 
 	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/viper"
@@ -12,6 +13,15 @@ var (
 	globalConfig *Config
 	once         sync.Once
 )
+
+// AIConfig AI服务配置
+type AIConfig struct {
+	BaseURL    string        `yaml:"baseURL"`
+	APIKey     string        `yaml:"apiKey"`
+	ModelName  string        `yaml:"modelName"`
+	Timeout    time.Duration `yaml:"timeout"`
+	MaxRetries int           `yaml:"maxRetries"`
+}
 
 // Config holds the application configuration.
 type Config struct {
@@ -24,6 +34,7 @@ type Config struct {
 	Log              LogConfig        `mapstructure:"log"`         // Logging configuration
 	Version          string           `mapstructure:"version"`     // Application version
 	System           SystemConfig     `mapstructure:"system"`      // System configuration
+	AI               AIConfig         `mapstructure:"ai"`          // AI configuration
 	v                *viper.Viper     `mapstructure:"-"`
 }
 
@@ -98,6 +109,20 @@ func (c *Config) Validate() error {
 	}
 	if c.DB.Database == "" {
 		return fmt.Errorf("database name is required")
+	}
+	return nil
+}
+
+// 校验AI配置
+func (c *Config) ValidateAI() error {
+	if c.AI.BaseURL == "" {
+		return fmt.Errorf("AI服务BaseURL不能为空")
+	}
+	if c.AI.APIKey == "" {
+		return fmt.Errorf("AI服务APIKey不能为空")
+	}
+	if c.AI.ModelName == "" {
+		return fmt.Errorf("AI服务ModelName不能为空")
 	}
 	return nil
 }

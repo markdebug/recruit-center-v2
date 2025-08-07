@@ -5,6 +5,8 @@ go 1.24.1
 require (
 	github.com/fsnotify/fsnotify v1.8.0
 	github.com/gin-gonic/gin v1.10.1
+	github.com/go-resty/resty/v2 v2.16.5
+	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/ledongthuc/pdf v0.0.0-20250511090121-5959a4027728
 	github.com/matoous/go-nanoid/v2 v2.1.0
 	github.com/spf13/viper v1.20.1
@@ -30,7 +32,6 @@ require (
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/richardlehane/msoleps v1.0.3 // indirect
 	github.com/rs/xid v1.6.0 // indirect
-	github.com/stretchr/objx v0.5.2 // indirect
 	github.com/tinylib/msgp v1.3.0 // indirect
 	golang.org/x/mod v0.26.0 // indirect
 )

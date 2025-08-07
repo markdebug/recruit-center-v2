@@ -5,27 +5,27 @@ type ErrorCode int
 
 const (
 	// 成功
-	Success ErrorCode = 200
+	Success ErrorCode = 0000
 
-	// 客户端错误 (4xx)
-	BadRequest       ErrorCode = 400 // 请求参数错误
-	Unauthorized     ErrorCode = 401 // 未授权
-	Forbidden        ErrorCode = 403 // 禁止访问
-	NotFound         ErrorCode = 404 // 资源不存在
-	MethodNotAllowed ErrorCode = 405 // 方法不允许
-	Conflict         ErrorCode = 409 // 资源冲突
-	TooManyRequests  ErrorCode = 429 // 请求过多
-	InvalidParams    ErrorCode = 422 // 无效的请求参数
+	// 客户端错误 (1xxx)
+	BadRequest       ErrorCode = 1001 // 请求参数错误
+	Unauthorized     ErrorCode = 1002 // 未授权
+	Forbidden        ErrorCode = 1003 // 禁止访问
+	NotFound         ErrorCode = 1004 // 资源不存在
+	MethodNotAllowed ErrorCode = 1005 // 方法不允许
+	Conflict         ErrorCode = 1006 // 资源冲突
+	TooManyRequests  ErrorCode = 1007 // 请求过多
+	InvalidParams    ErrorCode = 1008 // 无效的请求参数
 
-	// 服务器错误 (5xx)
-	InternalServerError ErrorCode = 500 // 服务器内部错误
-	ServiceUnavailable  ErrorCode = 503 // 服务不可用
+	// 服务器错误 (9xxx)
+	InternalServerError ErrorCode = 9000 // 服务器内部错误
+	ServiceUnavailable  ErrorCode = 9001 // 服务不可用
 
-	// 业务错误码 (1001-9999)
-	// 用户模块 (1001-1999)
-	UserNotFound      ErrorCode = 1001 // 用户不存在
-	UserAlreadyExists ErrorCode = 1002 // 用户已存在
-	PasswordIncorrect ErrorCode = 1003 // 密码错误
+	// 业务错误码 (1001-8999)
+	// 用户模块 (6001-6999)
+	UserNotFound      ErrorCode = 6001 // 用户不存在
+	UserAlreadyExists ErrorCode = 6002 // 用户已存在
+	PasswordIncorrect ErrorCode = 6003 // 密码错误
 
 	// 职位模块 (2001-2999)
 	JobNotFound                   ErrorCode = 2001 // 职位不存在
@@ -61,6 +61,10 @@ const (
 	ResumeUpdate            ErrorCode = 5010 // 简历更新失败
 	ResumeUpdateTooFrequent ErrorCode = 5011 // 简历更新过于频繁
 	ResumeUpdateStatus      ErrorCode = 5012 // 简历更新状态错误
+
+	// 外部模块 (8001-8999)
+
+	InvalidToken ErrorCode = 8001 // 无效的令牌
 
 )
 
@@ -109,6 +113,45 @@ func (e ErrorCode) String() string {
 		return "请求过多"
 	case ServiceUnavailable:
 		return "服务不可用"
+	case InvalidParams:
+		return "无效的请求参数"
+	case JobApplicationLimitReached:
+		return "职位申请次数已达上限"
+	case JobCreationLimitReached:
+		return "职位创建次数已达上限"
+	case JobUpdateNotAllowed:
+		return "职位更新不允许"
+	case JobDeleteNotAllowed:
+		return "职位删除不允许"
+	case JobApplicationNotFound:
+		return "职位申请不存在"
+	case JobApplicationAlreadyReviewed:
+		return "职位申请已被审核"
+	case ResumeNotFound:
+		return "简历不存在"
+	case ResumeInvalid:
+		return "简历无效"
+	case ResumeExists:
+		return "简历已存在"
+	case ResumeTooLarge:
+		return "简历文件过大"
+	case ResumeFormat:
+		return "简历格式错误"
+	case ResumeUpload:
+		return "简历上传失败"
+	case ResumeDelete:
+		return "简历删除失败"
+	case ResumeAccessDenied:
+		return "无权限访问简历"
+	case ResumeParse:
+		return "简历解析失败"
+	case ResumeUpdate:
+		return "简历更新失败"
+	case ResumeUpdateTooFrequent:
+		return "简历更新过于频繁"
+	case ResumeUpdateStatus:
+		return "简历更新状态错误"
+
 	default:
 		return "未知错误"
 	}

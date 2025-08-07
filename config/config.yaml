@@ -43,3 +43,11 @@ file_upload:
     - ".pdf"
     - ".doc"
     - ".docx"
+
+# AI服务配置
+ai:
+  baseURL: https://api.guijilife.com/v1
+  apiKey: your-api-key-here
+  modelName: gpt-4
+  timeout: 30s
+  maxRetries: 3

@@ -13,6 +13,7 @@ import (
 	"org.thinkinai.com/recruit-center/api/dto/response"
 	"org.thinkinai.com/recruit-center/internal/dao"
 	"org.thinkinai.com/recruit-center/internal/model"
+	"org.thinkinai.com/recruit-center/pkg/ai"
 	"org.thinkinai.com/recruit-center/pkg/enums"
 	"org.thinkinai.com/recruit-center/pkg/errors"
 	"org.thinkinai.com/recruit-center/pkg/logger"
@@ -316,9 +317,8 @@ func (s *ResumeService) UpdateWorkingStatus(userID uint, targetStatus int) error
 	return s.resumeDao.UpdateBasic(resume)
 }
 
-// UploadResumeFile 上传简历文件到MinIO
-func (s *ResumeService) UploadResumeFile(userID uint, file io.Reader, filename string) (string, error) {
-
+// UploadResumeFile 上传并解析简历文件
+func (s *ResumeService) UploadResumeFile(userID uint, file io.Reader, filename string) (*response.ResumeResponse, error) {
 	// 生成唯一的文件名
 	ext := filepath.Ext(filename)
 	objectName := fmt.Sprintf("resumes/%d/%s%s", userID, time.Now().Format("20060102150405"), ext)
@@ -335,7 +335,8 @@ func (s *ResumeService) UploadResumeFile(userID uint, file io.Reader, filename s
 		},
 	)
 	if err != nil {
-		return "", fmt.Errorf("上传文件失败: %w", err)
+		logger.L.Error("上传文件失败", zap.Uint("userID", userID), zap.String("objectName", objectName), zap.Error(err))
+		return nil, fmt.Errorf("上传文件失败: %w", err)
 	}
 
 	// 生成文件访问URL
@@ -344,10 +345,102 @@ func (s *ResumeService) UploadResumeFile(userID uint, file io.Reader, filename s
 	// 更新简历记录
 	err = s.resumeDao.UpdateAttachmentURL(userID, fileURL, objectName)
 	if err != nil {
-		return "", fmt.Errorf("更新简历记录失败: %w", err)
+		logger.L.Error("更新简历记录失败", zap.Uint("userID", userID), zap.String("objectName", objectName), zap.Error(err))
+		return nil, fmt.Errorf("更新简历记录失败: %w", err)
 	}
 
-	return fileURL, nil
+	// 根据文件类型提取文本
+	var fileContent string
+	fileContent, err = utils.NewDocumentParser(objectName).Parse(file)
+	if err != nil {
+		logger.L.Error("提取文件内容失败", zap.String("objectName", objectName), zap.Error(err))
+		return nil, fmt.Errorf("提取文件内容失败: %w", err)
+	}
+
+	// 调用AI服务解析简历
+	parseResult, err := ai.ParseResume(fileContent)
+	if err != nil {
+		logger.L.Error("解析简历失败", zap.String("fileURL", fileURL), zap.Error(err))
+		return nil, fmt.Errorf("解析简历失败: %w", err)
+	}
+
+	// 将解析结果转换为Resume模型
+	resume := &model.Resume{
+		UserID:       userID,
+		Name:         parseResult.BasicInfo.Name,
+		Phone:        parseResult.BasicInfo.Phone,
+		Email:        parseResult.BasicInfo.Email,
+		Gender:       parseResult.BasicInfo.Gender,
+		Location:     parseResult.BasicInfo.Location,
+		Experience:   parseResult.BasicInfo.Experience,
+		ExpectedJob:  parseResult.BasicInfo.ExpectedJob,
+		ExpectedCity: parseResult.BasicInfo.ExpectedCity,
+		Introduction: parseResult.BasicInfo.Introduction,
+		Skills:       parseResult.BasicInfo.Skills,
+	}
+
+	// 添加教育经历
+	for _, edu := range parseResult.Education {
+		startTime, _ := time.Parse("2006-01-02", edu.StartTime)
+		endTime, _ := time.Parse("2006-01-02", edu.EndTime)
+
+		resume.Educations = append(resume.Educations, model.Education{
+			School:    edu.School,
+			Major:     edu.Major,
+			Degree:    edu.Degree,
+			StartTime: startTime,
+			EndTime:   endTime,
+		})
+	}
+
+	// 添加工作经历
+	for _, work := range parseResult.WorkExperience {
+		startTime, _ := time.Parse("2006-01-02", work.StartTime)
+		endTime, _ := time.Parse("2006-01-02", work.EndTime)
+
+		resume.WorkExperiences = append(resume.WorkExperiences, model.WorkExperience{
+			CompanyName: work.CompanyName,
+			Position:    work.Position,
+			Department:  work.Department,
+			StartTime:   startTime,
+			EndTime:     endTime,
+			Description: work.Description,
+			Achievement: work.Achievement,
+		})
+	}
+
+	// 添加项目经历
+	for _, proj := range parseResult.Projects {
+		startTime, _ := time.Parse("2006-01-02", proj.StartTime)
+		endTime, _ := time.Parse("2006-01-02", proj.EndTime)
+
+		resume.Projects = append(resume.Projects, model.Project{
+			Name:        proj.Name,
+			Role:        proj.Role,
+			StartTime:   startTime,
+			EndTime:     endTime,
+			Description: proj.Description,
+			Technology:  proj.Technology,
+			Achievement: proj.Achievement,
+		})
+	}
+
+	// 生成分享令牌
+	shareToken, err := utils.GenerateNanoID(10)
+	if err != nil {
+		logger.L.Error("生成分享令牌失败", zap.Uint("userID", userID), zap.Error(err))
+		return nil, fmt.Errorf("生成分享令牌失败: %w", err)
+	}
+	resume.ShareToken = shareToken
+
+	// 保存简历到数据库
+	if err := s.resumeDao.Create(resume); err != nil {
+		logger.L.Error("保存简历失败", zap.Uint("userID", userID), zap.Error(err))
+		return nil, fmt.Errorf("保存简历失败: %w", err)
+	}
+
+	// 返回响应
+	return s.convertToResumeResponse(resume), nil
 }
 
 // GetResumeByID 获取简历详情
