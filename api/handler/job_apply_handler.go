@@ -29,8 +29,8 @@ func NewJobApplyHandler(service *service.JobApplyService) *JobApplyHandler {
 //	@Produce		json
 //	@Param			Authorization	header		string				true	"Bearer 用户令牌"
 //	@Param			apply			body		request.JobApply	true	"申请信息"
-//	@Success		200				{object}	response.Response{data=model.JobApply}
-//	@Failure		400				{object}	response.Response
+//	@Success		0000			{object}	response.Response{data=model.JobApply}
+//	@Failure		2000			{object}	response.Response{}
 //	@Router			/api/v1/applies [post]
 func (h *JobApplyHandler) Create(c *gin.Context) {
 	var req request.JobApply
@@ -53,6 +53,15 @@ func (h *JobApplyHandler) Create(c *gin.Context) {
 }
 
 // Delete 删除职位申请
+//
+//	@Summary		删除职位申请
+//	@Description	删除指定ID的职位申请
+//	@Tags			职位申请
+//	@Produce		json
+//	@Param			id		path		int	true	"申请ID"
+//	@Success		0000	{object}	response.Response{data=string}
+//	@Failure		2000	{object}	response.Response{}
+//	@Router			/api/v1/applies/{id} [delete]
 func (h *JobApplyHandler) Delete(c *gin.Context) {
 	idStr := c.Param("id")
 	id, err := strconv.ParseUint(idStr, 10, 32)
@@ -75,9 +84,9 @@ func (h *JobApplyHandler) Delete(c *gin.Context) {
 //	@Description	获取指定ID的职位申请详情
 //	@Tags			职位申请
 //	@Produce		json
-//	@Param			id	path		int	true	"申请ID"
-//	@Success		200	{object}	response.Response{data=model.JobApply}
-//	@Failure		404	{object}	response.Response
+//	@Param			id		path		int	true	"申请ID"
+//	@Success		0000	{object}	response.Response{data=model.JobApply}
+//	@Failure		2000	{object}	response.Response{}
 //	@Router			/api/v1/applies/{id} [get]
 func (h *JobApplyHandler) GetByID(c *gin.Context) {
 	idStr := c.Param("id")
@@ -107,10 +116,8 @@ func (h *JobApplyHandler) GetByID(c *gin.Context) {
 //	@Param			Authorization	header		string											true	"Bearer JWT"
 //	@Param			page			query		integer											false	"页码 (默认值: 1)"		minimum(1)	default(1)
 //	@Param			size			query		integer											false	"每页数量 (默认值: 10)"	minimum(1)	maximum(100)	default(10)
-//	@Success		200				{object}	response.PageResponse{data=[]model.JobApply}	"成功"
-//	@Failure		400				{object}	response.Response{}								"请求参数错误"
-//	@Failure		401				{object}	response.Response{}								"未授权"
-//	@Failure		500				{object}	response.Response{}								"服务器内部错误"
+//	@Success		0000			{object}	response.PageResponse{data=[]model.JobApply}	"成功"
+//	@Failure		2000			{object}	response.Response{}								"错误"
 //	@Router			/api/v1/applies [get]
 func (h *JobApplyHandler) List(c *gin.Context) {
 	page, size := parsePageSize(c)

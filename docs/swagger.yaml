@@ -20,20 +20,20 @@ definitions:
     - JobTypeIntern
   errors.ErrorCode:
     enum:
-    - 200
-    - 400
-    - 401
-    - 403
-    - 404
-    - 405
-    - 409
-    - 429
-    - 422
-    - 500
-    - 503
+    - 0
     - 1001
     - 1002
     - 1003
+    - 1004
+    - 1005
+    - 1006
+    - 1007
+    - 1008
+    - 9000
+    - 9001
+    - 6001
+    - 6002
+    - 6003
     - 2001
     - 2002
     - 2003
@@ -61,6 +61,7 @@ definitions:
     - 5010
     - 5011
     - 5012
+    - 8001
     type: integer
     x-enum-comments:
       BadRequest: 请求参数错误
@@ -73,6 +74,7 @@ definitions:
       InternalServerError: 服务器内部错误
       InvalidFileFormat: 无效的文件格式
       InvalidParams: 无效的请求参数
+      InvalidToken: 无效的令牌
       JobAlreadyApplied: 已经申请过该职位
       JobApplicationAlreadyReviewed: 职位申请已被审核
       JobApplicationLimitReached: 职位申请次数已达上限
@@ -145,6 +147,7 @@ definitions:
     - 简历更新失败
     - 简历更新过于频繁
     - 简历更新状态错误
+    - 无效的令牌
     x-enum-varnames:
     - Success
     - BadRequest
@@ -187,6 +190,7 @@ definitions:
     - ResumeUpdate
     - ResumeUpdateTooFrequent
     - ResumeUpdateStatus
+    - InvalidToken
   model.Education:
     properties:
       createdAt:
@@ -333,6 +337,7 @@ definitions:
           $ref: '#/definitions/model.Education'
         type: array
       email:
+        description: 修改size以适应加密后的长度
         type: string
       expectedCity:
         type: string
@@ -349,10 +354,12 @@ definitions:
       jobStatus:
         type: integer
       location:
+        description: 修改size以适应加密后的长度
         type: string
       name:
         type: string
       phone:
+        description: 修改size以适应加密后的长度
         type: string
       projects:
         items:
@@ -809,7 +816,7 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
+        "0":
           description: 成功
           schema:
             allOf:
@@ -820,16 +827,8 @@ paths:
                     $ref: '#/definitions/model.JobApply'
                   type: array
               type: object
-        "400":
-          description: 请求参数错误
-          schema:
-            $ref: '#/definitions/response.Response'
-        "401":
-          description: 未授权
-          schema:
-            $ref: '#/definitions/response.Response'
-        "500":
-          description: 服务器内部错误
+        "2000":
+          description: 错误
           schema:
             $ref: '#/definitions/response.Response'
       security:
@@ -856,8 +855,8 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
-          description: OK
+        "0":
+          description: ""
           schema:
             allOf:
             - $ref: '#/definitions/response.Response'
@@ -865,14 +864,41 @@ paths:
                 data:
                   $ref: '#/definitions/model.JobApply'
               type: object
-        "400":
-          description: Bad Request
+        "2000":
+          description: ""
           schema:
             $ref: '#/definitions/response.Response'
       summary: 创建职位申请
       tags:
       - 职位申请
   /api/v1/applies/{id}:
+    delete:
+      description: 删除指定ID的职位申请
+      parameters:
+      - description: 申请ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "0":
+          description: ""
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "2000":
+          description: ""
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: 删除职位申请
+      tags:
+      - 职位申请
     get:
       description: 获取指定ID的职位申请详情
       parameters:
@@ -884,8 +910,8 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
-          description: OK
+        "0":
+          description: ""
           schema:
             allOf:
             - $ref: '#/definitions/response.Response'
@@ -893,8 +919,8 @@ paths:
                 data:
                   $ref: '#/definitions/model.JobApply'
               type: object
-        "404":
-          description: Not Found
+        "2000":
+          description: ""
           schema:
             $ref: '#/definitions/response.Response'
       summary: 获取申请详情
@@ -922,7 +948,7 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
+        "0":
           description: 成功
           schema:
             allOf:
@@ -931,6 +957,10 @@ paths:
                 data:
                   $ref: '#/definitions/response.JobListResponse'
               type: object
+        "2000":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/response.Response'
       summary: 获取公司职位
       tags:
       - 职位
@@ -951,8 +981,8 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
-          description: OK
+        "0":
+          description: ""
           schema:
             allOf:
             - $ref: '#/definitions/response.Response'
@@ -960,6 +990,10 @@ paths:
                 data:
                   $ref: '#/definitions/response.JobListResponse'
               type: object
+        "2000":
+          description: ""
+          schema:
+            $ref: '#/definitions/response.Response'
       summary: 获取职位列表
       tags:
       - 职位
@@ -982,25 +1016,17 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
-          description: 成功
+        "0":
+          description: ""
           schema:
             allOf:
             - $ref: '#/definitions/response.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/response.JobResponse'
+                  $ref: '#/definitions/model.Job'
               type: object
-        "400":
-          description: 请求参数错误
-          schema:
-            $ref: '#/definitions/response.Response'
-        "401":
-          description: 未授权
-          schema:
-            $ref: '#/definitions/response.Response'
-        "500":
-          description: 服务器内部错误
+        "2000":
+          description: ""
           schema:
             $ref: '#/definitions/response.Response'
       security:
@@ -1027,20 +1053,12 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
+        "0":
           description: 成功
           schema:
             $ref: '#/definitions/response.Response'
-        "401":
+        "2000":
           description: 未授权
-          schema:
-            $ref: '#/definitions/response.Response'
-        "404":
-          description: 职位不存在
-          schema:
-            $ref: '#/definitions/response.Response'
-        "500":
-          description: 服务器内部错误
           schema:
             $ref: '#/definitions/response.Response'
       security:
@@ -1059,17 +1077,17 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
-          description: OK
+        "0":
+          description: ""
           schema:
             allOf:
             - $ref: '#/definitions/response.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/response.JobResponse'
+                  $ref: '#/definitions/model.Job'
               type: object
-        "404":
-          description: Not Found
+        "2000":
+          description: ""
           schema:
             $ref: '#/definitions/response.Response'
       summary: 获取职位详情
@@ -1099,7 +1117,7 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
+        "0":
           description: 成功
           schema:
             allOf:
@@ -1108,20 +1126,8 @@ paths:
                 data:
                   $ref: '#/definitions/model.Job'
               type: object
-        "400":
+        "2000":
           description: 请求参数错误
-          schema:
-            $ref: '#/definitions/response.Response'
-        "401":
-          description: 未授权
-          schema:
-            $ref: '#/definitions/response.Response'
-        "404":
-          description: 职位不存在
-          schema:
-            $ref: '#/definitions/response.Response'
-        "500":
-          description: 服务器内部错误
           schema:
             $ref: '#/definitions/response.Response'
       security:
@@ -1141,7 +1147,7 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
+        "0":
           description: 成功
           schema:
             allOf:
@@ -1150,6 +1156,10 @@ paths:
                 data:
                   $ref: '#/definitions/response.JobListResponse'
               type: object
+        "2000":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/response.Response'
       security:
       - Bearer: []
       summary: 获取已过期职位
@@ -1167,7 +1177,7 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
+        "0":
           description: 成功
           schema:
             allOf:
@@ -1176,7 +1186,7 @@ paths:
                 data:
                   $ref: '#/definitions/response.JobListResponse'
               type: object
-        "500":
+        "2000":
           description: 服务器内部错误
           schema:
             $ref: '#/definitions/response.Response'
@@ -1206,7 +1216,7 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
+        "0":
           description: 成功
           schema:
             allOf:
@@ -1215,7 +1225,7 @@ paths:
                 data:
                   $ref: '#/definitions/response.JobListResponse'
               type: object
-        "400":
+        "2000":
           description: 请求参数错误
           schema:
             $ref: '#/definitions/response.Response'
@@ -1242,8 +1252,8 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
-          description: OK
+        "0":
+          description: ""
           schema:
             allOf:
             - $ref: '#/definitions/response.Response'
@@ -1251,8 +1261,8 @@ paths:
                 data:
                   $ref: '#/definitions/model.Resume'
               type: object
-        "400":
-          description: Bad Request
+        "5000":
+          description: ""
           schema:
             $ref: '#/definitions/response.Response'
       summary: 创建简历
@@ -1270,8 +1280,8 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
-          description: OK
+        "0":
+          description: ""
           schema:
             allOf:
             - $ref: '#/definitions/response.Response'
@@ -1279,8 +1289,8 @@ paths:
                 data:
                   $ref: '#/definitions/model.Resume'
               type: object
-        "404":
-          description: Not Found
+        "5000":
+          description: ""
           schema:
             $ref: '#/definitions/response.Response'
       summary: 获取简历详情
@@ -1310,12 +1320,12 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
-          description: OK
+        "0":
+          description: ""
           schema:
             $ref: '#/definitions/response.Response'
-        "400":
-          description: Bad Request
+        "5000":
+          description: ""
           schema:
             $ref: '#/definitions/response.Response'
       summary: 更新简历
@@ -1338,8 +1348,12 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
-          description: OK
+        "0":
+          description: ""
+          schema:
+            $ref: '#/definitions/response.Response'
+        "5000":
+          description: ""
           schema:
             $ref: '#/definitions/response.Response'
       summary: 收藏/取消收藏简历
@@ -1362,8 +1376,8 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
-          description: OK
+        "0":
+          description: ""
           schema:
             allOf:
             - $ref: '#/definitions/response.Response'
@@ -1374,8 +1388,8 @@ paths:
                     type: integer
                   type: object
               type: object
-        "404":
-          description: Not Found
+        "5000":
+          description: ""
           schema:
             $ref: '#/definitions/response.Response'
       summary: 获取简历统计信息
@@ -1398,8 +1412,12 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
-          description: OK
+        "0":
+          description: ""
+          schema:
+            $ref: '#/definitions/response.Response'
+        "5000":
+          description: ""
           schema:
             $ref: '#/definitions/response.Response'
       summary: 查看简历收藏相关信息
@@ -1425,12 +1443,12 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
-          description: OK
+        "0":
+          description: ""
           schema:
             $ref: '#/definitions/response.Response'
-        "400":
-          description: Bad Request
+        "5000":
+          description: ""
           schema:
             $ref: '#/definitions/response.Response'
       summary: 更新简历访问状态
@@ -1448,8 +1466,8 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
-          description: OK
+        "0":
+          description: ""
           schema:
             allOf:
             - $ref: '#/definitions/response.Response'
@@ -1457,8 +1475,8 @@ paths:
                 data:
                   $ref: '#/definitions/model.Resume'
               type: object
-        "404":
-          description: Not Found
+        "5000":
+          description: ""
           schema:
             $ref: '#/definitions/response.Response'
       summary: 获取用户简历
@@ -1476,8 +1494,8 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
-          description: OK
+        "0":
+          description: ""
           schema:
             allOf:
             - $ref: '#/definitions/response.Response'
@@ -1485,8 +1503,8 @@ paths:
                 data:
                   $ref: '#/definitions/model.Resume'
               type: object
-        "404":
-          description: Not Found
+        "5000":
+          description: ""
           schema:
             $ref: '#/definitions/response.Response'
       summary: 根据分享token获取简历
@@ -1511,8 +1529,8 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
-          description: OK
+        "0":
+          description: ""
           schema:
             allOf:
             - $ref: '#/definitions/response.Response'
@@ -1522,8 +1540,8 @@ paths:
                     type: string
                   type: object
               type: object
-        "400":
-          description: Bad Request
+        "5000":
+          description: ""
           schema:
             $ref: '#/definitions/response.Response'
       summary: 上传简历文件
@@ -1549,12 +1567,12 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
-          description: OK
+        "0":
+          description: ""
           schema:
             $ref: '#/definitions/response.Response'
-        "400":
-          description: Bad Request
+        "5000":
+          description: ""
           schema:
             $ref: '#/definitions/response.Response'
       summary: 更新简历工作状态

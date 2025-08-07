@@ -69,7 +69,7 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "200": {
+                    "0": {
                         "description": "成功",
                         "schema": {
                             "allOf": [
@@ -90,20 +90,8 @@ const docTemplate = `{
                             ]
                         }
                     },
-                    "400": {
-                        "description": "请求参数错误",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
-                        }
-                    },
-                    "401": {
-                        "description": "未授权",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
-                        }
-                    },
-                    "500": {
-                        "description": "服务器内部错误",
+                    "2000": {
+                        "description": "错误",
                         "schema": {
                             "$ref": "#/definitions/response.Response"
                         }
@@ -141,8 +129,8 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "OK",
+                    "0": {
+                        "description": "",
                         "schema": {
                             "allOf": [
                                 {
@@ -159,8 +147,8 @@ const docTemplate = `{
                             ]
                         }
                     },
-                    "400": {
-                        "description": "Bad Request",
+                    "2000": {
+                        "description": "",
                         "schema": {
                             "$ref": "#/definitions/response.Response"
                         }
@@ -188,8 +176,8 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "OK",
+                    "0": {
+                        "description": "",
                         "schema": {
                             "allOf": [
                                 {
@@ -206,8 +194,53 @@ const docTemplate = `{
                             ]
                         }
                     },
-                    "404": {
-                        "description": "Not Found",
+                    "2000": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "删除指定ID的职位申请",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "职位申请"
+                ],
+                "summary": "删除职位申请",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "申请ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "0": {
+                        "description": "",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "2000": {
+                        "description": "",
                         "schema": {
                             "$ref": "#/definitions/response.Response"
                         }
@@ -249,7 +282,7 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "200": {
+                    "0": {
                         "description": "成功",
                         "schema": {
                             "allOf": [
@@ -265,6 +298,12 @@ const docTemplate = `{
                                     }
                                 }
                             ]
+                        }
+                    },
+                    "2000": {
+                        "description": "服务器内部错误",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
                         }
                     }
                 }
@@ -297,8 +336,8 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "OK",
+                    "0": {
+                        "description": "",
                         "schema": {
                             "allOf": [
                                 {
@@ -313,6 +352,12 @@ const docTemplate = `{
                                     }
                                 }
                             ]
+                        }
+                    },
+                    "2000": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
                         }
                     }
                 }
@@ -353,8 +398,8 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "成功",
+                    "0": {
+                        "description": "",
                         "schema": {
                             "allOf": [
                                 {
@@ -364,27 +409,15 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/response.JobResponse"
+                                            "$ref": "#/definitions/model.Job"
                                         }
                                     }
                                 }
                             ]
                         }
                     },
-                    "400": {
-                        "description": "请求参数错误",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
-                        }
-                    },
-                    "401": {
-                        "description": "未授权",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
-                        }
-                    },
-                    "500": {
-                        "description": "服务器内部错误",
+                    "2000": {
+                        "description": "",
                         "schema": {
                             "$ref": "#/definitions/response.Response"
                         }
@@ -417,7 +450,7 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "200": {
+                    "0": {
                         "description": "成功",
                         "schema": {
                             "allOf": [
@@ -433,6 +466,12 @@ const docTemplate = `{
                                     }
                                 }
                             ]
+                        }
+                    },
+                    "2000": {
+                        "description": "服务器内部错误",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
                         }
                     }
                 }
@@ -458,7 +497,7 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "200": {
+                    "0": {
                         "description": "成功",
                         "schema": {
                             "allOf": [
@@ -476,7 +515,7 @@ const docTemplate = `{
                             ]
                         }
                     },
-                    "500": {
+                    "2000": {
                         "description": "服务器内部错误",
                         "schema": {
                             "$ref": "#/definitions/response.Response"
@@ -521,7 +560,7 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "200": {
+                    "0": {
                         "description": "成功",
                         "schema": {
                             "allOf": [
@@ -539,7 +578,7 @@ const docTemplate = `{
                             ]
                         }
                     },
-                    "400": {
+                    "2000": {
                         "description": "请求参数错误",
                         "schema": {
                             "$ref": "#/definitions/response.Response"
@@ -568,8 +607,8 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "OK",
+                    "0": {
+                        "description": "",
                         "schema": {
                             "allOf": [
                                 {
@@ -579,15 +618,15 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/response.JobResponse"
+                                            "$ref": "#/definitions/model.Job"
                                         }
                                     }
                                 }
                             ]
                         }
                     },
-                    "404": {
-                        "description": "Not Found",
+                    "2000": {
+                        "description": "",
                         "schema": {
                             "$ref": "#/definitions/response.Response"
                         }
@@ -637,7 +676,7 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "200": {
+                    "0": {
                         "description": "成功",
                         "schema": {
                             "allOf": [
@@ -655,26 +694,8 @@ const docTemplate = `{
                             ]
                         }
                     },
-                    "400": {
+                    "2000": {
                         "description": "请求参数错误",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
-                        }
-                    },
-                    "401": {
-                        "description": "未授权",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
-                        }
-                    },
-                    "404": {
-                        "description": "职位不存在",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
-                        }
-                    },
-                    "500": {
-                        "description": "服务器内部错误",
                         "schema": {
                             "$ref": "#/definitions/response.Response"
                         }
@@ -715,26 +736,14 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "200": {
+                    "0": {
                         "description": "成功",
                         "schema": {
                             "$ref": "#/definitions/response.Response"
                         }
                     },
-                    "401": {
+                    "2000": {
                         "description": "未授权",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
-                        }
-                    },
-                    "404": {
-                        "description": "职位不存在",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
-                        }
-                    },
-                    "500": {
-                        "description": "服务器内部错误",
                         "schema": {
                             "$ref": "#/definitions/response.Response"
                         }
@@ -774,8 +783,8 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "OK",
+                    "0": {
+                        "description": "",
                         "schema": {
                             "allOf": [
                                 {
@@ -792,8 +801,8 @@ const docTemplate = `{
                             ]
                         }
                     },
-                    "400": {
-                        "description": "Bad Request",
+                    "5000": {
+                        "description": "",
                         "schema": {
                             "$ref": "#/definitions/response.Response"
                         }
@@ -833,14 +842,14 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "OK",
+                    "0": {
+                        "description": "",
                         "schema": {
                             "$ref": "#/definitions/response.Response"
                         }
                     },
-                    "400": {
-                        "description": "Bad Request",
+                    "5000": {
+                        "description": "",
                         "schema": {
                             "$ref": "#/definitions/response.Response"
                         }
@@ -868,8 +877,8 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "OK",
+                    "0": {
+                        "description": "",
                         "schema": {
                             "allOf": [
                                 {
@@ -886,8 +895,8 @@ const docTemplate = `{
                             ]
                         }
                     },
-                    "404": {
-                        "description": "Not Found",
+                    "5000": {
+                        "description": "",
                         "schema": {
                             "$ref": "#/definitions/response.Response"
                         }
@@ -915,8 +924,8 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "OK",
+                    "0": {
+                        "description": "",
                         "schema": {
                             "allOf": [
                                 {
@@ -933,8 +942,8 @@ const docTemplate = `{
                             ]
                         }
                     },
-                    "404": {
-                        "description": "Not Found",
+                    "5000": {
+                        "description": "",
                         "schema": {
                             "$ref": "#/definitions/response.Response"
                         }
@@ -972,8 +981,8 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "OK",
+                    "0": {
+                        "description": "",
                         "schema": {
                             "allOf": [
                                 {
@@ -993,8 +1002,8 @@ const docTemplate = `{
                             ]
                         }
                     },
-                    "400": {
-                        "description": "Bad Request",
+                    "5000": {
+                        "description": "",
                         "schema": {
                             "$ref": "#/definitions/response.Response"
                         }
@@ -1034,14 +1043,14 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "OK",
+                    "0": {
+                        "description": "",
                         "schema": {
                             "$ref": "#/definitions/response.Response"
                         }
                     },
-                    "400": {
-                        "description": "Bad Request",
+                    "5000": {
+                        "description": "",
                         "schema": {
                             "$ref": "#/definitions/response.Response"
                         }
@@ -1069,8 +1078,8 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "OK",
+                    "0": {
+                        "description": "",
                         "schema": {
                             "allOf": [
                                 {
@@ -1087,8 +1096,8 @@ const docTemplate = `{
                             ]
                         }
                     },
-                    "404": {
-                        "description": "Not Found",
+                    "5000": {
+                        "description": "",
                         "schema": {
                             "$ref": "#/definitions/response.Response"
                         }
@@ -1133,14 +1142,14 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "OK",
+                    "0": {
+                        "description": "",
                         "schema": {
                             "$ref": "#/definitions/response.Response"
                         }
                     },
-                    "400": {
-                        "description": "Bad Request",
+                    "5000": {
+                        "description": "",
                         "schema": {
                             "$ref": "#/definitions/response.Response"
                         }
@@ -1175,8 +1184,14 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "OK",
+                    "0": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "5000": {
+                        "description": "",
                         "schema": {
                             "$ref": "#/definitions/response.Response"
                         }
@@ -1211,8 +1226,8 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "OK",
+                    "0": {
+                        "description": "",
                         "schema": {
                             "allOf": [
                                 {
@@ -1233,8 +1248,8 @@ const docTemplate = `{
                             ]
                         }
                     },
-                    "404": {
-                        "description": "Not Found",
+                    "5000": {
+                        "description": "",
                         "schema": {
                             "$ref": "#/definitions/response.Response"
                         }
@@ -1269,8 +1284,14 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "OK",
+                    "0": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "5000": {
+                        "description": "",
                         "schema": {
                             "$ref": "#/definitions/response.Response"
                         }
@@ -1306,20 +1327,20 @@ const docTemplate = `{
         "errors.ErrorCode": {
             "type": "integer",
             "enum": [
-                200,
-                400,
-                401,
-                403,
-                404,
-                405,
-                409,
-                429,
-                422,
-                500,
-                503,
+                0,
                 1001,
                 1002,
                 1003,
+                1004,
+                1005,
+                1006,
+                1007,
+                1008,
+                9000,
+                9001,
+                6001,
+                6002,
+                6003,
                 2001,
                 2002,
                 2003,
@@ -1346,7 +1367,8 @@ const docTemplate = `{
                 5009,
                 5010,
                 5011,
-                5012
+                5012,
+                8001
             ],
             "x-enum-comments": {
                 "BadRequest": "请求参数错误",
@@ -1359,6 +1381,7 @@ const docTemplate = `{
                 "InternalServerError": "服务器内部错误",
                 "InvalidFileFormat": "无效的文件格式",
                 "InvalidParams": "无效的请求参数",
+                "InvalidToken": "无效的令牌",
                 "JobAlreadyApplied": "已经申请过该职位",
                 "JobApplicationAlreadyReviewed": "职位申请已被审核",
                 "JobApplicationLimitReached": "职位申请次数已达上限",
@@ -1431,7 +1454,8 @@ const docTemplate = `{
                 "简历解析失败",
                 "简历更新失败",
                 "简历更新过于频繁",
-                "简历更新状态错误"
+                "简历更新状态错误",
+                "无效的令牌"
             ],
             "x-enum-varnames": [
                 "Success",
@@ -1474,7 +1498,8 @@ const docTemplate = `{
                 "ResumeParse",
                 "ResumeUpdate",
                 "ResumeUpdateTooFrequent",
-                "ResumeUpdateStatus"
+                "ResumeUpdateStatus",
+                "InvalidToken"
             ]
         },
         "model.Education": {
@@ -1694,6 +1719,7 @@ const docTemplate = `{
                     }
                 },
                 "email": {
+                    "description": "修改size以适应加密后的长度",
                     "type": "string"
                 },
                 "expectedCity": {
@@ -1718,12 +1744,14 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "location": {
+                    "description": "修改size以适应加密后的长度",
                     "type": "string"
                 },
                 "name": {
                     "type": "string"
                 },
                 "phone": {
+                    "description": "修改size以适应加密后的长度",
                     "type": "string"
                 },
                 "projects": {

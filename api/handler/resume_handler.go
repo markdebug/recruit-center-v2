@@ -30,8 +30,8 @@ func NewResumeHandler(resumeService *service.ResumeService, interactionService *
 //	@Produce		json
 //	@Param			Authorization	header		string						true	"Bearer 用户令牌"
 //	@Param			resume			body		request.CreateResumeRequest	true	"简历信息"
-//	@Success		200				{object}	response.Response{data=model.Resume}
-//	@Failure		400				{object}	response.Response
+//	@Success		0000			{object}	response.Response{data=model.Resume}
+//	@Failure		5000			{object}	response.Response
 //	@Router			/api/v1/resumes [post]
 func (h *ResumeHandler) Create(c *gin.Context) {
 	var req request.CreateResumeRequest
@@ -60,8 +60,8 @@ func (h *ResumeHandler) Create(c *gin.Context) {
 //	@Param			Authorization	header		string						true	"Bearer 用户令牌"
 //	@Param			id				path		int							true	"简历ID"
 //	@Param			resume			body		request.UpdateResumeRequest	true	"更新简历信息"
-//	@Success		200				{object}	response.Response
-//	@Failure		400				{object}	response.Response
+//	@Success		0000			{object}	response.Response
+//	@Failure		5000			{object}	response.Response
 //	@Router			/api/v1/resumes/{id} [put]
 func (h *ResumeHandler) Update(c *gin.Context) {
 	var req request.UpdateResumeRequest
@@ -122,8 +122,8 @@ func (h *ResumeHandler) Update(c *gin.Context) {
 //	@Tags			简历管理
 //	@Produce		json
 //	@Param			Authorization	header		string	true	"Bearer 用户令牌"
-//	@Success		200				{object}	response.Response{data=model.Resume}
-//	@Failure		404				{object}	response.Response
+//	@Success		0000			{object}	response.Response{data=model.Resume}
+//	@Failure		5000			{object}	response.Response
 //	@Router			/api/v1/resumes/my [get]
 func (h *ResumeHandler) GetByUser(c *gin.Context) {
 	userID := c.GetUint("userId")
@@ -142,9 +142,9 @@ func (h *ResumeHandler) GetByUser(c *gin.Context) {
 //	@Description	获取指定ID的简历详细信息
 //	@Tags			简历管理
 //	@Produce		json
-//	@Param			id	path		int										true	"简历ID"
-//	@Success		200	{object}	response.Response{data=model.Resume}
-//	@Failure		404	{object}	response.Response
+//	@Param			id		path		int	true	"简历ID"
+//	@Success		0000	{object}	response.Response{data=model.Resume}
+//	@Failure		5000	{object}	response.Response
 //	@Router			/api/v1/resumes/{id} [get]
 func (h *ResumeHandler) GetByID(c *gin.Context) {
 	id, _ := strconv.ParseUint(c.Param("id"), 10, 32)
@@ -163,8 +163,8 @@ func (h *ResumeHandler) GetByID(c *gin.Context) {
 //	@Tags			简历管理
 //	@Produce		json
 //	@Param			token	path		string	true	"分享Token"
-//	@Success		200		{object}	response.Response{data=model.Resume}
-//	@Failure		404		{object}	response.Response
+//	@Success		0000	{object}	response.Response{data=model.Resume}
+//	@Failure		5000	{object}	response.Response
 //	@Router			/api/v1/resumes/share/{token} [get]
 func (h *ResumeHandler) GetByShareToken(c *gin.Context) {
 	token := c.Param("token")
@@ -191,8 +191,8 @@ func (h *ResumeHandler) GetByShareToken(c *gin.Context) {
 //	@Produce		json
 //	@Param			Authorization	header		string	true	"Bearer 用户令牌"
 //	@Param			resume			formData	file	true	"简历文件"
-//	@Success		200				{object}	response.Response{data=map[string]string}
-//	@Failure		400				{object}	response.Response
+//	@Success		0000			{object}	response.Response{data=map[string]string}
+//	@Failure		5000			{object}	response.Response
 //	@Router			/api/v1/resumes/upload [post]
 func (h *ResumeHandler) UploadResume(c *gin.Context) {
 	// 从上下文获取用户ID
@@ -234,8 +234,8 @@ func (h *ResumeHandler) UploadResume(c *gin.Context) {
 //	@Produce		json
 //	@Param			Authorization	header		string								true	"Bearer 用户令牌"
 //	@Param			status			body		request.UpdateResumeStatusRequest	true	"访问状态"
-//	@Success		200				{object}	response.Response
-//	@Failure		400				{object}	response.Response
+//	@Success		0000			{object}	response.Response
+//	@Failure		5000			{object}	response.Response
 //	@Router			/api/v1/resumes/access-status [put]
 func (h *ResumeHandler) UpdateAccessStatus(c *gin.Context) {
 	var req request.UpdateResumeStatusRequest
@@ -262,8 +262,8 @@ func (h *ResumeHandler) UpdateAccessStatus(c *gin.Context) {
 //	@Produce		json
 //	@Param			Authorization	header		string								true	"Bearer 用户令牌"
 //	@Param			status			body		request.UpdateResumeStatusRequest	true	"工作状态"
-//	@Success		200				{object}	response.Response
-//	@Failure		400				{object}	response.Response
+//	@Success		0000			{object}	response.Response
+//	@Failure		5000			{object}	response.Response
 //	@Router			/api/v1/resumes/working-status [put]
 func (h *ResumeHandler) UpdateWorkingStatus(c *gin.Context) {
 	var req request.UpdateResumeStatusRequest
@@ -289,7 +289,8 @@ func (h *ResumeHandler) UpdateWorkingStatus(c *gin.Context) {
 //	@Produce		json
 //	@Param			Authorization	header		string	true	"Bearer 用户令牌"
 //	@Param			id				path		int		true	"简历ID"
-//	@Success		200				{object}	response.Response
+//	@Success		0000			{object}	response.Response
+//	@Failure		5000			{object}	response.Response
 //	@Router			/api/v1/resumes/{id}/view [post]
 func (h *ResumeHandler) ViewResume(c *gin.Context) {
 	resumeID := c.GetUint("id")
@@ -317,7 +318,8 @@ func (h *ResumeHandler) ViewResume(c *gin.Context) {
 //	@Produce		json
 //	@Param			Authorization	header		string	true	"Bearer 用户令牌"
 //	@Param			id				path		int		true	"简历ID"
-//	@Success		200				{object}	response.Response
+//	@Success		0000			{object}	response.Response
+//	@Failure		5000			{object}	response.Response
 //	@Router			/api/v1/resumes/{id}/favorite [post]
 func (h *ResumeHandler) ToggleFavorite(c *gin.Context) {
 	resumeID := c.GetUint("id")
@@ -357,8 +359,8 @@ func (h *ResumeHandler) ToggleFavorite(c *gin.Context) {
 //	@Produce		json
 //	@Param			Authorization	header		string	true	"Bearer 用户令牌"
 //	@Param			id				path		int		true	"简历ID"
-//	@Success		200				{object}	response.Response{data=map[string]int64}
-//	@Failure		404				{object}	response.Response
+//	@Success		0000			{object}	response.Response{data=map[string]int64}
+//	@Failure		5000			{object}	response.Response{}
 //	@Router			/api/v1/resumes/{id}/stats [get]
 func (h *ResumeHandler) GetStats(c *gin.Context) {
 	resumeID := c.GetUint("id")
