@@ -32,6 +32,7 @@ const resumeParsePrompt = `
         "experience": "工作年限",
         "expectedJob": "期望职位",
         "expectedCity": "期望城市",
+		"expectedSalary": "期望薪资",
         "introduction": "个人简介",
         "skills": "技能描述"
     },
@@ -163,18 +164,4 @@ func ParseResume(fileContent string) (*ResumeParseResult, error) {
 	}
 
 	return &result, nil
-}
-
-// ExtractTextFromPDF 从PDF中提取文本
-func ExtractTextFromPDF(pdfURL string) (string, error) {
-	// TODO: 实现PDF文本提取
-	// 可以使用第三方库如 pdfcpu 或调用其他服务
-	return "", nil
-}
-
-// ExtractTextFromWord 从Word文档中提取文本
-func ExtractTextFromWord(docURL string) (string, error) {
-	// TODO: 实现Word文本提取
-	// 可以使用第三方库如 unidoc 或调用其他服务
-	return "", nil
 }

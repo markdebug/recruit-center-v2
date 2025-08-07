@@ -47,6 +47,7 @@ const (
 	FileTypeNotAllowed ErrorCode = 4002 // 文件类型不允许
 	InvalidFileFormat  ErrorCode = 4003 // 无效的文件格式
 	TooManyFiles       ErrorCode = 4004 // 文件数量超过限制
+	FileUploadFailed   ErrorCode = 4005 // 文件上传失败
 
 	//简历模块 (5001-5999)
 	ResumeNotFound          ErrorCode = 5001 // 简历不存在

@@ -208,7 +208,7 @@ func (h *ResumeHandler) UploadResume(c *gin.Context) {
 	// 打开文件
 	src, err := file.Open()
 	if err != nil {
-		c.JSON(http.StatusOK, response.NewErrorWithMsg(errors.InternalServerError, "无法读取文件"))
+		c.JSON(http.StatusOK, response.NewErrorWithMsg(errors.FileUploadFailed, "无法读取文件"))
 		return
 	}
 	defer src.Close()
@@ -216,12 +216,12 @@ func (h *ResumeHandler) UploadResume(c *gin.Context) {
 	// 调用service处理上传
 	fileURL, err := h.resumeService.UploadResumeFile(userID, src, file.Filename)
 	if err != nil {
-		c.JSON(http.StatusOK, response.NewErrorWithMsg(errors.InternalServerError, err.Error()))
+		c.JSON(http.StatusOK, response.NewErrorWithMsg(errors.FileUploadFailed, err.Error()))
 		return
 	}
 
 	c.JSON(http.StatusOK, response.NewSuccess(gin.H{
-		"file_url": fileURL,
+		"fileUrl": fileURL,
 	}))
 }
 
