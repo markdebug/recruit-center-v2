@@ -17,7 +17,7 @@ import (
 const APIVersion = "v1"
 
 // SetupRouter 初始化路由配置
-func SetupRouter(jobHandler *handler.JobHandler, jobApplyHandler *handler.JobApplyHandler, resumeHandler *handler.ResumeHandler) *gin.Engine {
+func SetupRouter(jobHandler *handler.JobHandler, jobApplyHandler *handler.JobApplyHandler, resumeHandler *handler.ResumeHandler, notificationHandler *handler.NotificationHandler, jobStatsHandler *handler.JobStatisticsHandler) *gin.Engine {
 	if gin.Mode() != gin.ReleaseMode {
 		gin.SetMode(gin.DebugMode)
 	}
@@ -28,7 +28,7 @@ func SetupRouter(jobHandler *handler.JobHandler, jobApplyHandler *handler.JobApp
 
 	// 配置API路由
 	apiGroup := r.Group(fmt.Sprintf("/api/%s", APIVersion))
-	setupAPIRoutes(apiGroup, jobHandler, jobApplyHandler, resumeHandler)
+	setupAPIRoutes(apiGroup, jobHandler, jobApplyHandler, resumeHandler, notificationHandler, jobStatsHandler)
 
 	// 配置工具路由
 	setupToolRoutes(r)
@@ -44,24 +44,30 @@ func setupGlobalMiddleware(r *gin.Engine) {
 }
 
 // setupAPIRoutes 配置API路由
-func setupAPIRoutes(api *gin.RouterGroup, jobHandler *handler.JobHandler, jobApplyHandler *handler.JobApplyHandler, resumeHandler *handler.ResumeHandler) {
+func setupAPIRoutes(api *gin.RouterGroup, jobHandler *handler.JobHandler, jobApplyHandler *handler.JobApplyHandler, resumeHandler *handler.ResumeHandler, notificationHandler *handler.NotificationHandler, jobStatsHandler *handler.JobStatisticsHandler) {
 	// 职位相关路由
-	setupJobRoutes(api.Group("/jobs"), jobHandler)
+	setupJobRoutes(api.Group("/jobs"), jobHandler, jobStatsHandler)
 
 	// 申请相关路由
 	setupApplyRoutes(api.Group("/applies"), jobApplyHandler)
 
 	// 简历相关路由
 	setupResumeRoutes(api.Group("/resumes"), resumeHandler)
+	// 通知相关路由
+	setUpNotificationsRouter(api.Group("/notifications"), notificationHandler)
 }
 
 // setupJobRoutes 配置职位相关路由
-func setupJobRoutes(jobs *gin.RouterGroup, handler *handler.JobHandler) {
+func setupJobRoutes(jobs *gin.RouterGroup, handler *handler.JobHandler, jobStatsHandler *handler.JobStatisticsHandler) {
 	jobs.POST("/", middleware.AuthRequired(), handler.Create)
 	jobs.PUT("/:id", middleware.AuthRequired(), handler.Update)
 	jobs.DELETE("/:id", middleware.AuthRequired(), handler.Delete)
 	jobs.GET("/:id", handler.GetByID)
 	jobs.GET("/", handler.List)
+
+	// 职位统计相关路由
+	jobs.GET("/jobs/:jobId/statistics", jobStatsHandler.GetJobStats)
+	jobs.GET("/companies/:companyId/statistics", jobStatsHandler.GetCompanyStats)
 	// jobs.GET("/search", handler.Search)
 }
 
@@ -99,6 +105,16 @@ func setupResumeRoutes(resumes *gin.RouterGroup, handler *handler.ResumeHandler)
 	resumes.PUT("/:id/favorite", middleware.AuthRequired(), handler.ToggleFavorite)
 	//获取简历的统计信息
 	resumes.GET("/:id/stats", middleware.AuthRequired(), handler.GetStats)
+}
+
+// SetupNotificationsRouter 通知相关路由配置
+func setUpNotificationsRouter(notifications *gin.RouterGroup, notificationHandler *handler.NotificationHandler) {
+
+	notifications.GET("", notificationHandler.List)                        // 获取通知列表
+	notifications.GET("/unread/count", notificationHandler.GetUnreadCount) // 获取未读数量
+	notifications.POST("/read", notificationHandler.MarkAsRead)            // 标记已读
+	notifications.POST("/send", notificationHandler.Send)                  // 发送通知
+
 }
 
 // setupToolRoutes 配置工具相关路由

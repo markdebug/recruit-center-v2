@@ -14,15 +14,17 @@ import (
 
 // JobApplyService 职位申请服务
 type JobApplyService struct {
-	jobApplyDAO *dao.JobApplyDAO
-	jobService  *JobService
+	jobApplyDAO         *dao.JobApplyDAO
+	jobService          *JobService
+	notificationService *NotificationService
 }
 
 // NewJobApplyService 创建职位申请服务实例
-func NewJobApplyService(jobApplyDao *dao.JobApplyDAO, jobService *JobService) *JobApplyService {
+func NewJobApplyService(jobApplyDao *dao.JobApplyDAO, jobService *JobService, notificationService *NotificationService) *JobApplyService {
 	return &JobApplyService{
-		jobApplyDAO: jobApplyDao,
-		jobService:  jobService,
+		jobApplyDAO:         jobApplyDao,
+		jobService:          jobService,
+		notificationService: notificationService,
 	}
 }
 
@@ -133,9 +135,14 @@ func (s *JobApplyService) UpdateStatus(id uint, status enums.JobApplyEnum) error
 	}
 
 	// 2. 检查申请是否存在
-	_, err := s.jobApplyDAO.GetByID(id)
+	apply, err := s.jobApplyDAO.GetByID(id)
 	if err != nil {
 		return errors.Wrap(err, errors.NotFound)
+	}
+
+	// 3. 验证状态流转是否合法
+	if !s.isValidStatusTransition(apply.Status, int(status)) {
+		return fmt.Errorf("无效的状态流转")
 	}
 
 	// 4. 更新状态
@@ -146,6 +153,19 @@ func (s *JobApplyService) UpdateStatus(id uint, status enums.JobApplyEnum) error
 			zap.Int("status", int(status)))
 		return err
 	}
+
+	// 发送通知
+	notification := &model.Notification{
+		UserID:  apply.UserID,
+		Title:   "申请状态更新",
+		Content: fmt.Sprintf("您的职位申请状态已更新为：%s", enums.JobApplyEnum(status).String()),
+		Type:    model.NotificationTypeStatusUpdate,
+	}
+
+	if err := s.notificationService.Create(notification); err != nil {
+		logger.L.Error("发送通知失败", zap.Error(err))
+	}
+
 	return nil
 }
 

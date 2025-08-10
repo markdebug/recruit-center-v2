@@ -141,7 +141,7 @@ func (a *App) initHTTPServer() error {
 	}
 
 	// 设置路由
-	router := api.SetupRouter(handlers.job, handlers.jobApply, handlers.resume)
+	router := api.SetupRouter(handlers.job, handlers.jobApply, handlers.resume, handlers.notification, handlers.jobStats)
 
 	// 创建HTTP服务器
 	a.server = &http.Server{
@@ -157,9 +157,11 @@ func (a *App) initHTTPServer() error {
 
 // Handlers 处理器集合
 type Handlers struct {
-	job      *handler.JobHandler
-	jobApply *handler.JobApplyHandler
-	resume   *handler.ResumeHandler
+	job          *handler.JobHandler
+	jobApply     *handler.JobApplyHandler
+	resume       *handler.ResumeHandler
+	notification *handler.NotificationHandler
+	jobStats     *handler.JobStatisticsHandler
 }
 
 // initializeDependencies 初始化所有依赖
@@ -169,18 +171,25 @@ func (a *App) initializeDependencies(db *gorm.DB) (*Handlers, error) {
 	jobApplyDao := dao.NewJobApplyDAO(db)
 	resumeDao := dao.NewResumeDAO(db)
 	resumeInteractionDao := dao.NewResumeInteractionDAO(db)
+	jobStatisticsDao := dao.NewJobStatisticsDAO(db)
+	notificationDao := dao.NewNotificationDAO(db)
+	notificationTemplateDap := dao.NewNotificationTemplateDAO(db)
 
 	// 初始化 Service 层
 	jobService := service.NewJobService(jobDao)
-	jobApplyService := service.NewJobApplyService(jobApplyDao, jobService)
+	jobStatsService := service.NewJobStatisticsService(jobStatisticsDao)
+	notificationService := service.NewNotificationService(notificationDao, notificationTemplateDap)
+	jobApplyService := service.NewJobApplyService(jobApplyDao, jobService, notificationService)
 	resumeService := service.NewResumeService(resumeDao)
 	resumeInteractionService := service.NewResumeInteractionService(resumeInteractionDao)
 
 	// 初始化 Handler 层
 	return &Handlers{
-		job:      handler.NewJobHandler(jobService),
-		jobApply: handler.NewJobApplyHandler(jobApplyService),
-		resume:   handler.NewResumeHandler(resumeService, resumeInteractionService),
+		job:          handler.NewJobHandler(jobService),
+		jobApply:     handler.NewJobApplyHandler(jobApplyService, jobService),
+		resume:       handler.NewResumeHandler(resumeService, resumeInteractionService),
+		notification: handler.NewNotificationHandler(notificationService),
+		jobStats:     handler.NewJobStatisticsHandler(jobStatsService),
 	}, nil
 }
 
