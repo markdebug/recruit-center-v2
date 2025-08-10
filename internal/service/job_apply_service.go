@@ -31,7 +31,7 @@ func NewJobApplyService(jobApplyDao *dao.JobApplyDAO, jobService *JobService, no
 // Create 创建职位申请
 func (s *JobApplyService) Create(apply *model.JobApply) error {
 	// 1. 验证职位是否存在且有效
-	job, err := s.jobService.GetByID(apply.JobID)
+	job, err := s.jobService.GetByID(apply.JobID, 0)
 	if err != nil {
 		return err
 	}
@@ -161,7 +161,7 @@ func (s *JobApplyService) Delete(id, userID uint) error {
 
 // getStatusNotification 获取状态变更的通知内容
 func (s *JobApplyService) getStatusNotification(apply *model.JobApply, status enums.JobApplyEnum) (userNotify, companyNotify *model.Notification) {
-	job, _ := s.jobService.GetByID(apply.JobID)
+	job, _ := s.jobService.GetByID(apply.JobID, 0)
 	jobName := "该职位"
 	if job != nil {
 		jobName = job.Name

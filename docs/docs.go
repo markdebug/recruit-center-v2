@@ -78,7 +78,7 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/model.JobApply"
+                                                "$ref": "#/definitions/response.JobApplyResponse"
                                             }
                                         }
                                     }
@@ -120,7 +120,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.JobApply"
+                            "$ref": "#/definitions/request.JobApplyRequest"
                         }
                     }
                 ],
@@ -136,7 +136,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/model.JobApply"
+                                            "$ref": "#/definitions/response.JobApplyResponse"
                                         }
                                     }
                                 }
@@ -190,7 +190,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/model.JobApply"
+                                            "$ref": "#/definitions/response.JobApplyResponse"
                                         }
                                     }
                                 }
@@ -243,6 +243,154 @@ const docTemplate = `{
                                     "properties": {
                                         "data": {
                                             "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "2000": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/applies/{id}/status": {
+            "put": {
+                "description": "更新指定职位申请的",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "职位申请"
+                ],
+                "summary": "更新职位申请状态",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer 用户令牌",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "申请ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "申请状态",
+                        "name": "status",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "0": {
+                        "description": "",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "2000": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/companies/{companyId}/applies": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "分页获取指定公司的",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "职位申请"
+                ],
+                "summary": "获取公司职位申请记录",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer 用户令牌",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "公司ID",
+                        "name": "companyId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "minimum": 1,
+                        "type": "integer",
+                        "default": 1,
+                        "description": "页码 (默认值: 1)",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "maximum": 100,
+                        "minimum": 1,
+                        "type": "integer",
+                        "default": 10,
+                        "description": "每页数量 (默认值: 10)",
+                        "name": "size",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "0": {
+                        "description": "成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.PageResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/response.JobApplyResponse"
+                                            }
                                         }
                                     }
                                 }
@@ -812,6 +960,151 @@ const docTemplate = `{
                     },
                     "2000": {
                         "description": "未授权",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/jobs/{id}/status": {
+            "put": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "更新指定ID的职位状态",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "职位"
+                ],
+                "summary": "更新职位状态",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer JWT",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "职位ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "职位状态",
+                        "name": "status",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "0": {
+                        "description": "成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/response.JobResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "2000": {
+                        "description": "请求参数错误",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/jobs/{jobId}/favorite": {
+            "post": {
+                "description": "添加职位到收藏夹",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "职位收藏"
+                ],
+                "summary": "收藏职位",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer 用户令牌",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "职位ID",
+                        "name": "jobId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "0": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "取消收藏指定职位",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "职位收藏"
+                ],
+                "summary": "取消收藏",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer 用户令牌",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "职位ID",
+                        "name": "jobId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "0": {
+                        "description": "",
                         "schema": {
                             "$ref": "#/definitions/response.Response"
                         }
@@ -1596,33 +1889,70 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/api/v1/users/favorites": {
+            "get": {
+                "description": "分页获取用户收藏的职位列表",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "职位收藏"
+                ],
+                "summary": "获取收藏列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer 用户令牌",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "minimum": 1,
+                        "type": "integer",
+                        "default": 1,
+                        "description": "页码",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "maximum": 100,
+                        "minimum": 1,
+                        "type": "integer",
+                        "default": 10,
+                        "description": "每页数量",
+                        "name": "size",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "0": {
+                        "description": "",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/response.JobListResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
-        "enums.JobApplyEnum": {
-            "type": "integer",
-            "enum": [
-                1,
-                2,
-                3,
-                4,
-                5
-            ],
-            "x-enum-comments": {
-                "JobApplyAccepted": "已接受",
-                "JobApplyInProgress": "进行中",
-                "JobApplyPending": "待处理",
-                "JobApplyRejected": "已拒绝",
-                "JobApplyWithdrawn": "已撤回"
-            },
-            "x-enum-varnames": [
-                "JobApplyPending",
-                "JobApplyInProgress",
-                "JobApplyAccepted",
-                "JobApplyRejected",
-                "JobApplyWithdrawn"
-            ]
-        },
         "enums.JobType": {
             "type": "integer",
             "enum": [
@@ -1667,6 +1997,8 @@ const docTemplate = `{
                 2007,
                 2008,
                 2009,
+                2010,
+                2011,
                 3001,
                 3002,
                 4001,
@@ -1699,6 +2031,7 @@ const docTemplate = `{
                 "Forbidden": "禁止访问",
                 "InternalServerError": "服务器内部错误",
                 "InvalidFileFormat": "无效的文件格式",
+                "InvalidJobStatus": "无效的职位状态",
                 "InvalidParams": "无效的请求参数",
                 "InvalidToken": "无效的令牌",
                 "JobAlreadyApplied": "已经申请过该职位",
@@ -1708,6 +2041,7 @@ const docTemplate = `{
                 "JobCreationLimitReached": "职位创建次数已达上限",
                 "JobDeleteNotAllowed": "职位删除不允许",
                 "JobExpired": "职位已过期",
+                "JobNotBelongToCompany": "职位不属于该公司",
                 "JobNotFound": "职位不存在",
                 "JobUpdateNotAllowed": "职位更新不允许",
                 "MethodNotAllowed": "方法不允许",
@@ -1756,6 +2090,8 @@ const docTemplate = `{
                 "JobDeleteNotAllowed",
                 "JobApplicationNotFound",
                 "JobApplicationAlreadyReviewed",
+                "JobNotBelongToCompany",
+                "InvalidJobStatus",
                 "CompanyNotFound",
                 "CompanyInactive",
                 "FileTooLarge",
@@ -1810,41 +2146,44 @@ const docTemplate = `{
                 }
             }
         },
-        "model.JobApply": {
-            "type": "object",
-            "properties": {
-                "applyProgress": {
-                    "type": "string"
-                },
-                "applyTime": {
-                    "type": "string"
-                },
-                "createTime": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "jobId": {
-                    "type": "integer"
-                },
-                "reason": {
-                    "description": "拒绝原因",
-                    "type": "string"
-                },
-                "resumeId": {
-                    "type": "integer"
-                },
-                "status": {
-                    "type": "integer"
-                },
-                "updateTime": {
-                    "type": "string"
-                },
-                "userId": {
-                    "type": "integer"
-                }
-            }
+        "model.JobBenefitType": {
+            "type": "integer",
+            "enum": [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10
+            ],
+            "x-enum-comments": {
+                "Bonus": "年终奖",
+                "FlexibleTime": "弹性工作",
+                "Gym": "健身设施",
+                "Healthcare": "医疗保险",
+                "Insurance": "五险一金",
+                "Leave": "带薪休假",
+                "Meals": "餐补",
+                "Stock": "股票期权",
+                "Training": "培训发展",
+                "Transport": "交通补助"
+            },
+            "x-enum-varnames": [
+                "Insurance",
+                "Bonus",
+                "Leave",
+                "Training",
+                "Meals",
+                "Transport",
+                "Stock",
+                "FlexibleTime",
+                "Healthcare",
+                "Gym"
+            ]
         },
         "model.Project": {
             "type": "object",
@@ -2076,9 +2415,148 @@ const docTemplate = `{
             }
         },
         "request.CreateJobRequest": {
-            "type": "object"
+            "description": "创建职位的请求参数",
+            "type": "object",
+            "required": [
+                "benefits",
+                "companyId",
+                "jobCategory",
+                "jobDescribe",
+                "jobEducation",
+                "jobExperience",
+                "jobExpireTime",
+                "jobLocation",
+                "jobSalary",
+                "jobSalaryMax",
+                "jobSkill",
+                "jobType",
+                "name",
+                "remoteRatio",
+                "remoteType"
+            ],
+            "properties": {
+                "benefitDesc": {
+                    "description": "福利补充说明",
+                    "type": "string",
+                    "example": "额外提供商业医疗保险，每年体检一次"
+                },
+                "benefits": {
+                    "description": "职位福利列表\nrequired: true",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.JobBenefitType"
+                    }
+                },
+                "companyId": {
+                    "description": "公司ID\nrequired: true",
+                    "type": "integer"
+                },
+                "jobBenefit": {
+                    "description": "职位福利",
+                    "type": "string",
+                    "example": "五险一金,年终奖,带薪休假"
+                },
+                "jobCategory": {
+                    "description": "职位类别\nrequired: true",
+                    "type": "string",
+                    "example": "技术"
+                },
+                "jobContact": {
+                    "description": "联系方式",
+                    "type": "string"
+                },
+                "jobDescribe": {
+                    "description": "职位描述\nrequired: true",
+                    "type": "string"
+                },
+                "jobEducation": {
+                    "description": "学历要求\nrequired: true",
+                    "type": "string",
+                    "example": "本科"
+                },
+                "jobExperience": {
+                    "description": "经验要求\nrequired: true",
+                    "type": "string",
+                    "example": "3-5年"
+                },
+                "jobExpireTime": {
+                    "description": "职位过期时间\nrequired: true\nexample: 2024-12-31T23:59:59Z",
+                    "type": "string"
+                },
+                "jobLocation": {
+                    "description": "工作地点\nrequired: true",
+                    "type": "string",
+                    "example": "上海"
+                },
+                "jobSalary": {
+                    "description": "职位薪资范围\nrequired: true",
+                    "type": "integer",
+                    "minimum": 1,
+                    "example": 15000
+                },
+                "jobSalaryMax": {
+                    "description": "职位最高薪资\nrequired: true",
+                    "type": "integer",
+                    "example": 25000
+                },
+                "jobSkill": {
+                    "description": "职位技能要求\nrequired: true",
+                    "type": "string",
+                    "example": "Go,Docker,Kubernetes"
+                },
+                "jobSource": {
+                    "description": "职位来源",
+                    "type": "string",
+                    "example": "官网"
+                },
+                "jobType": {
+                    "description": "职位类型（全职/兼职）\nrequired: true",
+                    "type": "integer",
+                    "example": 1
+                },
+                "name": {
+                    "description": "职位名称\nrequired: true",
+                    "type": "string",
+                    "example": "高级Go工程师"
+                },
+                "remoteDesc": {
+                    "description": "远程办公补充说明",
+                    "type": "string",
+                    "example": "每周可远程办公3天,周四需到办公室参加团队会议"
+                },
+                "remoteRatio": {
+                    "description": "远程办公比例(0-100)\nrequired: true",
+                    "type": "integer",
+                    "maximum": 100,
+                    "minimum": 0,
+                    "example": 60
+                },
+                "remoteType": {
+                    "description": "远程办公类型(1:办公室办公 2:混合办公 3:全远程 4:灵活办公)\nrequired: true",
+                    "type": "integer",
+                    "enum": [
+                        1,
+                        2,
+                        3,
+                        4
+                    ],
+                    "example": 2
+                },
+                "tags": {
+                    "description": "职位标签",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "['急招'",
+                        "'环境好']"
+                    ]
+                }
+            }
         },
         "request.CreateResumeRequest": {
+            "description": "创建简历的请求参数",
             "type": "object",
             "required": [
                 "email",
@@ -2168,41 +2646,21 @@ const docTemplate = `{
                 }
             }
         },
-        "request.JobApply": {
+        "request.JobApplyRequest": {
             "type": "object",
+            "required": [
+                "jobId",
+                "resumeId",
+                "userId"
+            ],
             "properties": {
-                "applyProgress": {
-                    "description": "改为 applyProgress",
-                    "type": "string"
-                },
-                "applyTime": {
-                    "description": "改为 applyTime",
-                    "type": "string"
-                },
-                "createTime": {
-                    "description": "改为 createTime",
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
                 "jobId": {
-                    "description": "改为 jobId",
                     "type": "integer"
                 },
-                "reason": {
-                    "description": "拒绝原因",
-                    "type": "string"
-                },
-                "status": {
-                    "$ref": "#/definitions/enums.JobApplyEnum"
-                },
-                "updateTime": {
-                    "description": "改为 updateTime",
-                    "type": "string"
+                "resumeId": {
+                    "type": "integer"
                 },
                 "userId": {
-                    "description": "改为 userId",
                     "type": "integer"
                 }
             }
@@ -2279,11 +2737,23 @@ const docTemplate = `{
             }
         },
         "request.UpdateJobRequest": {
+            "description": "更新职位的请求参数",
             "type": "object",
             "required": [
                 "id"
             ],
             "properties": {
+                "benefitDesc": {
+                    "description": "福利补充说明",
+                    "type": "string"
+                },
+                "benefits": {
+                    "description": "职位福利列表",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.JobBenefitType"
+                    }
+                },
                 "id": {
                     "type": "integer"
                 },
@@ -2319,8 +2789,11 @@ const docTemplate = `{
                     "maxLength": 200
                 },
                 "jobSalary": {
-                    "type": "string",
-                    "maxLength": 50
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "jobSalaryMax": {
+                    "type": "integer"
                 },
                 "jobSkill": {
                     "type": "string",
@@ -2337,6 +2810,26 @@ const docTemplate = `{
                     "type": "string",
                     "maxLength": 100,
                     "minLength": 1
+                },
+                "remoteDesc": {
+                    "description": "远程办公补充说明",
+                    "type": "string"
+                },
+                "remoteRatio": {
+                    "description": "远程办公比例(0-100)",
+                    "type": "integer",
+                    "maximum": 100,
+                    "minimum": 0
+                },
+                "remoteType": {
+                    "description": "远程办公类型(1:办公室办公 2:混合办公 3:全远程 4:灵活办公)",
+                    "type": "integer",
+                    "enum": [
+                        1,
+                        2,
+                        3,
+                        4
+                    ]
                 }
             }
         },
@@ -2385,6 +2878,7 @@ const docTemplate = `{
             }
         },
         "request.UpdateResumeStatusRequest": {
+            "description": "更新简历状态的请求参数",
             "type": "object",
             "required": [
                 "resumeId",
@@ -2436,6 +2930,35 @@ const docTemplate = `{
                 }
             }
         },
+        "response.JobApplyResponse": {
+            "description": "职位申请响应对象",
+            "type": "object",
+            "properties": {
+                "applyProgress": {
+                    "description": "申请进度状态",
+                    "type": "string"
+                },
+                "applyTime": {
+                    "description": "enum: 待处理,进行中,已接受,已拒绝,已撤回,待面试,面试通过,面试不通过,已发送Offer,Offer已接受,Offer已拒绝\nexample: 待面试",
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "jobId": {
+                    "type": "integer"
+                },
+                "resumeId": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "userId": {
+                    "type": "integer"
+                }
+            }
+        },
         "response.JobListResponse": {
             "type": "object",
             "properties": {
@@ -2451,22 +2974,62 @@ const docTemplate = `{
             }
         },
         "response.JobResponse": {
+            "description": "职位响应对象",
             "type": "object",
             "properties": {
                 "applyCount": {
                     "type": "integer"
                 },
+                "benefitDesc": {
+                    "type": "string"
+                },
+                "benefitTexts": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "benefits": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.JobBenefitType"
+                    }
+                },
                 "companyId": {
                     "type": "integer"
                 },
+                "deleteStatus": {
+                    "description": "删除状态 0: 正常 1: 已删除",
+                    "type": "integer",
+                    "enum": [
+                        0,
+                        1
+                    ],
+                    "example": 0
+                },
                 "id": {
                     "type": "integer"
+                },
+                "isApplied": {
+                    "description": "是否已投递",
+                    "type": "boolean"
+                },
+                "isFavorited": {
+                    "description": "是否已收藏",
+                    "type": "boolean"
                 },
                 "jobBenefit": {
                     "type": "string"
                 },
                 "jobCategory": {
-                    "type": "string"
+                    "description": "职位分类 internal 内推 2 direct 直招 3 猎头",
+                    "type": "string",
+                    "enum": [
+                        "internal",
+                        "direct",
+                        "headhunting"
+                    ],
+                    "example": "direct"
                 },
                 "jobContact": {
                     "type": "string"
@@ -2487,16 +3050,27 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "jobSalary": {
-                    "type": "string"
+                    "type": "integer"
+                },
+                "jobSalaryMax": {
+                    "type": "integer"
                 },
                 "jobSkill": {
                     "type": "string"
                 },
                 "jobSource": {
+                    "description": "职位来源",
                     "type": "string"
                 },
                 "jobType": {
-                    "type": "integer"
+                    "description": "职位类型 1 全职 2 兼职 3 实习",
+                    "type": "integer",
+                    "enum": [
+                        1,
+                        2,
+                        3
+                    ],
+                    "example": 1
                 },
                 "name": {
                     "type": "string"
@@ -2504,8 +3078,35 @@ const docTemplate = `{
                 "priority": {
                     "type": "integer"
                 },
+                "remoteDesc": {
+                    "description": "远程办公描述",
+                    "type": "string"
+                },
+                "remoteRatio": {
+                    "description": "远程办公比例(0-100)",
+                    "type": "integer",
+                    "maximum": 100,
+                    "minimum": 0,
+                    "example": 60
+                },
+                "remoteType": {
+                    "description": "远程办公类型",
+                    "type": "integer",
+                    "enum": [
+                        1,
+                        2,
+                        3,
+                        4
+                    ],
+                    "example": 1
+                },
                 "status": {
-                    "type": "integer"
+                    "type": "integer",
+                    "enum": [
+                        0,
+                        1
+                    ],
+                    "example": 1
                 },
                 "tags": {
                     "type": "array",

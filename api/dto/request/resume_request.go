@@ -7,6 +7,7 @@ import (
 )
 
 // CreateResumeRequest 创建简历请求
+// @Description 创建简历的请求参数
 type CreateResumeRequest struct {
 	Name            string                  `json:"name" binding:"required"`
 	Avatar          string                  `json:"avatar"`
@@ -27,6 +28,7 @@ type CreateResumeRequest struct {
 }
 
 // 更新简历状态请求
+// @Description 更新简历状态的请求参数
 type UpdateResumeStatusRequest struct {
 	Status   int  `json:"status" binding:"required,oneof=1 2"`
 	ResumeID uint `json:"resumeId" binding:"required"`

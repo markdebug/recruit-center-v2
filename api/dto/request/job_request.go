@@ -46,7 +46,7 @@ type CreateJobRequest struct {
 
 	// 职位类型（全职/兼职）
 	// required: true
-	JobType enums.JobType `json:"jobType" binding:"required" example:"全职"`
+	JobType int `json:"jobType" binding:"required" example:"1"`
 
 	// 职位类别
 	// required: true
@@ -85,13 +85,14 @@ type CreateJobRequest struct {
 
 	// 职位福利列表
 	// required: true
-	Benefits []model.JobBenefitType `json:"benefits" binding:"required,dive,oneof=1 2 3 4 5 6 7 8 9 10" example:"[1,2,3]"`
+	Benefits []model.JobBenefitType `json:"benefits" binding:"required,dive,oneof=1 2 3 4 5 6 7 8 9 10""`
 
 	// 福利补充说明
 	BenefitDesc string `json:"benefitDesc" example:"额外提供商业医疗保险，每年体检一次"`
 }
 
 // UpdateJobRequest 更新职位请求
+// @Description 更新职位的请求参数
 type UpdateJobRequest struct {
 	ID            uint          `json:"id" binding:"required"`
 	Name          string        `json:"name" binding:"min=1,max=100"`
@@ -126,6 +127,7 @@ type UpdateJobRequest struct {
 }
 
 // JobSearchRequest 职位搜索请求
+// @Description 职位搜索的请求参数
 type JobSearchRequest struct {
 	Keyword     string        `json:"keyword" form:"keyword" example:"Go开发"`
 	JobType     enums.JobType `json:"jobType" form:"jobType" example:"full_time"`
@@ -139,6 +141,7 @@ type JobSearchRequest struct {
 }
 
 // JobListRequest 职位列表请求
+// @Description 职位列表的请求参数
 type JobListRequest struct {
 	Page     int `json:"page" form:"page" binding:"min=1" example:"1"`
 	PageSize int `json:"pageSize" form:"pageSize" binding:"min=1,max=100" example:"10"`

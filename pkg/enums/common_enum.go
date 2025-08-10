@@ -4,8 +4,8 @@ package enums
 type DeleteStatus int
 
 const (
-	DeleteStatusNormal  DeleteStatus = iota // 正常状态
-	DeleteStatusDeleted                     // 已删除状态
+	DeleteStatusNormal  DeleteStatus = 0 // 正常状态
+	DeleteStatusDeleted DeleteStatus = 1 // 已删除状态
 )
 
 func (s DeleteStatus) String() string {

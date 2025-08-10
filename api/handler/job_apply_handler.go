@@ -3,7 +3,6 @@ package handler
 import (
 	"net/http"
 	"strconv"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"org.thinkinai.com/recruit-center/api/dto/request"
@@ -29,22 +28,24 @@ func NewJobApplyHandler(service *service.JobApplyService, jobService *service.Jo
 //	@Accept			json
 //	@Produce		json
 //	@Param			Authorization	header		string						true	"Bearer 用户令牌"
-//	@Param			apply			body		request.JobApply	true	"申请信息"
-//	@Success		0000			{object}	response.Response{data=model.JobApply}
+//	@Param			apply			body		request.JobApplyRequest	true	"申请信息"
+//	@Success		0000			{object}	response.Response{data=response.JobApplyResponse}
 //	@Failure		2000			{object}	response.Response{}
 //	@Router			/api/v1/applies [post]
 func (h *JobApplyHandler) Create(c *gin.Context) {
-	var req request.JobApply
+	var req request.JobApplyRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusOK, errors.BadRequest)
 		return
 	}
-
 	userID := c.GetUint("userId")
 	req.UserID = userID
-	req.ApplyTime = time.Now()
-	apply := req.ToModel()
-
+	// 校验请求参数
+	if !req.Validate() {
+		c.JSON(http.StatusOK, errors.InvalidParams)
+		return
+	}
+	apply := req.NewJobApply()
 	if err := h.jobApplyService.Create(apply); err != nil {
 		c.JSON(http.StatusOK, errors.Wrap(err, errors.InternalServerError))
 		return
@@ -88,7 +89,7 @@ func (h *JobApplyHandler) Delete(c *gin.Context) {
 //	@Produce		json
 //	@Param			Authorization	header		string						true	"Bearer 用户令牌"
 //	@Param			id		path		int	true	"申请ID"
-//	@Success		0000	{object}	response.Response{data=model.JobApply}
+//	@Success		0000	{object}	response.Response{data=response.JobApplyResponse}
 //	@Failure		2000	{object}	response.Response{}
 //	@Router			/api/v1/applies/{id} [get]
 func (h *JobApplyHandler) GetByID(c *gin.Context) {
@@ -121,6 +122,10 @@ func (h *JobApplyHandler) GetByID(c *gin.Context) {
 //	@Param			userId			path	int		true	"用户ID"
 //	@Param			page			query	integer	false	"页码 (默认值: 1)"		minimum(1)	default(1)
 //	@Param			size			query	integer	false	"每页数量 (默认值: 10)"	minimum(1)	maximum(100)	default(10)
+//	@Success		0000			{object}	response.PageResponse{data=[]response.JobApplyResponse}	"成功"
+//	@Failure		2000			{object}	response.Response{}
+//	@Router			/api/v1/users/{userId}/applies [get]
+
 func (h *JobApplyHandler) ListByUser(c *gin.Context) {
 	userID, _ := strconv.Atoi(c.Param("userId"))
 	page, size := parsePageSize(c)
@@ -148,10 +153,12 @@ func (h *JobApplyHandler) ListByUser(c *gin.Context) {
 //	@Param			companyId		path	int		true	"公司ID"
 //	@Param			page			query	integer	false	"页码 (默认值: 1)"		minimum(1)	default(1)
 //	@Param			size			query	integer	false	"每页数量 (默认值: 10)"	minimum(1)	maximum(100)	default(10)
+//	@Success		0000			{object}	response.PageResponse{data=[]response.JobApplyResponse}	"成功"
+//	@Failure		2000			{object}	response.Response{}
+//	@Router			/api/v1/companies/{companyId}/applies [get]
 func (h *JobApplyHandler) ListByCompany(c *gin.Context) {
 	companyID, _ := strconv.Atoi(c.Param("companyId"))
 	page, size := parsePageSize(c)
-
 	applies, err := h.jobApplyService.ListByCompanyID(uint(companyID), page, size)
 	if err != nil {
 		c.JSON(http.StatusOK, errors.Wrap(err, errors.InternalServerError))
@@ -171,7 +178,7 @@ func (h *JobApplyHandler) ListByCompany(c *gin.Context) {
 //	@Param			Authorization	header		string						true	"Bearer 用户令牌"
 //	@Param			page			query		integer											false	"页码 (默认值: 1)"		minimum(1)	default(1)
 //	@Param			size			query		integer											false	"每页数量 (默认值: 10)"	minimum(1)	maximum(100)	default(10)
-//	@Success		0000			{object}	response.PageResponse{data=[]model.JobApply}	"成功"
+//	@Success		0000			{object}	response.PageResponse{data=[]response.JobApplyResponse}	"成功"
 //	@Failure		2000			{object}	response.Response{}								"错误"
 //	@Router			/api/v1/applies [get]
 func (h *JobApplyHandler) List(c *gin.Context) {
@@ -186,7 +193,19 @@ func (h *JobApplyHandler) List(c *gin.Context) {
 	c.JSON(http.StatusOK, response.NewSuccess(response.NewPage(applies, applies.Total, page, size)))
 }
 
-// 更新职位申请状态
+// UpdateStatus 更新职位申请状态
+//
+//	@Summary		更新职位申请状态
+//	@Description	更新指定职位申请的
+//	@Tags			职位申请
+//	@Accept			json
+//	@Produce		json
+//	@Param			Authorization	header		string						true	"Bearer 用户令牌"
+//	@Param			id		path		int	true	"申请ID"
+//	@Param			status	body		string	true	"申请状态"
+//	@Success		0000	{object}	response.Response{data=string}
+//	@Failure		2000	{object}	response.Response{}
+//	@Router			/api/v1/applies/{id}/status [put]
 func (h *JobApplyHandler) UpdateStatus(c *gin.Context) {
 	var req request.JobApplyUpdateStatus
 	if err := c.ShouldBindJSON(&req); err != nil {

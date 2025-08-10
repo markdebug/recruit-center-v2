@@ -93,12 +93,12 @@ func (d *JobApplyDAO) ListByCompany(companyID uint, page, size int) ([]model.Job
 	var applies []model.JobApply
 	var total int64
 
-	if err := d.db.Model(&model.JobApply{}).Where("company_id = ?", companyID).Count(&total).Error; err != nil {
+	if err := d.db.Model(&model.JobApply{}).Where("company_id = ? and status=0", companyID).Count(&total).Error; err != nil {
 		return nil, 0, err
 	}
 
 	offset := (page - 1) * size
-	if err := d.db.Where("company_id = ?", companyID).
+	if err := d.db.Where("company_id = ? and status=0", companyID).
 		Offset(offset).
 		Limit(size).
 		Order("apply_time DESC").
@@ -114,12 +114,12 @@ func (d *JobApplyDAO) ListByJob(jobID uint, page, size int) ([]model.JobApply, i
 	var applies []model.JobApply
 	var total int64
 
-	if err := d.db.Model(&model.JobApply{}).Where("job_id = ?", jobID).Count(&total).Error; err != nil {
+	if err := d.db.Model(&model.JobApply{}).Where("job_id = ? and status=0", jobID).Count(&total).Error; err != nil {
 		return nil, 0, err
 	}
 
 	offset := (page - 1) * size
-	if err := d.db.Where("job_id = ?", jobID).
+	if err := d.db.Where("job_id = ? and status=0", jobID).
 		Offset(offset).
 		Limit(size).
 		Order("apply_time DESC").

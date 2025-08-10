@@ -6,6 +6,7 @@ import "time"
 type JobApply struct {
 	ID            uint      `gorm:"primarykey" json:"id"`
 	JobID         uint      `gorm:"not null;index" json:"jobId"`
+	CompanyID     uint      `gorm:"not null;index" json:"companyId"` // 企业ID
 	UserID        uint      `gorm:"not null;index" json:"userId"`
 	ResumeID      uint      `gorm:"not null;index" json:"resumeId"`
 	ApplyTime     time.Time `gorm:"not null" json:"applyTime"`

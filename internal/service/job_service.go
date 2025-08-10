@@ -15,13 +15,17 @@ import (
 
 // JobService 职位服务
 type JobService struct {
-	jobDao *dao.JobDAO
+	jobDao      *dao.JobDAO
+	favoriteDAO *dao.JobFavoriteDAO
+	jobApplyDAO *dao.JobApplyDAO
 }
 
 // NewJobService 创建职位服务实例
-func NewJobService(jobDao *dao.JobDAO) *JobService {
+func NewJobService(jobDao *dao.JobDAO, favoriteDAO *dao.JobFavoriteDAO, jobApplyDAO *dao.JobApplyDAO) *JobService {
 	return &JobService{
-		jobDao: jobDao,
+		jobDao:      jobDao,
+		favoriteDAO: favoriteDAO,
+		jobApplyDAO: jobApplyDAO,
 	}
 }
 
@@ -125,11 +129,12 @@ func (s *JobService) UpdateStatus(id uint, status int, companyID uint) error {
 }
 
 // ConvertToJobResponse 将 model.Job 转换为 response.JobResponse
-func (s *JobService) ConvertToJobResponse(job *model.Job) *response.JobResponse {
+func (s *JobService) ConvertToJobResponse(job *model.Job, userID uint) *response.JobResponse {
 	if job == nil {
 		return nil
 	}
-	return &response.JobResponse{
+
+	resp := &response.JobResponse{
 		ID:            job.ID,
 		Name:          job.Name,
 		CompanyID:     job.CompanyID,
@@ -151,21 +156,34 @@ func (s *JobService) ConvertToJobResponse(job *model.Job) *response.JobResponse 
 		Priority:      job.Priority,
 		Tags:          job.Tags,
 	}
+
+	// 如果提供了用户ID，查询用户状态
+	if userID > 0 {
+		// 查询收藏状态
+		isFavorited, _ := s.favoriteDAO.IsFavorited(userID, job.ID)
+		resp.IsFavorited = isFavorited
+
+		// 查询投递状态
+		hasApplied, _ := s.jobApplyDAO.GetByUserAndJob(userID, job.ID)
+		resp.IsApplied = hasApplied != nil
+	}
+
+	return resp
 }
 
 // GetByID 获取职位详情
-func (s *JobService) GetByID(id uint) (*response.JobResponse, error) {
+func (s *JobService) GetByID(id uint, userID uint) (*response.JobResponse, error) {
 	// 从数据库获取
 	job, err := s.jobDao.GetByID(id)
 	if err != nil {
 		return nil, errors.Wrap(err, errors.JobNotFound)
 	}
 
-	return s.ConvertToJobResponse(job), nil
+	return s.ConvertToJobResponse(job, userID), nil
 }
 
 // List 获取职位列表
-func (s *JobService) List(page, size int) (*response.JobListResponse, error) {
+func (s *JobService) List(page, size int, userID uint) (*response.JobListResponse, error) {
 	jobs, total, err := s.jobDao.List(page, size)
 	if err != nil {
 		return nil, err
@@ -177,7 +195,7 @@ func (s *JobService) List(page, size int) (*response.JobListResponse, error) {
 	}
 
 	for i, job := range jobs {
-		resp.Records[i] = *s.ConvertToJobResponse(&job)
+		resp.Records[i] = *s.ConvertToJobResponse(&job, userID)
 	}
 
 	return resp, nil
@@ -196,7 +214,7 @@ func (s *JobService) SearchByKeyword(keyword string) (*response.JobListResponse,
 	}
 
 	for i, job := range jobs {
-		resp.Records[i] = *s.ConvertToJobResponse(&job)
+		resp.Records[i] = *s.ConvertToJobResponse(&job, 0)
 	}
 
 	return resp, nil
@@ -215,7 +233,7 @@ func (s *JobService) SearchByCondition(conditions map[string]interface{}, page, 
 	}
 
 	for i, job := range jobs {
-		resp.Records[i] = *s.ConvertToJobResponse(&job)
+		resp.Records[i] = *s.ConvertToJobResponse(&job, 0)
 	}
 
 	return resp, nil
@@ -234,7 +252,7 @@ func (s *JobService) GetExpiredJobs() (*response.JobListResponse, error) {
 	}
 
 	for i, job := range jobs {
-		resp.Records[i] = *s.ConvertToJobResponse(&job)
+		resp.Records[i] = *s.ConvertToJobResponse(&job, 0)
 	}
 
 	return resp, nil
@@ -253,7 +271,7 @@ func (s *JobService) SearchByCompany(companyID uint, page, size int) (*response.
 	}
 
 	for i, job := range jobs {
-		resp.Records[i] = *s.ConvertToJobResponse(&job)
+		resp.Records[i] = *s.ConvertToJobResponse(&job, 0)
 	}
 
 	return resp, nil

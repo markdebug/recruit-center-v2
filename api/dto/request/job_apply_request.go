@@ -7,17 +7,11 @@ import (
 	"org.thinkinai.com/recruit-center/pkg/enums"
 )
 
-// JobApply 职位申请实体
-type JobApply struct {
-	ID            uint               `json:"id"`
-	JobID         uint               `json:"jobId"`         // 改为 jobId
-	UserID        uint               `json:"userId"`        // 改为 userId
-	ApplyTime     time.Time          `json:"applyTime"`     // 改为 applyTime
-	ApplyProgress string             `json:"applyProgress"` // 改为 applyProgress
-	Reason        string             `json:"reason"`        //拒绝原因
-	Status        enums.JobApplyEnum `json:"status"`
-	CreateTime    time.Time          `json:"createTime"` // 改为 createTime
-	UpdateTime    time.Time          `json:"updateTime"` // 改为 updateTime
+// JobApplyRequest 职位申请请求
+type JobApplyRequest struct {
+	JobID    uint `json:"jobId" binding:"required"`
+	UserID   uint `json:"userId" binding:"required"`
+	ResumeID uint `json:"resumeId" binding:"required"`
 }
 
 type JobApplyUpdateStatus struct {
@@ -28,12 +22,13 @@ type JobApplyUpdateStatus struct {
 }
 
 // NewJobApply 创建新的职位申请
-func NewJobApply(jobID, userID uint) *JobApply {
-	return &JobApply{
-		JobID:         jobID,
-		UserID:        userID,
+func (ja *JobApplyRequest) NewJobApply() *model.JobApply {
+	return &model.JobApply{
+		JobID:         ja.JobID,
+		ResumeID:      ja.ResumeID,
+		UserID:        ja.UserID,
 		ApplyTime:     time.Now(),
-		Status:        enums.JobApplyPending,
+		Status:        int(enums.DeleteStatusNormal),
 		ApplyProgress: enums.JobApplyPending.String(),
 		CreateTime:    time.Now(),
 		UpdateTime:    time.Now(),
@@ -41,7 +36,7 @@ func NewJobApply(jobID, userID uint) *JobApply {
 }
 
 // canTransitionTo 检查是否可以转换到目标状态
-func (ja *JobApply) canTransitionTo(targetStatus enums.JobApplyEnum) bool {
+func (ja *JobApplyUpdateStatus) canTransitionTo(targetStatus enums.JobApplyEnum) bool {
 	// 定义状态转换规则
 	transitions := map[enums.JobApplyEnum][]enums.JobApplyEnum{
 		enums.JobApplyPending: {
@@ -69,16 +64,10 @@ func (ja *JobApply) canTransitionTo(targetStatus enums.JobApplyEnum) bool {
 	return false
 }
 
-// ToModel 将 DTO 转换为数据模型
-func (ja *JobApply) ToModel() *model.JobApply {
-	return &model.JobApply{
-		ID:            ja.ID,
-		JobID:         ja.JobID,
-		UserID:        ja.UserID,
-		ApplyTime:     ja.ApplyTime,
-		ApplyProgress: ja.ApplyProgress,
-		Status:        int(ja.Status),
-		CreateTime:    ja.CreateTime,
-		UpdateTime:    ja.UpdateTime,
+// 校验创建参数是否正确
+func (ja *JobApplyRequest) Validate() bool {
+	if ja.JobID == 0 || ja.UserID == 0 || ja.ResumeID == 0 {
+		return false
 	}
+	return true
 }

@@ -48,7 +48,7 @@ func (h *JobHandler) Create(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, response.NewSuccess(h.jobService.ConvertToJobResponse(job)))
+	c.JSON(http.StatusOK, response.NewSuccess(h.jobService.ConvertToJobResponse(job, 0)))
 }
 
 // Update 更新职位
@@ -156,7 +156,8 @@ func (h *JobHandler) Delete(c *gin.Context) {
 //	@Router			/api/v1/jobs/{id} [get]
 func (h *JobHandler) GetByID(c *gin.Context) {
 	id, _ := strconv.ParseUint(c.Param("id"), 10, 32)
-	job, err := h.jobService.GetByID(uint(id))
+	userID := c.GetUint("userId")
+	job, err := h.jobService.GetByID(uint(id), userID)
 	if err != nil {
 		c.JSON(http.StatusOK, errors.Wrap(err, errors.InternalServerError))
 		return
@@ -179,8 +180,8 @@ func (h *JobHandler) GetByID(c *gin.Context) {
 func (h *JobHandler) List(c *gin.Context) {
 	page, _ := strconv.Atoi(c.Query("page"))
 	size, _ := strconv.Atoi(c.Query("size"))
-
-	result, err := h.jobService.List(page, size)
+	UserID := c.GetUint("userId")
+	result, err := h.jobService.List(page, size, UserID)
 	if err != nil {
 		c.JSON(http.StatusOK, errors.Wrap(err, errors.InternalServerError))
 		return
