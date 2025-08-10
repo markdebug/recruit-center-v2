@@ -6,12 +6,10 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"go.uber.org/zap"
 	"org.thinkinai.com/recruit-center/api/dto/request"
 	"org.thinkinai.com/recruit-center/api/dto/response"
 	"org.thinkinai.com/recruit-center/internal/service"
 	"org.thinkinai.com/recruit-center/pkg/errors"
-	"org.thinkinai.com/recruit-center/pkg/logger"
 )
 
 type JobApplyHandler struct {
@@ -73,8 +71,8 @@ func (h *JobApplyHandler) Delete(c *gin.Context) {
 		c.JSON(http.StatusOK, errors.BadRequest)
 		return
 	}
-
-	if err := h.jobApplyService.Delete(uint(id)); err != nil {
+	userID := c.GetUint("userId")
+	if err := h.jobApplyService.Delete(uint(id), userID); err != nil {
 		c.JSON(http.StatusOK, errors.Wrap(err, errors.InternalServerError))
 		return
 	}
@@ -195,24 +193,8 @@ func (h *JobApplyHandler) UpdateStatus(c *gin.Context) {
 		c.JSON(http.StatusOK, errors.BadRequest)
 		return
 	}
-	//通过jobID查询job详情
-	job, err := h.jobService.GetByID(req.JobID)
-	if err != nil {
-		logger.L.Error("查询职位信息失败",
-			zap.Error(err),
-			zap.Uint("jobId", req.JobID))
-		c.JSON(http.StatusOK, errors.Wrap(err, errors.JobNotFound))
-		return
-	}
-	//判断职位是否是当前公司的职位
-	if job.CompanyID != c.GetUint("companyId") {
-		logger.L.Warn("职位不属于当前公司",
-			zap.Uint("jobId", req.JobID),
-			zap.Uint("companyId", c.GetUint("companyId")))
-		c.JSON(http.StatusOK, errors.Forbidden)
-	}
-
-	if err := h.jobApplyService.UpdateStatus(req.JobID, req.Status); err != nil {
+	companyID := c.GetUint("companyId")
+	if err := h.jobApplyService.UpdateStatus(req.JobID, companyID, req.Status); err != nil {
 		c.JSON(http.StatusOK, errors.Wrap(err, errors.InternalServerError))
 		return
 	}

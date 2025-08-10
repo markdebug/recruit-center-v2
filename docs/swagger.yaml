@@ -188,61 +188,6 @@ definitions:
       updatedAt:
         type: string
     type: object
-  model.Job:
-    properties:
-      applyCount:
-        description: 申请次数
-        type: integer
-      companyId:
-        type: integer
-      createTime:
-        type: string
-      deleteStatus:
-        type: integer
-      id:
-        type: integer
-      jobBenefit:
-        type: string
-      jobCategory:
-        type: string
-      jobContact:
-        type: string
-      jobDescribe:
-        type: string
-      jobEducation:
-        type: string
-      jobExperience:
-        type: string
-      jobExpireTime:
-        type: string
-      jobLocation:
-        type: string
-      jobSalary:
-        type: string
-      jobSkill:
-        type: string
-      jobSource:
-        type: string
-      jobType:
-        type: integer
-      name:
-        type: string
-      priority:
-        description: 优先级
-        type: integer
-      status:
-        type: integer
-      tags:
-        description: 职位标签
-        items:
-          type: string
-        type: array
-      updateTime:
-        type: string
-      viewCount:
-        description: 添加新的字段和方法
-        type: integer
-    type: object
   model.JobApply:
     properties:
       applyProgress:
@@ -1109,7 +1054,7 @@ paths:
             - $ref: '#/definitions/response.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/model.Job'
+                  $ref: '#/definitions/response.JobResponse'
               type: object
         "2000":
           description: ""
@@ -1170,7 +1115,7 @@ paths:
             - $ref: '#/definitions/response.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/model.Job'
+                  $ref: '#/definitions/response.JobResponse'
               type: object
         "2000":
           description: ""
@@ -1210,7 +1155,7 @@ paths:
             - $ref: '#/definitions/response.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/model.Job'
+                  $ref: '#/definitions/response.JobResponse'
               type: object
         "2000":
           description: 请求参数错误

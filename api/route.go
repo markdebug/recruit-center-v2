@@ -68,6 +68,10 @@ func setupJobRoutes(jobs *gin.RouterGroup, handler *handler.JobHandler, jobStats
 	// 职位统计相关路由
 	jobs.GET("/jobs/:jobId/statistics", jobStatsHandler.GetJobStats)
 	jobs.GET("/companies/:companyId/statistics", jobStatsHandler.GetCompanyStats)
+	// 更新职位状态
+	jobs.PUT("/:id/status", middleware.AuthRequired(), handler.UpdateStatus)
+	// 根据公司搜索职位信息
+	jobs.GET("/companies/:companyId/search", handler.SearchByCompany) // 假设有搜索功能
 	// jobs.GET("/search", handler.Search)
 }
 

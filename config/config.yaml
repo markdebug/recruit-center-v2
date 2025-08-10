@@ -5,7 +5,7 @@ port: 8080
 
 # 数据库配置
 db:
-  host: "192.168.10.153"
+  host: "192.168.2.185"
   port: 5432
   username: "pgtest"
   password: "123456"

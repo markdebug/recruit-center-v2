@@ -37,6 +37,8 @@ const (
 	JobDeleteNotAllowed           ErrorCode = 2007 // 职位删除不允许
 	JobApplicationNotFound        ErrorCode = 2008 // 职位申请不存在
 	JobApplicationAlreadyReviewed ErrorCode = 2009 // 职位申请已被审核
+	JobNotBelongToCompany         ErrorCode = 2010 // 职位不属于该公司
+	InvalidJobStatus              ErrorCode = 2011 // 无效的职位状态
 
 	// 公司模块 (3001-3999)
 	CompanyNotFound ErrorCode = 3001 // 公司不存在

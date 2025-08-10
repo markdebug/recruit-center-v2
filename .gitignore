@@ -34,3 +34,6 @@ go/pkg/mod/cache/
 
 # Temporary files
 *~
+
+# Logs
+*.log

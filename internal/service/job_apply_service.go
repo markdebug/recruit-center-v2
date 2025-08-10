@@ -127,8 +127,111 @@ func (s *JobApplyService) ListByJob(jobID uint, page, size int) (*response.JobAp
 	return resp, nil
 }
 
+// VerifyApplyOwner 验证申请是否属于指定用户
+func (s *JobApplyService) VerifyApplyOwner(applyID, userID uint) error {
+	apply, err := s.jobApplyDAO.GetByID(applyID)
+	if err != nil {
+		return errors.Wrap(err, errors.NotFound)
+	}
+	if apply.UserID != userID {
+		logger.L.Warn("非法操作：用户尝试操作非本人的申请记录",
+			zap.Uint("applyID", applyID),
+			zap.Uint("userID", userID),
+			zap.Uint("ownerID", apply.UserID))
+		return errors.New(errors.Forbidden)
+	}
+	return nil
+}
+
+// Delete 删除职位申请
+func (s *JobApplyService) Delete(id, userID uint) error {
+	// 验证操作权限
+	if err := s.VerifyApplyOwner(id, userID); err != nil {
+		return err
+	}
+
+	if err := s.jobApplyDAO.Delete(id); err != nil {
+		logger.L.Error("删除职位申请失败",
+			zap.Error(err),
+			zap.Uint("id", id))
+		return errors.Wrap(err, errors.InternalServerError)
+	}
+	return nil
+}
+
+// getStatusNotification 获取状态变更的通知内容
+func (s *JobApplyService) getStatusNotification(apply *model.JobApply, status enums.JobApplyEnum) (userNotify, companyNotify *model.Notification) {
+	job, _ := s.jobService.GetByID(apply.JobID)
+	jobName := "该职位"
+	if job != nil {
+		jobName = job.Name
+	}
+
+	// 根据不同状态生成不同的通知内容
+	switch status {
+	case enums.JobApplyWaitInterview:
+		userNotify = &model.Notification{
+			UserID:  apply.UserID,
+			Title:   "面试通知",
+			Content: fmt.Sprintf("您申请的 %s 已通过初筛，请等待面试安排", jobName),
+			Type:    model.NotificationTypeInterview,
+		}
+		companyNotify = &model.Notification{
+			UserID:  job.CompanyID,
+			Title:   "候选人状态更新",
+			Content: fmt.Sprintf("职位 %s 的候选人已进入面试环节，请及时安排面试", jobName),
+			Type:    model.NotificationTypeStatusUpdate,
+		}
+
+	case enums.JobApplyInterviewPass:
+		userNotify = &model.Notification{
+			UserID:  apply.UserID,
+			Title:   "面试结果通知",
+			Content: fmt.Sprintf("恭喜！您在 %s 的面试已通过", jobName),
+			Type:    model.NotificationTypeStatusUpdate,
+		}
+		companyNotify = &model.Notification{
+			UserID:  job.CompanyID,
+			Title:   "面试结果提醒",
+			Content: fmt.Sprintf("职位 %s 的候选人面试已通过，请及时处理后续流程", jobName),
+			Type:    model.NotificationTypeStatusUpdate,
+		}
+
+	case enums.JobApplyInterviewFail:
+		userNotify = &model.Notification{
+			UserID:  apply.UserID,
+			Title:   "面试结果通知",
+			Content: fmt.Sprintf("很遗憾，您在 %s 的面试未通过，欢迎继续投递其他职位", jobName),
+			Type:    model.NotificationTypeStatusUpdate,
+		}
+
+	case enums.JobApplyOfferSent:
+		userNotify = &model.Notification{
+			UserID:  apply.UserID,
+			Title:   "Offer通知",
+			Content: fmt.Sprintf("恭喜！%s 向您发出了录用意向，请查看并确认", jobName),
+			Type:    model.NotificationTypeStatusUpdate,
+		}
+
+	default:
+		userNotify = &model.Notification{
+			UserID:  apply.UserID,
+			Title:   "申请状态更新",
+			Content: fmt.Sprintf("您的职位申请状态已更新为：%s", status.String()),
+			Type:    model.NotificationTypeStatusUpdate,
+		}
+	}
+
+	return userNotify, companyNotify
+}
+
 // UpdateStatus 更新申请状态
-func (s *JobApplyService) UpdateStatus(id uint, status enums.JobApplyEnum) error {
+func (s *JobApplyService) UpdateStatus(id uint, userID uint, status enums.JobApplyEnum) error {
+	// 验证操作权限
+	if err := s.VerifyApplyOwner(id, userID); err != nil {
+		return err
+	}
+
 	// 1. 验证状态是否有效
 	if !status.IsValid() {
 		return fmt.Errorf("无效的状态值")
@@ -154,16 +257,21 @@ func (s *JobApplyService) UpdateStatus(id uint, status enums.JobApplyEnum) error
 		return err
 	}
 
-	// 发送通知
-	notification := &model.Notification{
-		UserID:  apply.UserID,
-		Title:   "申请状态更新",
-		Content: fmt.Sprintf("您的职位申请状态已更新为：%s", enums.JobApplyEnum(status).String()),
-		Type:    model.NotificationTypeStatusUpdate,
+	// 5. 发送通知
+	userNotify, companyNotify := s.getStatusNotification(apply, status)
+
+	// 发送给求职者的通知
+	if userNotify != nil {
+		if err := s.notificationService.Create(userNotify); err != nil {
+			logger.L.Error("发送求职者通知失败", zap.Error(err))
+		}
 	}
 
-	if err := s.notificationService.Create(notification); err != nil {
-		logger.L.Error("发送通知失败", zap.Error(err))
+	// 发送给公司的通知
+	if companyNotify != nil {
+		if err := s.notificationService.Create(companyNotify); err != nil {
+			logger.L.Error("发送公司通知失败", zap.Error(err))
+		}
 	}
 
 	return nil
@@ -193,17 +301,6 @@ func (s *JobApplyService) isValidStatusTransition(from, to int) bool {
 		}
 	}
 	return false
-}
-
-// Delete 删除职位申请
-func (s *JobApplyService) Delete(id uint) error {
-	if err := s.jobApplyDAO.Delete(id); err != nil {
-		logger.L.Error("删除职位申请失败",
-			zap.Error(err),
-			zap.Uint("id", id))
-		return errors.Wrap(err, errors.InternalServerError)
-	}
-	return nil
 }
 
 // List 获取职位申请列表

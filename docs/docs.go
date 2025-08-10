@@ -477,7 +477,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/model.Job"
+                                            "$ref": "#/definitions/response.JobResponse"
                                         }
                                     }
                                 }
@@ -686,7 +686,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/model.Job"
+                                            "$ref": "#/definitions/response.JobResponse"
                                         }
                                     }
                                 }
@@ -755,7 +755,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/model.Job"
+                                            "$ref": "#/definitions/response.JobResponse"
                                         }
                                     }
                                 }
@@ -1807,87 +1807,6 @@ const docTemplate = `{
                 },
                 "updatedAt": {
                     "type": "string"
-                }
-            }
-        },
-        "model.Job": {
-            "type": "object",
-            "properties": {
-                "applyCount": {
-                    "description": "申请次数",
-                    "type": "integer"
-                },
-                "companyId": {
-                    "type": "integer"
-                },
-                "createTime": {
-                    "type": "string"
-                },
-                "deleteStatus": {
-                    "type": "integer"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "jobBenefit": {
-                    "type": "string"
-                },
-                "jobCategory": {
-                    "type": "string"
-                },
-                "jobContact": {
-                    "type": "string"
-                },
-                "jobDescribe": {
-                    "type": "string"
-                },
-                "jobEducation": {
-                    "type": "string"
-                },
-                "jobExperience": {
-                    "type": "string"
-                },
-                "jobExpireTime": {
-                    "type": "string"
-                },
-                "jobLocation": {
-                    "type": "string"
-                },
-                "jobSalary": {
-                    "type": "string"
-                },
-                "jobSkill": {
-                    "type": "string"
-                },
-                "jobSource": {
-                    "type": "string"
-                },
-                "jobType": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "priority": {
-                    "description": "优先级",
-                    "type": "integer"
-                },
-                "status": {
-                    "type": "integer"
-                },
-                "tags": {
-                    "description": "职位标签",
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "updateTime": {
-                    "type": "string"
-                },
-                "viewCount": {
-                    "description": "添加新的字段和方法",
-                    "type": "integer"
                 }
             }
         },

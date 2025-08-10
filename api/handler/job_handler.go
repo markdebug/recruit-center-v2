@@ -29,7 +29,7 @@ func NewJobHandler(jobService *service.JobService) *JobHandler {
 //	@Security		Bearer
 //	@Param			Authorization	header		string						true	"Bearer JWT"
 //	@Param			request			body		request.CreateJobRequest	true	"职位创建请求参数"
-//	@Success		0000			{object}	response.Response{data=model.Job}
+//	@Success		0000			{object}	response.Response{data=response.JobResponse}
 //	@Failure		2000			{object}	response.Response{}
 //	@Router			/api/v1/jobs [post]
 func (h *JobHandler) Create(c *gin.Context) {
@@ -62,7 +62,7 @@ func (h *JobHandler) Create(c *gin.Context) {
 //	@Param			Authorization	header		string								true	"Bearer JWT"
 //	@Param			id				path		integer								true	"职位ID"
 //	@Param			request			body		request.UpdateJobRequest			true	"职位更新请求参数"
-//	@Success		0000			{object}	response.Response{data=model.Job}	"成功"
+//	@Success		0000			{object}	response.Response{data=response.JobResponse}	"成功"
 //	@Failure		2000			{object}	response.Response{}					"请求参数错误"
 //	@Router			/api/v1/jobs/{id} [put]
 func (h *JobHandler) Update(c *gin.Context) {
@@ -73,12 +73,51 @@ func (h *JobHandler) Update(c *gin.Context) {
 	}
 
 	job := req.ToModel()
+	companyID := c.GetUint("companyId")
+	job.CompanyID = companyID
 	if err := h.jobService.Update(job); err != nil {
 		c.JSON(http.StatusOK, errors.Wrap(err, errors.InternalServerError))
 		return
 	}
 
 	c.JSON(http.StatusOK, response.NewSuccess(job))
+}
+
+// 更新职位状态
+// UpdateStatus 更新职位状态
+//
+//	@Summary		更新职位状态
+//	@Description	更新指定ID的职位状态
+//	@Tags			职位
+//	@Accept			json
+//	@Produce		json
+//	@Security		Bearer
+//	@Param			Authorization	header		string								true	"Bearer JWT"
+//	@Param			id				path		integer								true	"职位ID"
+//	@Param			status			query		integer								true	"职位状态"
+//	@Success		0000			{object}	response.Response{data=response.JobResponse}	"成功"
+//	@Failure		2000			{object}	response.Response{}					"请求参数错误"
+//	@Router			/api/v1/jobs/{id}/status [put]
+func (h *JobHandler) UpdateStatus(c *gin.Context) {
+	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
+	if err != nil {
+		c.JSON(http.StatusOK, errors.BadRequest)
+		return
+	}
+
+	status, err := strconv.Atoi(c.Query("status"))
+	if err != nil {
+		c.JSON(http.StatusOK, errors.BadRequest)
+		return
+	}
+
+	companyID := c.GetUint("companyId")
+	if err := h.jobService.UpdateStatus(uint(id), status, companyID); err != nil {
+		c.JSON(http.StatusOK, errors.Wrap(err, errors.InternalServerError))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.NewSuccess(nil))
 }
 
 // Delete 删除职位
@@ -96,7 +135,8 @@ func (h *JobHandler) Update(c *gin.Context) {
 //	@Router			/api/v1/jobs/{id} [delete]
 func (h *JobHandler) Delete(c *gin.Context) {
 	id, _ := strconv.ParseUint(c.Param("id"), 10, 32)
-	if err := h.jobService.Delete(uint(id)); err != nil {
+	companyID := c.GetUint("companyId")
+	if err := h.jobService.Delete(uint(id), companyID); err != nil {
 		c.JSON(http.StatusOK, errors.Wrap(err, errors.InternalServerError))
 		return
 	}
@@ -111,7 +151,7 @@ func (h *JobHandler) Delete(c *gin.Context) {
 //	@Tags			职位
 //	@Produce		json
 //	@Param			id		path		int	true	"职位ID"
-//	@Success		0000	{object}	response.Response{data=model.Job}
+//	@Success		0000	{object}	response.Response{data=response.JobResponse}
 //	@Failure		2000	{object}	response.Response
 //	@Router			/api/v1/jobs/{id} [get]
 func (h *JobHandler) GetByID(c *gin.Context) {

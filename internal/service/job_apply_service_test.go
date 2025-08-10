@@ -45,7 +45,7 @@ func TestJobApplyService_UpdateStatus(t *testing.T) {
 
 	service := NewJobApplyService(mockDAO, mockJobService, mockNotificationService)
 
-	err := service.UpdateStatus(1, enums.JobApplyAccepted)
+	err := service.UpdateStatus(1, 1, enums.JobApplyAccepted)
 	if err != nil {
 		t.Errorf("UpdateStatus() error = %v", err)
 		return

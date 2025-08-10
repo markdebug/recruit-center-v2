@@ -3,6 +3,7 @@ package model
 import (
 	"time"
 
+	"gorm.io/gorm"
 	"org.thinkinai.com/recruit-center/pkg/utils"
 )
 
@@ -122,7 +123,7 @@ func (ResumeAttachment) TableName() string {
 }
 
 // BeforeSave 保存前加密敏感信息
-func (r *Resume) BeforeSave() error {
+func (r *Resume) BeforeSave(tx *gorm.DB) error {
 	var err error
 	if r.Phone != "" {
 		r.Phone, err = utils.Encrypt(r.Phone)
@@ -146,7 +147,7 @@ func (r *Resume) BeforeSave() error {
 }
 
 // AfterFind 查询后解密敏感信息
-func (r *Resume) AfterFind() error {
+func (r *Resume) AfterFind(*gorm.DB) error {
 	var err error
 	if r.Phone != "" {
 		r.Phone, err = utils.Decrypt(r.Phone)

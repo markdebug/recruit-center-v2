@@ -11,7 +11,7 @@ import (
 
 // SetupTestDB 创建测试数据库连接
 func SetupTestDB(t *testing.T) *gorm.DB {
-	dsn := "host=192.168.10.153 user=pgtest password=123456 dbname=testdb port=5432 sslmode=disable"
+	dsn := "host=192.168.2.185 user=pgtest password=123456 dbname=testdb port=5432 sslmode=disable"
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	assert.NoError(t, err)
 	err = db.AutoMigrate(
@@ -21,6 +21,11 @@ func SetupTestDB(t *testing.T) *gorm.DB {
 		&model.Project{},
 		&model.ResumeAttachment{},
 		&model.ResumeInteraction{},
+		&model.Job{},
+		&model.JobApply{},
+		&model.JobStatistics{},
+		&model.Notification{},
+		&model.NotificationTemplate{},
 	)
 	assert.NoError(t, err)
 	return db

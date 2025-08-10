@@ -69,23 +69,59 @@ func (s *JobService) Create(job *model.Job) error {
 	return nil
 }
 
-// Update 更新职位信息
-func (s *JobService) Update(job *model.Job) error {
-	// 检查职位是否存在
-	exist, err := s.jobDao.GetByID(job.ID)
+// VerifyCompanyOwner 验证职位是否属于指定公司
+func (s *JobService) VerifyCompanyOwner(jobID, companyID uint) error {
+	job, err := s.jobDao.GetByID(jobID)
 	if err != nil {
-		return err
-	}
-	if exist == nil {
-		return fmt.Errorf("职位不存在")
+		logger.L.Error("获取职位失败",
+			zap.Error(err),
+			zap.Uint("jobId", jobID))
+		return errors.Wrap(err, errors.JobNotFound)
 	}
 
+	if job.CompanyID != companyID {
+		logger.L.Warn("职位不属于该公司",
+			zap.Uint("jobId", jobID),
+			zap.Uint("companyId", companyID),
+			zap.Uint("ownerCompanyId", job.CompanyID))
+		return errors.New(errors.JobNotBelongToCompany)
+	}
+	return nil
+}
+
+// Update 更新职位信息
+func (s *JobService) Update(job *model.Job) error {
+	if err := s.VerifyCompanyOwner(job.ID, job.CompanyID); err != nil {
+		return err
+	}
 	return s.jobDao.Update(job)
 }
 
 // Delete 删除职位
-func (s *JobService) Delete(id uint) error {
+func (s *JobService) Delete(id uint, companyID uint) error {
+	if err := s.VerifyCompanyOwner(id, companyID); err != nil {
+		return err
+	}
 	return s.jobDao.Delete(id)
+}
+
+// UpdateStatus 更新职位状态
+func (s *JobService) UpdateStatus(id uint, status int, companyID uint) error {
+	logger.L.Info("更新职位状态",
+		zap.Uint("job_id", id),
+		zap.Int("status", status),
+		zap.Uint("company_id", companyID))
+
+	if err := s.VerifyCompanyOwner(id, companyID); err != nil {
+		return err
+	}
+
+	// 检查状态是否有效
+	if !enums.JobStatus(status).IsValid() {
+		return errors.New(errors.InvalidJobStatus)
+	}
+
+	return s.jobDao.UpdateStatus(id, status)
 }
 
 // ConvertToJobResponse 将 model.Job 转换为 response.JobResponse
@@ -183,16 +219,6 @@ func (s *JobService) SearchByCondition(conditions map[string]interface{}, page, 
 	}
 
 	return resp, nil
-}
-
-// UpdateStatus 更新职位状态
-func (s *JobService) UpdateStatus(id uint, status int) error {
-	// 检查状态是否有效
-	if !enums.JobStatus(status).IsValid() {
-		return fmt.Errorf("无效的职位状态")
-	}
-
-	return s.jobDao.UpdateStatus(id, status)
 }
 
 // GetExpiredJobs 获取已过期职位
