@@ -10,30 +10,30 @@ import (
 // JobResponse 职位响应对象
 // @Description 职位响应对象
 type JobResponse struct {
-	ID            uint                   `json:"id"`
-	Name          string                 `json:"name"`
-	CompanyID     uint                   `json:"companyId"`
-	JobSkill      string                 `json:"jobSkill"`
-	JobSalary     int                    `json:"jobSalary"`
-	JobSalaryMax  int                    `json:"jobSalaryMax"`
-	JobDescribe   string                 `json:"jobDescribe"`
-	JobLocation   string                 `json:"jobLocation"`
-	JobExpireTime time.Time              `json:"jobExpireTime"`
-	Status        int                    `json:"status" example:"1" enums:"0,1"`
+	ID            uint                   `json:"id"`                                                               // id
+	Name          string                 `json:"name"`                                                             // 职位名称
+	CompanyID     uint                   `json:"companyId"`                                                        // 公司ID
+	JobSkill      string                 `json:"jobSkill"`                                                         // 职位技能要求
+	JobSalary     int                    `json:"jobSalary"`                                                        // 职位薪资最低
+	JobSalaryMax  int                    `json:"jobSalaryMax"`                                                     // 职位薪资最高
+	JobDescribe   string                 `json:"jobDescribe"`                                                      // 职位描述
+	JobLocation   string                 `json:"jobLocation"`                                                      // 工作地点
+	JobExpireTime time.Time              `json:"jobExpireTime"`                                                    // 职位过期时间
+	Status        int                    `json:"status" example:"1" enums:"0,1"`                                   // 职位状态 0: 禁用 1: 正常
 	JobType       int                    `json:"jobType" example:"1" enums:"1,2,3"`                                // 职位类型 1 全职 2 兼职 3 实习
 	RemoteType    int                    `json:"remoteType" example:"1" enums:"1,2,3,4"`                           // 远程办公类型
 	RemoteDesc    string                 `json:"remoteDesc"`                                                       // 远程办公描述
 	RemoteRatio   int                    `json:"remoteRatio" example:"60" minimum:"0" maximum:"100"`               // 远程办公比例(0-100)
 	JobCategory   string                 `json:"jobCategory" example:"direct" enums:"internal,direct,headhunting"` // 职位分类 internal 内推 2 direct 直招 3 猎头
-	JobExperience string                 `json:"jobExperience"`
-	JobEducation  string                 `json:"jobEducation"`
-	JobBenefit    string                 `json:"jobBenefit"`
-	JobContact    string                 `json:"jobContact"`
-	JobSource     string                 `json:"jobSource"`                            // 职位来源
-	DeleteStatus  int                    `json:"deleteStatus" example:"0" enums:"0,1"` // 删除状态 0: 正常 1: 已删除
-	ViewCount     int                    `json:"viewCount"`
-	ApplyCount    int                    `json:"applyCount"`
-	Priority      int                    `json:"priority"`
+	JobExperience string                 `json:"jobExperience"`                                                    // 经验要求
+	JobEducation  string                 `json:"jobEducation"`                                                     // 学历要求
+	JobBenefit    string                 `json:"jobBenefit"`                                                       // 职位福利
+	JobContact    string                 `json:"jobContact"`                                                       // 联系方式
+	JobSource     string                 `json:"jobSource"`                                                        // 职位来源
+	DeleteStatus  int                    `json:"deleteStatus" example:"0" enums:"0,1"`                             // 删除状态 0: 正常 1: 已删除
+	ViewCount     int                    `json:"viewCount"`                                                        // 浏览次数
+	ApplyCount    int                    `json:"applyCount"`                                                       // 申请次数
+	Priority      int                    `json:"priority"`                                                         // 优先级
 	Tags          []string               `json:"tags"`
 	Benefits      []model.JobBenefitType `json:"benefits" `
 	BenefitDesc   string                 `json:"benefitDesc"`
@@ -46,8 +46,8 @@ type JobResponse struct {
 
 // JobListResponse 职位列表响应
 type JobListResponse struct {
-	Total   int64         `json:"total"`
-	Records []JobResponse `json:"records"`
+	Total   int64         `json:"total"`   // 总数
+	Records []JobResponse `json:"records"` // 公司信息
 }
 
 // 新增获取job是否激活的方法

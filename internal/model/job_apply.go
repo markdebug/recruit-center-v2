@@ -11,8 +11,8 @@ type JobApply struct {
 	ResumeID      uint      `gorm:"not null;index" json:"resumeId"`
 	ApplyTime     time.Time `gorm:"not null" json:"applyTime"`
 	ApplyProgress string    `gorm:"size:50" json:"applyProgress"`
-	Reason        string    `gorm:"size:255" json:"reason"` //拒绝原因
-	Status        int       `gorm:"default:1" json:"status"`
+	Reason        string    `gorm:"size:255" json:"reason"`  //拒绝原因
+	Status        int       `gorm:"default:1" json:"status"` // 状态 1: 正常 0: 删除
 	CreateTime    time.Time `gorm:"autoCreateTime" json:"createTime"`
 	UpdateTime    time.Time `gorm:"autoUpdateTime" json:"updateTime"`
 }

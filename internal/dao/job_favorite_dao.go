@@ -2,6 +2,7 @@ package dao
 
 import (
 	"gorm.io/gorm"
+	"org.thinkinai.com/recruit-center/api/dto/response"
 	"org.thinkinai.com/recruit-center/internal/model"
 )
 
@@ -43,4 +44,17 @@ func (dao *JobFavoriteDAO) ListByUser(userID uint, page, size int) ([]model.JobF
 		Find(&favorites).Error
 
 	return favorites, total, err
+}
+
+// GetUserFavoriteJobs 获取用户收藏的职位详情
+func (dao *JobFavoriteDAO) GetUserFavoriteJobs(userID uint) ([]response.FavoriteJobDetail, error) {
+	var jobs []response.FavoriteJobDetail
+
+	err := dao.db.Model(&model.JobFavorite{}).
+		Select("j.id as job_id, j.job_salary, j.job_salary_max as salary_max, j.update_time").
+		Joins("JOIN t_rc_job j ON j.id = job_id").
+		Where("user_id = ?", userID).
+		Scan(&jobs).Error
+
+	return jobs, err
 }

@@ -7,14 +7,14 @@ import (
 )
 
 type JobStatisticsResponse struct {
-	ID             uint      `json:"id"`
-	JobID          uint      `json:"jobId"`
-	CompanyID      uint      `json:"companyId"`
-	ViewCount      int64     `json:"viewCount"`
-	ApplyCount     int64     `json:"applyCount"`
-	ConversionRate float64   `json:"conversionRate"`
-	LastViewTime   time.Time `json:"lastViewTime"`
-	LastApplyTime  time.Time `json:"lastApplyTime"`
+	ID             uint      `json:"id"`             // 统计ID
+	JobID          uint      `json:"jobId"`          // 职位ID
+	CompanyID      uint      `json:"companyId"`      // 公司ID
+	ViewCount      int64     `json:"viewCount"`      // 浏览次数
+	ApplyCount     int64     `json:"applyCount"`     // 申请次数
+	ConversionRate float64   `json:"conversionRate"` // 转化率
+	LastViewTime   time.Time `json:"lastViewTime"`   // 最后浏览时间
+	LastApplyTime  time.Time `json:"lastApplyTime"`  // 最后申请时间
 }
 
 type JobStatisticsListResponse struct {

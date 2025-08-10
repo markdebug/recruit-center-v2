@@ -76,6 +76,10 @@ func setupJobRoutes(jobs *gin.RouterGroup, handler *handler.JobHandler, jobStats
 	// 收藏相关路由
 	jobs.POST("/:jobId/favorite", middleware.AuthRequired(), jobFavoriteHandler.AddFavorite)
 	jobs.DELETE("/:jobId/favorite", middleware.AuthRequired(), jobFavoriteHandler.RemoveFavorite)
+	//获取用户收藏的职位
+	jobs.GET("/favorites", middleware.AuthRequired(), jobFavoriteHandler.ListFavorites)
+	//获取用户收藏职位的统计信息
+	jobs.GET("/favorites/stats", middleware.AuthRequired(), jobFavoriteHandler.GetUserStatistics)
 }
 
 // setupApplyRoutes 配置申请相关路由

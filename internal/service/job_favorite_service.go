@@ -1,6 +1,8 @@
 package service
 
 import (
+	"time"
+
 	"org.thinkinai.com/recruit-center/api/dto/response"
 	"org.thinkinai.com/recruit-center/internal/dao"
 	"org.thinkinai.com/recruit-center/internal/model"
@@ -56,4 +58,39 @@ func (s *JobFavoriteService) ListFavorites(userID uint, page, size int) (*respon
 	}
 
 	return resp, nil
+}
+
+// GetUserStatistics 获取用户收藏统计
+func (s *JobFavoriteService) GetUserStatistics(userID uint) (*response.JobFavoriteStatistics, error) {
+	// 获取收藏职位的原始数据
+	jobs, err := s.favoriteDAO.GetUserFavoriteJobs(userID)
+	if err != nil {
+		return nil, err
+	}
+
+	stats := &response.JobFavoriteStatistics{
+		TotalFavorites: int64(len(jobs)),
+	}
+
+	if len(jobs) > 0 {
+		// 计算平均工资
+		var totalSalary float64
+		for _, job := range jobs {
+			avgJobSalary := float64(job.JobSalary+job.SalaryMax) / 2
+			totalSalary += avgJobSalary
+		}
+		stats.AverageSalary = totalSalary / float64(len(jobs))
+
+		// 统计近7天更新的职位数
+		sevenDaysAgo := time.Now().AddDate(0, 0, -7)
+		var activeCount int64
+		for _, job := range jobs {
+			if job.UpdateTime.After(sevenDaysAgo) {
+				activeCount++
+			}
+		}
+		stats.ActiveJobsCount = activeCount
+	}
+
+	return stats, nil
 }

@@ -85,3 +85,24 @@ func (h *JobFavoriteHandler) ListFavorites(c *gin.Context) {
 
 	c.JSON(http.StatusOK, response.NewSuccess(favorites))
 }
+
+// GetUserStatistics 获取用户收藏统计
+// @Summary 获取用户收藏统计
+// @Description 统计用户收藏的职位信息
+// @Tags 职位收藏
+// @Accept json
+// @Produce json
+// @Param Authorization header string true "Bearer 用户令牌"
+// @Success 200 {object} response.Response{data=response.JobFavoriteStatistics}
+// @Router /api/v1/users/favorites/statistics [get]
+func (h *JobFavoriteHandler) GetUserStatistics(c *gin.Context) {
+	userID := c.GetUint("userId")
+
+	stats, err := h.favoriteService.GetUserStatistics(userID)
+	if err != nil {
+		c.JSON(http.StatusOK, errors.Wrap(err, errors.InternalServerError))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.NewSuccess(stats))
+}

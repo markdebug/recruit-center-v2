@@ -8,13 +8,13 @@ import (
 
 // NotificationResponse 通知响应
 type NotificationResponse struct {
-	ID         uint      `json:"id"`
-	UserID     uint      `json:"userId"`
-	Title      string    `json:"title"`
-	Content    string    `json:"content"`
-	Type       int       `json:"type"`
-	IsRead     bool      `json:"isRead"`
-	CreateTime time.Time `json:"createTime"`
+	ID         uint      `json:"id"`         // 通知ID
+	UserID     uint      `json:"userId"`     // 用户ID
+	Title      string    `json:"title"`      // 通知标题
+	Content    string    `json:"content"`    // 通知内容
+	Type       int       `json:"type"`       // 通知类型
+	IsRead     bool      `json:"isRead"`     // 是否已读
+	CreateTime time.Time `json:"createTime"` // 创建时间
 }
 
 // NotificationListResponse 通知列表响应
