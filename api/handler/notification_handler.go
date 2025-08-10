@@ -20,16 +20,16 @@ func NewNotificationHandler(service *service.NotificationService) *NotificationH
 }
 
 // List 获取通知列表
-// @Summary 获取通知列表
-// @Description 分页获取当前用户的通知列表
-// @Tags 通知管理
-// @Accept json
-// @Produce json
-// @Param Authorization header string true "Bearer 用户令牌"
-// @Param page query int false "页码 (默认值: 1)" minimum(1) default(1)
-// @Param size query int false "每页数量 (默认值: 10)" minimum(1) maximum(100) default(10)
-// @Success 200 {object} response.Response{data=response.NotificationListResponse}
-// @Router /api/v1/notifications [get]
+//	@Summary		获取通知列表
+//	@Description	分页获取当前用户的通知列表
+//	@Tags			通知管理
+//	@Accept			json
+//	@Produce		json
+//	@Param			Authorization	header		string	true	"Bearer 用户令牌"
+//	@Param			page			query		int		false	"页码 (默认值: 1)"		minimum(1)	default(1)
+//	@Param			size			query		int		false	"每页数量 (默认值: 10)"	minimum(1)	maximum(100)	default(10)
+//	@Success		200				{object}	response.Response{data=response.NotificationListResponse}
+//	@Router			/api/v1/notifications [get]
 func (h *NotificationHandler) List(c *gin.Context) {
 	userID := c.GetUint("userId")
 	page, size := parsePageSize(c)
@@ -53,14 +53,14 @@ func (h *NotificationHandler) List(c *gin.Context) {
 }
 
 // GetUnreadCount 获取未读通知数量
-// @Summary 获取未读通知数量
-// @Description 获取当前用户的未读通知数量
-// @Tags 通知管理
-// @Accept json
-// @Produce json
-// @Param Authorization header string true "Bearer 用户令牌"
-// @Success 200 {object} response.Response{data=int64}
-// @Router /api/v1/notifications/unread/count [get]
+//	@Summary		获取未读通知数量
+//	@Description	获取当前用户的未读通知数量
+//	@Tags			通知管理
+//	@Accept			json
+//	@Produce		json
+//	@Param			Authorization	header		string	true	"Bearer 用户令牌"
+//	@Success		200				{object}	response.Response{data=int64}
+//	@Router			/api/v1/notifications/unread/count [get]
 func (h *NotificationHandler) GetUnreadCount(c *gin.Context) {
 	userID := c.GetUint("userId")
 	count, err := h.notificationService.GetUnreadCount(userID)
@@ -73,15 +73,15 @@ func (h *NotificationHandler) GetUnreadCount(c *gin.Context) {
 }
 
 // MarkAsRead 标记通知为已读
-// @Summary 标记通知为已读
-// @Description 标记指定的通知为已读状态
-// @Tags 通知管理
-// @Accept json
-// @Produce json
-// @Param Authorization header string true "Bearer 用户令牌"
-// @Param request body request.NotificationMarkReadRequest true "通知ID列表"
-// @Success 200 {object} response.Response
-// @Router /api/v1/notifications/read [post]
+//	@Summary		标记通知为已读
+//	@Description	标记指定的通知为已读状态
+//	@Tags			通知管理
+//	@Accept			json
+//	@Produce		json
+//	@Param			Authorization	header		string								true	"Bearer 用户令牌"
+//	@Param			request			body		request.NotificationMarkReadRequest	true	"通知ID列表"
+//	@Success		200				{object}	response.Response
+//	@Router			/api/v1/notifications/read [post]
 func (h *NotificationHandler) MarkAsRead(c *gin.Context) {
 	var req request.NotificationMarkReadRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -100,15 +100,15 @@ func (h *NotificationHandler) MarkAsRead(c *gin.Context) {
 }
 
 // Send 发送通知
-// @Summary 发送通知
-// @Description 发送通知到指定用户
-// @Tags 通知管理
-// @Accept json
-// @Produce json
-// @Param Authorization header string true "Bearer 用户令牌"
-// @Param request body request.NotificationSendRequest true "发送通知请求"
-// @Success 200 {object} response.Response
-// @Router /api/v1/notifications/send [post]
+//	@Summary		发送通知
+//	@Description	发送通知到指定用户
+//	@Tags			通知管理
+//	@Accept			json
+//	@Produce		json
+//	@Param			Authorization	header		string							true	"Bearer 用户令牌"
+//	@Param			request			body		request.NotificationSendRequest	true	"发送通知请求"
+//	@Success		200				{object}	response.Response
+//	@Router			/api/v1/notifications/send [post]
 func (h *NotificationHandler) Send(c *gin.Context) {
 	var req request.NotificationSendRequest
 	if err := c.ShouldBindJSON(&req); err != nil {

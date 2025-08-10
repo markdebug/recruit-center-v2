@@ -19,14 +19,14 @@ func NewJobStatisticsHandler(service *service.JobStatisticsService) *JobStatisti
 }
 
 // GetJobStats 获取职位统计信息
-// @Summary 获取职位统计信息
-// @Description 获取指定职位的统计信息
-// @Tags 职位统计
-// @Accept json
-// @Produce json
-// @Param jobId path int true "职位ID"
-// @Success 200 {object} response.Response{data=response.JobStatisticsResponse}
-// @Router /api/v1/jobs/{jobId}/statistics [get]
+//	@Summary		获取职位统计信息
+//	@Description	获取指定职位的统计信息
+//	@Tags			职位统计
+//	@Accept			json
+//	@Produce		json
+//	@Param			jobId	path		int	true	"职位ID"
+//	@Success		200		{object}	response.Response{data=response.JobStatisticsResponse}
+//	@Router			/api/v1/jobs/{jobId}/statistics [get]
 func (h *JobStatisticsHandler) GetJobStats(c *gin.Context) {
 	jobID, err := strconv.ParseUint(c.Param("jobId"), 10, 32)
 	if err != nil {
@@ -44,16 +44,16 @@ func (h *JobStatisticsHandler) GetJobStats(c *gin.Context) {
 }
 
 // GetCompanyStats 获取公司职位统计信息
-// @Summary 获取公司职位统计信息
-// @Description 获取指定公司所有职位的统计信息
-// @Tags 职位统计
-// @Accept json
-// @Produce json
-// @Param companyId path int true "公司ID"
-// @Param page query int false "页码" default(1)
-// @Param size query int false "每页数量" default(10)
-// @Success 200 {object} response.Response{data=response.JobStatisticsListResponse}
-// @Router /api/v1/companies/{companyId}/statistics [get]
+//	@Summary		获取公司职位统计信息
+//	@Description	获取指定公司所有职位的统计信息
+//	@Tags			职位统计
+//	@Accept			json
+//	@Produce		json
+//	@Param			companyId	path		int	true	"公司ID"
+//	@Param			page		query		int	false	"页码"	default(1)
+//	@Param			size		query		int	false	"每页数量"	default(10)
+//	@Success		200			{object}	response.Response{data=response.JobStatisticsListResponse}
+//	@Router			/api/v1/companies/{companyId}/statistics [get]
 func (h *JobStatisticsHandler) GetCompanyStats(c *gin.Context) {
 	companyID, _ := strconv.ParseUint(c.Param("companyId"), 10, 32)
 	page, size := parsePageSize(c)

@@ -30,7 +30,7 @@ func NewJobApplyHandler(service *service.JobApplyService, jobService *service.Jo
 //	@Tags			职位申请
 //	@Accept			json
 //	@Produce		json
-//	@Param			Authorization	header		string				true	"Bearer 用户令牌"
+//	@Param			Authorization	header		string						true	"Bearer 用户令牌"
 //	@Param			apply			body		request.JobApply	true	"申请信息"
 //	@Success		0000			{object}	response.Response{data=model.JobApply}
 //	@Failure		2000			{object}	response.Response{}
@@ -61,6 +61,7 @@ func (h *JobApplyHandler) Create(c *gin.Context) {
 //	@Description	删除指定ID的职位申请
 //	@Tags			职位申请
 //	@Produce		json
+//	@Param			Authorization	header		string						true	"Bearer 用户令牌"
 //	@Param			id		path		int	true	"申请ID"
 //	@Success		0000	{object}	response.Response{data=string}
 //	@Failure		2000	{object}	response.Response{}
@@ -87,6 +88,7 @@ func (h *JobApplyHandler) Delete(c *gin.Context) {
 //	@Description	获取指定ID的职位申请详情
 //	@Tags			职位申请
 //	@Produce		json
+//	@Param			Authorization	header		string						true	"Bearer 用户令牌"
 //	@Param			id		path		int	true	"申请ID"
 //	@Success		0000	{object}	response.Response{data=model.JobApply}
 //	@Failure		2000	{object}	response.Response{}
@@ -117,10 +119,10 @@ func (h *JobApplyHandler) GetByID(c *gin.Context) {
 //	@Accept			application/json
 //	@Produce		application/json
 //	@Security		Bearer
-//	@Param			Authorization	header		string											true	"Bearer
-//	@Param			userId			path		int												true	"用户ID"
-//	@Param			page			query		integer											false	"页码 (默认
-//	@Param			size			query		integer											false	"每页数量 (默认值: 10)"	minimum(1)	maximum(100)	default(10)
+//	@Param			Authorization	header		string						true	"Bearer 用户令牌"
+//	@Param			userId			path	int		true	"用户ID"
+//	@Param			page			query	integer	false	"页码 (默认值: 1)"		minimum(1)	default(1)
+//	@Param			size			query	integer	false	"每页数量 (默认值: 10)"	minimum(1)	maximum(100)	default(10)
 func (h *JobApplyHandler) ListByUser(c *gin.Context) {
 	userID, _ := strconv.Atoi(c.Param("userId"))
 	page, size := parsePageSize(c)
@@ -144,10 +146,10 @@ func (h *JobApplyHandler) ListByUser(c *gin.Context) {
 //	@Accept			application/json
 //	@Produce		application/json
 //	@Security		Bearer
-//	@Param			Authorization	header		string											true	"Bearer
-//	@Param			companyId		path		int												true	"公司ID"
-//	@Param			page			query		integer											false	"页码 (默认值: 1)"		minimum(1)	default(1)
-//	@Param			size			query		integer											false	"每页数量 (默认值: 10)"	minimum(1)	maximum(100)	default(10)
+//	@Param			Authorization	header		string						true	"Bearer 用户令牌"
+//	@Param			companyId		path	int		true	"公司ID"
+//	@Param			page			query	integer	false	"页码 (默认值: 1)"		minimum(1)	default(1)
+//	@Param			size			query	integer	false	"每页数量 (默认值: 10)"	minimum(1)	maximum(100)	default(10)
 func (h *JobApplyHandler) ListByCompany(c *gin.Context) {
 	companyID, _ := strconv.Atoi(c.Param("companyId"))
 	page, size := parsePageSize(c)
@@ -168,8 +170,7 @@ func (h *JobApplyHandler) ListByCompany(c *gin.Context) {
 //	@Tags			职位申请
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Security		Bearer
-//	@Param			Authorization	header		string											true	"Bearer JWT"
+//	@Param			Authorization	header		string						true	"Bearer 用户令牌"
 //	@Param			page			query		integer											false	"页码 (默认值: 1)"		minimum(1)	default(1)
 //	@Param			size			query		integer											false	"每页数量 (默认值: 10)"	minimum(1)	maximum(100)	default(10)
 //	@Success		0000			{object}	response.PageResponse{data=[]model.JobApply}	"成功"

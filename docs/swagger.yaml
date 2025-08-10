@@ -1,5 +1,25 @@
 basePath: /api/v1
 definitions:
+  enums.JobApplyEnum:
+    enum:
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
+    type: integer
+    x-enum-comments:
+      JobApplyAccepted: 已接受
+      JobApplyInProgress: 进行中
+      JobApplyPending: 待处理
+      JobApplyRejected: 已拒绝
+      JobApplyWithdrawn: 已撤回
+    x-enum-varnames:
+    - JobApplyPending
+    - JobApplyInProgress
+    - JobApplyAccepted
+    - JobApplyRejected
+    - JobApplyWithdrawn
   enums.JobType:
     enum:
     - 1
@@ -10,10 +30,6 @@ definitions:
       JobTypeFullTime: 全职
       JobTypeIntern: 实习
       JobTypePartTime: 兼职
-    x-enum-descriptions:
-    - 全职
-    - 兼职
-    - 实习
     x-enum-varnames:
     - JobTypeFullTime
     - JobTypePartTime
@@ -49,6 +65,7 @@ definitions:
     - 4002
     - 4003
     - 4004
+    - 4005
     - 5001
     - 5002
     - 5003
@@ -70,6 +87,7 @@ definitions:
       Conflict: 资源冲突
       FileTooLarge: 文件过大
       FileTypeNotAllowed: 文件类型不允许
+      FileUploadFailed: 文件上传失败
       Forbidden: 禁止访问
       InternalServerError: 服务器内部错误
       InvalidFileFormat: 无效的文件格式
@@ -105,49 +123,6 @@ definitions:
       Unauthorized: 未授权
       UserAlreadyExists: 用户已存在
       UserNotFound: 用户不存在
-    x-enum-descriptions:
-    - ""
-    - 请求参数错误
-    - 未授权
-    - 禁止访问
-    - 资源不存在
-    - 方法不允许
-    - 资源冲突
-    - 请求过多
-    - 无效的请求参数
-    - 服务器内部错误
-    - 服务不可用
-    - 用户不存在
-    - 用户已存在
-    - 密码错误
-    - 职位不存在
-    - 职位已过期
-    - 已经申请过该职位
-    - 职位申请次数已达上限
-    - 职位创建次数已达上限
-    - 职位更新不允许
-    - 职位删除不允许
-    - 职位申请不存在
-    - 职位申请已被审核
-    - 公司不存在
-    - 公司未激活
-    - 文件过大
-    - 文件类型不允许
-    - 无效的文件格式
-    - 文件数量超过限制
-    - 简历不存在
-    - 简历无效
-    - 简历已存在
-    - 简历文件过大
-    - 简历格式错误
-    - 简历上传失败
-    - 简历删除失败
-    - 无权限访问简历
-    - 简历解析失败
-    - 简历更新失败
-    - 简历更新过于频繁
-    - 简历更新状态错误
-    - 无效的令牌
     x-enum-varnames:
     - Success
     - BadRequest
@@ -178,6 +153,7 @@ definitions:
     - FileTypeNotAllowed
     - InvalidFileFormat
     - TooManyFiles
+    - FileUploadFailed
     - ResumeNotFound
     - ResumeInvalid
     - ResumeExists
@@ -279,6 +255,9 @@ definitions:
         type: integer
       jobId:
         type: integer
+      reason:
+        description: 拒绝原因
+        type: string
       resumeId:
         type: integer
       status:
@@ -340,8 +319,13 @@ definitions:
         description: 修改size以适应加密后的长度
         type: string
       expectedCity:
+        description: 期望城市
         type: string
       expectedJob:
+        description: 期望职位
+        type: string
+      expectedSalary:
+        description: 期望薪资
         type: string
       experience:
         type: integer
@@ -350,8 +334,10 @@ definitions:
       id:
         type: integer
       introduction:
+        description: 个人简介
         type: string
       jobStatus:
+        description: '0: 未找工作, 1: 在找工作, 2: 已找到工作'
         type: integer
       location:
         description: 修改size以适应加密后的长度
@@ -369,6 +355,7 @@ definitions:
         description: 用于分享简历的唯一标识
         type: string
       skills:
+        description: 技能描述
         type: string
       status:
         description: '1: 正常, 0: 删除'
@@ -516,8 +503,11 @@ definitions:
       jobId:
         description: 改为 jobId
         type: integer
+      reason:
+        description: 拒绝原因
+        type: string
       status:
-        $ref: '#/definitions/request.JobApplyStatus'
+        $ref: '#/definitions/enums.JobApplyEnum'
       updateTime:
         description: 改为 updateTime
         type: string
@@ -525,32 +515,36 @@ definitions:
         description: 改为 userId
         type: integer
     type: object
-  request.JobApplyStatus:
-    enum:
-    - 1
-    - 2
-    - 3
-    - 4
-    - 5
-    type: integer
-    x-enum-comments:
-      JobApplyStatusAccepted: 已接受
-      JobApplyStatusInProgress: 进行中
-      JobApplyStatusPending: 待处理
-      JobApplyStatusRejected: 已拒绝
-      JobApplyStatusWithdrawn: 已撤回
-    x-enum-descriptions:
-    - 待处理
-    - 进行中
-    - 已接受
-    - 已拒绝
-    - 已撤回
-    x-enum-varnames:
-    - JobApplyStatusPending
-    - JobApplyStatusInProgress
-    - JobApplyStatusAccepted
-    - JobApplyStatusRejected
-    - JobApplyStatusWithdrawn
+  request.NotificationMarkReadRequest:
+    properties:
+      notificationIds:
+        items:
+          type: integer
+        minItems: 1
+        type: array
+    required:
+    - notificationIds
+    type: object
+  request.NotificationSendRequest:
+    properties:
+      templateId:
+        description: 模板ID
+        type: string
+      userId:
+        description: 接收者ID
+        type: integer
+      userType:
+        description: 用户类型
+        type: integer
+      variables:
+        additionalProperties: true
+        description: 模板变量
+        type: object
+    required:
+    - templateId
+    - userId
+    - userType
+    type: object
   request.ProjectRequest:
     properties:
       achievement:
@@ -629,12 +623,6 @@ definitions:
       ModuleProject: 项目经历
       ModuleSkills: 技能特长
       ModuleWorkExperience: 工作经历
-    x-enum-descriptions:
-    - 基本信息
-    - 教育经历
-    - 工作经历
-    - 项目经历
-    - 技能特长
     x-enum-varnames:
     - ModuleBasic
     - ModuleEducation
@@ -742,6 +730,60 @@ definitions:
       viewCount:
         type: integer
     type: object
+  response.JobStatisticsListResponse:
+    properties:
+      records:
+        items:
+          $ref: '#/definitions/response.JobStatisticsResponse'
+        type: array
+      total:
+        type: integer
+    type: object
+  response.JobStatisticsResponse:
+    properties:
+      applyCount:
+        type: integer
+      companyId:
+        type: integer
+      conversionRate:
+        type: number
+      id:
+        type: integer
+      jobId:
+        type: integer
+      lastApplyTime:
+        type: string
+      lastViewTime:
+        type: string
+      viewCount:
+        type: integer
+    type: object
+  response.NotificationListResponse:
+    properties:
+      records:
+        items:
+          $ref: '#/definitions/response.NotificationResponse'
+        type: array
+      total:
+        type: integer
+    type: object
+  response.NotificationResponse:
+    properties:
+      content:
+        type: string
+      createTime:
+        type: string
+      id:
+        type: integer
+      isRead:
+        type: boolean
+      title:
+        type: string
+      type:
+        type: integer
+      userId:
+        type: integer
+    type: object
   response.PageResponse:
     properties:
       code:
@@ -795,7 +837,7 @@ paths:
       - application/json
       description: 分页获取所有职位申请记录
       parameters:
-      - description: Bearer JWT
+      - description: Bearer 用户令牌
         in: header
         name: Authorization
         required: true
@@ -831,8 +873,6 @@ paths:
           description: 错误
           schema:
             $ref: '#/definitions/response.Response'
-      security:
-      - Bearer: []
       summary: 获取申请列表
       tags:
       - 职位申请
@@ -875,6 +915,11 @@ paths:
     delete:
       description: 删除指定ID的职位申请
       parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: 申请ID
         in: path
         name: id
@@ -902,6 +947,11 @@ paths:
     get:
       description: 获取指定ID的职位申请详情
       parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: 申请ID
         in: path
         name: id
@@ -964,6 +1014,42 @@ paths:
       summary: 获取公司职位
       tags:
       - 职位
+  /api/v1/companies/{companyId}/statistics:
+    get:
+      consumes:
+      - application/json
+      description: 获取指定公司所有职位的统计信息
+      parameters:
+      - description: 公司ID
+        in: path
+        name: companyId
+        required: true
+        type: integer
+      - default: 1
+        description: 页码
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: 每页数量
+        in: query
+        name: size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/response.JobStatisticsListResponse'
+              type: object
+      summary: 获取公司职位统计信息
+      tags:
+      - 职位统计
   /api/v1/jobs:
     get:
       description: 分页获取职位列表
@@ -1135,6 +1221,32 @@ paths:
       summary: 更新职位
       tags:
       - 职位
+  /api/v1/jobs/{jobId}/statistics:
+    get:
+      consumes:
+      - application/json
+      description: 获取指定职位的统计信息
+      parameters:
+      - description: 职位ID
+        in: path
+        name: jobId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/response.JobStatisticsResponse'
+              type: object
+      summary: 获取职位统计信息
+      tags:
+      - 职位统计
   /api/v1/jobs/expired:
     get:
       description: 获取所有已过期的职位列表
@@ -1232,6 +1344,125 @@ paths:
       summary: 多条件搜索职位
       tags:
       - 职位
+  /api/v1/notifications:
+    get:
+      consumes:
+      - application/json
+      description: 分页获取当前用户的通知列表
+      parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - default: 1
+        description: '页码 (默认值: 1)'
+        in: query
+        minimum: 1
+        name: page
+        type: integer
+      - default: 10
+        description: '每页数量 (默认值: 10)'
+        in: query
+        maximum: 100
+        minimum: 1
+        name: size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/response.NotificationListResponse'
+              type: object
+      summary: 获取通知列表
+      tags:
+      - 通知管理
+  /api/v1/notifications/read:
+    post:
+      consumes:
+      - application/json
+      description: 标记指定的通知为已读状态
+      parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 通知ID列表
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.NotificationMarkReadRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: 标记通知为已读
+      tags:
+      - 通知管理
+  /api/v1/notifications/send:
+    post:
+      consumes:
+      - application/json
+      description: 发送通知到指定用户
+      parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 发送通知请求
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.NotificationSendRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: 发送通知
+      tags:
+      - 通知管理
+  /api/v1/notifications/unread/count:
+    get:
+      consumes:
+      - application/json
+      description: 获取当前用户的未读通知数量
+      parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  type: integer
+              type: object
+      summary: 获取未读通知数量
+      tags:
+      - 通知管理
   /api/v1/resumes:
     post:
       consumes:
@@ -1384,7 +1615,6 @@ paths:
             - properties:
                 data:
                   additionalProperties:
-                    format: int64
                     type: integer
                   type: object
               type: object
