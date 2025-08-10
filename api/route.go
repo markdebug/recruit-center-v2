@@ -54,7 +54,7 @@ func setupAPIRoutes(api *gin.RouterGroup, jobHandler *handler.JobHandler, jobApp
 	// 简历相关路由
 	setupResumeRoutes(api.Group("/resumes"), resumeHandler)
 	// 通知相关路由
-	setUpNotificationsRouter(api.Group("/notifications"), notificationHandler)
+	setupNotificationsRouter(api.Group("/notifications"), notificationHandler)
 }
 
 // setupJobRoutes 配置职位相关路由
@@ -108,7 +108,7 @@ func setupResumeRoutes(resumes *gin.RouterGroup, handler *handler.ResumeHandler)
 }
 
 // SetupNotificationsRouter 通知相关路由配置
-func setUpNotificationsRouter(notifications *gin.RouterGroup, notificationHandler *handler.NotificationHandler) {
+func setupNotificationsRouter(notifications *gin.RouterGroup, notificationHandler *handler.NotificationHandler) {
 
 	notifications.GET("", notificationHandler.List)                        // 获取通知列表
 	notifications.GET("/unread/count", notificationHandler.GetUnreadCount) // 获取未读数量

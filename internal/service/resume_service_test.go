@@ -7,11 +7,12 @@ import (
 	"github.com/stretchr/testify/assert"
 	"org.thinkinai.com/recruit-center/api/dto/request"
 	"org.thinkinai.com/recruit-center/internal/dao"
+	"org.thinkinai.com/recruit-center/internal/testutil"
 )
 
 func TestResumeService_Create_Success(t *testing.T) {
 	// Arrange
-	db := setupTestDB(t)
+	db := testutil.SetupTestDB(t)
 	mockDao := dao.NewResumeDAO(db)
 	service := &ResumeService{resumeDao: mockDao}
 	birthday, err := time.Parse("2006-01-02", "1990-01-01")
@@ -64,7 +65,7 @@ func TestResumeService_Create_Success(t *testing.T) {
 }
 
 func TestResumeService_Create_AlreadyExists(t *testing.T) {
-	db := setupTestDB(t)
+	db := testutil.SetupTestDB(t)
 	mockDao := dao.NewResumeDAO(db)
 	service := &ResumeService{resumeDao: mockDao}
 	userID := uint(10012)
@@ -77,7 +78,7 @@ func TestResumeService_Create_AlreadyExists(t *testing.T) {
 }
 
 func TestResumeService_Create_GenerateNanoIDError(t *testing.T) {
-	db := setupTestDB(t)
+	db := testutil.SetupTestDB(t)
 	mockDao := dao.NewResumeDAO(db)
 	service := &ResumeService{resumeDao: mockDao}
 	userID := uint(10012)
@@ -89,7 +90,7 @@ func TestResumeService_Create_GenerateNanoIDError(t *testing.T) {
 }
 
 func TestResumeService_Create_DaoCreateError(t *testing.T) {
-	db := setupTestDB(t)
+	db := testutil.SetupTestDB(t)
 	mockDao := dao.NewResumeDAO(db)
 	service := &ResumeService{resumeDao: mockDao}
 	userID := uint(10012)
@@ -101,7 +102,7 @@ func TestResumeService_Create_DaoCreateError(t *testing.T) {
 }
 
 func TestResumeService_GetByShareToken(t *testing.T) {
-	db := setupTestDB(t)
+	db := testutil.SetupTestDB(t)
 	mockDao := dao.NewResumeDAO(db)
 	service := &ResumeService{resumeDao: mockDao}
 	token := "aM6tR3KU2W"

@@ -23,6 +23,9 @@ type JobStatisticsListResponse struct {
 }
 
 func FromJobStatistics(stats *model.JobStatistics) *JobStatisticsResponse {
+	if stats == nil {
+		return nil
+	}
 	return &JobStatisticsResponse{
 		ID:             stats.ID,
 		JobID:          stats.JobID,

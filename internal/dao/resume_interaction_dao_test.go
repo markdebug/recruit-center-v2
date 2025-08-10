@@ -6,10 +6,11 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"org.thinkinai.com/recruit-center/internal/model"
+	"org.thinkinai.com/recruit-center/internal/testutil"
 )
 
 func TestAddInteraction_InsertNew(t *testing.T) {
-	db := setupTestDB(t)
+	db := testutil.SetupTestDB(t)
 	dao := NewResumeInteractionDAO(db)
 
 	resumeID := uint(1)
@@ -29,7 +30,7 @@ func TestAddInteraction_InsertNew(t *testing.T) {
 }
 
 func TestAddInteraction_UpsertUpdatesLastTime(t *testing.T) {
-	db := setupTestDB(t)
+	db := testutil.SetupTestDB(t)
 	dao := NewResumeInteractionDAO(db)
 
 	resumeID := uint(1)

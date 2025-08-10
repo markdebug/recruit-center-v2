@@ -4,10 +4,11 @@ import (
 	"testing"
 
 	"org.thinkinai.com/recruit-center/internal/dao"
+	"org.thinkinai.com/recruit-center/internal/testutil"
 )
 
 func TestRecordView(t *testing.T) {
-	db := setupTestDB(t)
+	db := testutil.SetupTestDB(t)
 	interactionDAO := dao.NewResumeInteractionDAO(db)
 	service := NewResumeInteractionService(interactionDAO)
 	err := service.RecordView(1, 2)
@@ -17,7 +18,7 @@ func TestRecordView(t *testing.T) {
 }
 
 func TestAddFavorite(t *testing.T) {
-	db := setupTestDB(t)
+	db := testutil.SetupTestDB(t)
 	interactionDAO := dao.NewResumeInteractionDAO(db)
 	service := NewResumeInteractionService(interactionDAO)
 	err := service.AddFavorite(1, 2)
@@ -27,7 +28,7 @@ func TestAddFavorite(t *testing.T) {
 }
 
 func TestRemoveFavorite(t *testing.T) {
-	db := setupTestDB(t)
+	db := testutil.SetupTestDB(t)
 	interactionDAO := dao.NewResumeInteractionDAO(db)
 	service := NewResumeInteractionService(interactionDAO)
 	err := service.RemoveFavorite(1, 2)
@@ -37,7 +38,7 @@ func TestRemoveFavorite(t *testing.T) {
 }
 
 func TestGetInteractionStats(t *testing.T) {
-	db := setupTestDB(t)
+	db := testutil.SetupTestDB(t)
 	interactionDAO := dao.NewResumeInteractionDAO(db)
 	service := NewResumeInteractionService(interactionDAO)
 	stats, err := service.GetInteractionStats(1)
@@ -53,7 +54,7 @@ func TestGetInteractionStats(t *testing.T) {
 }
 
 func TestGetInteractionStats_Error(t *testing.T) {
-	db := setupTestDB(t)
+	db := testutil.SetupTestDB(t)
 	interactionDAO := dao.NewResumeInteractionDAO(db)
 	service := NewResumeInteractionService(interactionDAO)
 	_, err := service.GetInteractionStats(1)
@@ -63,7 +64,7 @@ func TestGetInteractionStats_Error(t *testing.T) {
 }
 
 func TestIsFavorited(t *testing.T) {
-	db := setupTestDB(t)
+	db := testutil.SetupTestDB(t)
 	interactionDAO := dao.NewResumeInteractionDAO(db)
 	service := NewResumeInteractionService(interactionDAO)
 	favorited, err := service.IsFavorited(1, 2)
@@ -76,7 +77,7 @@ func TestIsFavorited(t *testing.T) {
 }
 
 func TestIsFavorited_Error(t *testing.T) {
-	db := setupTestDB(t)
+	db := testutil.SetupTestDB(t)
 	interactionDAO := dao.NewResumeInteractionDAO(db)
 	service := NewResumeInteractionService(interactionDAO)
 	_, err := service.IsFavorited(1, 2)

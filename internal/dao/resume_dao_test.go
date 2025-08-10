@@ -5,10 +5,11 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"org.thinkinai.com/recruit-center/internal/model"
+	"org.thinkinai.com/recruit-center/internal/testutil"
 )
 
 func TestResumeDAO_CreateAndGetByID(t *testing.T) {
-	db := setupTestDB(t)
+	db := testutil.SetupTestDB(t)
 	dao := NewResumeDAO(db)
 
 	resume := &model.Resume{
@@ -25,7 +26,7 @@ func TestResumeDAO_CreateAndGetByID(t *testing.T) {
 }
 
 func TestResumeDAO_GetByUser(t *testing.T) {
-	db := setupTestDB(t)
+	db := testutil.SetupTestDB(t)
 	dao := NewResumeDAO(db)
 
 	resume := &model.Resume{UserID: 3, Name: "UserResume"}
@@ -37,7 +38,7 @@ func TestResumeDAO_GetByUser(t *testing.T) {
 }
 
 func TestResumeDAO_AddAndDeleteEducation(t *testing.T) {
-	db := setupTestDB(t)
+	db := testutil.SetupTestDB(t)
 	dao := NewResumeDAO(db)
 
 	resume := &model.Resume{UserID: 4, Name: "EduResume"}
@@ -53,7 +54,7 @@ func TestResumeDAO_AddAndDeleteEducation(t *testing.T) {
 }
 
 func TestResumeDAO_AddAndDeleteWorkExperience(t *testing.T) {
-	db := setupTestDB(t)
+	db := testutil.SetupTestDB(t)
 	dao := NewResumeDAO(db)
 
 	resume := &model.Resume{UserID: 5, Name: "WorkResume"}
@@ -69,7 +70,7 @@ func TestResumeDAO_AddAndDeleteWorkExperience(t *testing.T) {
 }
 
 func TestResumeDAO_AddAndDeleteProject(t *testing.T) {
-	db := setupTestDB(t)
+	db := testutil.SetupTestDB(t)
 	dao := NewResumeDAO(db)
 
 	resume := &model.Resume{UserID: 6, Name: "ProjResume"}
@@ -85,7 +86,7 @@ func TestResumeDAO_AddAndDeleteProject(t *testing.T) {
 }
 
 func TestResumeDAO_UpdateEducation(t *testing.T) {
-	db := setupTestDB(t)
+	db := testutil.SetupTestDB(t)
 	dao := NewResumeDAO(db)
 
 	resume := &model.Resume{UserID: 7, Name: "EduUpdate"}
@@ -100,7 +101,7 @@ func TestResumeDAO_UpdateEducation(t *testing.T) {
 }
 
 func TestResumeDAO_UpdateWorkExperience(t *testing.T) {
-	db := setupTestDB(t)
+	db := testutil.SetupTestDB(t)
 	dao := NewResumeDAO(db)
 
 	resume := &model.Resume{UserID: 8, Name: "WorkUpdate"}
@@ -114,7 +115,7 @@ func TestResumeDAO_UpdateWorkExperience(t *testing.T) {
 }
 
 func TestResumeDAO_UpdateProject(t *testing.T) {
-	db := setupTestDB(t)
+	db := testutil.SetupTestDB(t)
 	dao := NewResumeDAO(db)
 
 	resume := &model.Resume{UserID: 9, Name: "ProjUpdate"}
@@ -129,7 +130,7 @@ func TestResumeDAO_UpdateProject(t *testing.T) {
 }
 
 func TestResumeDAO_AddUpdateDeleteAttachment(t *testing.T) {
-	db := setupTestDB(t)
+	db := testutil.SetupTestDB(t)
 	dao := NewResumeDAO(db)
 
 	resume := &model.Resume{UserID: 10, Name: "AttachResume"}
@@ -149,7 +150,7 @@ func TestResumeDAO_AddUpdateDeleteAttachment(t *testing.T) {
 }
 
 func TestResumeDAO_GetAttachments(t *testing.T) {
-	db := setupTestDB(t)
+	db := testutil.SetupTestDB(t)
 	dao := NewResumeDAO(db)
 
 	resume := &model.Resume{UserID: 11, Name: "AttachList"}
@@ -164,7 +165,7 @@ func TestResumeDAO_GetAttachments(t *testing.T) {
 }
 
 func TestResumeDAO_UpdateAttachmentURL(t *testing.T) {
-	db := setupTestDB(t)
+	db := testutil.SetupTestDB(t)
 	dao := NewResumeDAO(db)
 
 	resume := &model.Resume{UserID: 12, Name: "AttachURL"}
@@ -183,7 +184,7 @@ func TestResumeDAO_UpdateAttachmentURL(t *testing.T) {
 }
 
 func TestResumeDAO_List(t *testing.T) {
-	db := setupTestDB(t)
+	db := testutil.SetupTestDB(t)
 	dao := NewResumeDAO(db)
 
 	for i := 0; i < 5; i++ {
