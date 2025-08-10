@@ -53,6 +53,8 @@ func (s *JobFavoriteService) ListFavorites(userID uint, page, size int) (*respon
 
 	for _, fav := range favorites {
 		if job, err := s.jobService.GetByID(fav.JobID, userID); err == nil {
+			job.IsFavorited = true
+			job.FavoriteTime = fav.CreateTime // 设置收藏时间
 			resp.Records = append(resp.Records, *job)
 		}
 	}

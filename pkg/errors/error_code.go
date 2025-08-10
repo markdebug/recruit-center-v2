@@ -154,7 +154,8 @@ func (e ErrorCode) String() string {
 		return "简历更新过于频繁"
 	case ResumeUpdateStatus:
 		return "简历更新状态错误"
-
+	case InvalidToken:
+		return "无效的令牌"
 	default:
 		return "未知错误"
 	}

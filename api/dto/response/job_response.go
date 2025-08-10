@@ -40,6 +40,8 @@ type JobResponse struct {
 	BenefitTexts  []string               `json:"benefitTexts"`
 	// 是否已收藏
 	IsFavorited bool `json:"isFavorited"`
+	// 收藏时间
+	FavoriteTime time.Time `json:"favoriteTime,omitempty"` // 收藏时间，可能为空
 	// 是否已投递
 	IsApplied bool `json:"isApplied"`
 }

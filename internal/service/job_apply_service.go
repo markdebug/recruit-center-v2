@@ -212,7 +212,38 @@ func (s *JobApplyService) getStatusNotification(apply *model.JobApply, status en
 			Content: fmt.Sprintf("恭喜！%s 向您发出了录用意向，请查看并确认", jobName),
 			Type:    model.NotificationTypeStatusUpdate,
 		}
-
+		companyNotify = &model.Notification{
+			UserID:  job.CompanyID,
+			Title:   "Offer已发送",
+			Content: fmt.Sprintf("您已向 %s 发送了录用意向，请等待候选人确认", jobName),
+			Type:    model.NotificationTypeStatusUpdate,
+		}
+	case enums.JobApplyOfferAccept:
+		userNotify = &model.Notification{
+			UserID:  apply.UserID,
+			Title:   "Offer已接受",
+			Content: fmt.Sprintf("恭喜！您已接受 %s 的录用意向，请准备入职相关事宜", jobName),
+			Type:    model.NotificationTypeStatusUpdate,
+		}
+		companyNotify = &model.Notification{
+			UserID:  job.CompanyID,
+			Title:   "Offer已被接受",
+			Content: fmt.Sprintf("候选人已接受 %s 的录用意向，请准备入职相关事宜", jobName),
+			Type:    model.NotificationTypeStatusUpdate,
+		}
+	case enums.JobApplyOfferReject:
+		userNotify = &model.Notification{
+			UserID:  apply.UserID,
+			Title:   "Offer已拒绝",
+			Content: fmt.Sprintf("您已拒绝 %s 的录用意向，感谢您的申请", jobName),
+			Type:    model.NotificationTypeStatusUpdate,
+		}
+		companyNotify = &model.Notification{
+			UserID:  job.CompanyID,
+			Title:   "Offer已被拒绝",
+			Content: fmt.Sprintf("候选人已拒绝 %s 的录用意向，请继续寻找合适人选", jobName),
+			Type:    model.NotificationTypeStatusUpdate,
+		}
 	default:
 		userNotify = &model.Notification{
 			UserID:  apply.UserID,

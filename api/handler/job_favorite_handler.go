@@ -27,7 +27,7 @@ func NewJobFavoriteHandler(service *service.JobFavoriteService) *JobFavoriteHand
 // @Param Authorization header string true "Bearer 用户令牌"
 // @Param jobId path int true "职位ID"
 // @Success 0000 {object} response.Response
-// @Router /api/v1/jobs/{jobId}/favorite [post]
+// @Router /api/v1/jobs/favorite/{jobId} [post]
 func (h *JobFavoriteHandler) AddFavorite(c *gin.Context) {
 	jobID, _ := strconv.ParseUint(c.Param("jobId"), 10, 32)
 	userID := c.GetUint("userId")
@@ -49,7 +49,7 @@ func (h *JobFavoriteHandler) AddFavorite(c *gin.Context) {
 // @Param Authorization header string true "Bearer 用户令牌"
 // @Param jobId path int true "职位ID"
 // @Success 0000 {object} response.Response
-// @Router /api/v1/jobs/{jobId}/favorite [delete]
+// @Router /api/v1/jobs/favorite/{jobId} [delete]
 func (h *JobFavoriteHandler) RemoveFavorite(c *gin.Context) {
 	jobID, _ := strconv.ParseUint(c.Param("jobId"), 10, 32)
 	userID := c.GetUint("userId")

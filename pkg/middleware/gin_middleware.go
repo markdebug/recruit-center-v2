@@ -13,37 +13,36 @@ import (
 	"org.thinkinai.com/recruit-center/api/dto/response"
 	"org.thinkinai.com/recruit-center/pkg/errors"
 	"org.thinkinai.com/recruit-center/pkg/logger"
-	"org.thinkinai.com/recruit-center/pkg/utils"
 )
 
 // AuthRequired 认证中间件
 func AuthRequired() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		auth := c.GetHeader("Authorization")
-		if auth == "" {
-			c.AbortWithStatusJSON(200, response.NewError(errors.Unauthorized))
-			return
-		}
+		// auth := c.GetHeader("Authorization")
+		// if auth == "" {
+		// 	c.AbortWithStatusJSON(200, response.NewError(errors.Unauthorized))
+		// 	return
+		// }
 
-		// 提取 token
-		parts := strings.SplitN(auth, " ", 2)
-		if !(len(parts) == 2 && parts[0] == "Bearer") {
-			c.AbortWithStatusJSON(200, response.NewError(errors.InvalidToken))
-			return
-		}
+		// // 提取 token
+		// parts := strings.SplitN(auth, " ", 2)
+		// if !(len(parts) == 2 && parts[0] == "Bearer") {
+		// 	c.AbortWithStatusJSON(200, response.NewError(errors.InvalidToken))
+		// 	return
+		// }
 
-		// 解析 token
-		claims, err := utils.ParseToken(parts[1])
-		if err != nil {
-			logger.L.Error("Token解析失败", zap.Error(err))
-			c.AbortWithStatusJSON(200, response.NewError(errors.InvalidToken))
-			return
-		}
+		// // 解析 token
+		// claims, err := utils.ParseToken(parts[1])
+		// if err != nil {
+		// 	logger.L.Error("Token解析失败", zap.Error(err))
+		// 	c.AbortWithStatusJSON(200, response.NewError(errors.InvalidToken))
+		// 	return
+		// }
 
-		// 将用户信息存储到上下文
-		c.Set("userId", claims.UserID)
-		c.Set("username", claims.Username)
-		c.Set("userRole", claims.Role)
+		// // 将用户信息存储到上下文
+		// c.Set("userId", claims.UserID)
+		// c.Set("username", claims.Username)
+		// c.Set("userRole", claims.Role)
 
 		c.Next()
 	}

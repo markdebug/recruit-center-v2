@@ -26,6 +26,8 @@ func SetupTestDB(t *testing.T) *gorm.DB {
 		&model.JobStatistics{},
 		&model.Notification{},
 		&model.NotificationTemplate{},
+		&model.Dict{},
+		&model.JobFavorite{},
 	)
 	assert.NoError(t, err)
 	return db

@@ -13,7 +13,7 @@ package main
 //	@license.url	http://www.apache.org/licenses/LICENSE-2.0.html
 
 //	@host		localhost:8080
-//	@BasePath	/api/v1
+
 import (
 	"context"
 	"flag"
@@ -141,7 +141,7 @@ func (a *App) initHTTPServer() error {
 	}
 
 	// 设置路由
-	router := api.SetupRouter(handlers.job, handlers.jobApply, handlers.resume, handlers.notification, handlers.jobStats)
+	router := api.SetupRouter(handlers.job, handlers.jobApply, handlers.resume, handlers.notification, handlers.jobStats, handlers.jobFavorite)
 
 	// 创建HTTP服务器
 	a.server = &http.Server{
@@ -162,6 +162,7 @@ type Handlers struct {
 	resume       *handler.ResumeHandler
 	notification *handler.NotificationHandler
 	jobStats     *handler.JobStatisticsHandler
+	jobFavorite  *handler.JobFavoriteHandler
 }
 
 // initializeDependencies 初始化所有依赖
@@ -174,13 +175,15 @@ func (a *App) initializeDependencies(db *gorm.DB) (*Handlers, error) {
 	jobStatisticsDao := dao.NewJobStatisticsDAO(db)
 	notificationDao := dao.NewNotificationDAO(db)
 	notificationTemplateDap := dao.NewNotificationTemplateDAO(db)
+	jobFavoriteDao := dao.NewJobFavoriteDAO(db)
 
 	// 初始化 Service 层
-	jobService := service.NewJobService(jobDao)
+	jobService := service.NewJobService(jobDao, jobFavoriteDao, jobApplyDao)
 	jobStatsService := service.NewJobStatisticsService(jobStatisticsDao)
 	notificationService := service.NewNotificationService(notificationDao, notificationTemplateDap)
 	jobApplyService := service.NewJobApplyService(jobApplyDao, jobService, notificationService)
 	resumeService := service.NewResumeService(resumeDao)
+	JobFavoriteService := service.NewJobFavoriteService(jobFavoriteDao, jobService)
 	resumeInteractionService := service.NewResumeInteractionService(resumeInteractionDao)
 
 	// 初始化 Handler 层
@@ -190,6 +193,7 @@ func (a *App) initializeDependencies(db *gorm.DB) (*Handlers, error) {
 		resume:       handler.NewResumeHandler(resumeService, resumeInteractionService),
 		notification: handler.NewNotificationHandler(notificationService),
 		jobStats:     handler.NewJobStatisticsHandler(jobStatsService),
+		jobFavorite:  handler.NewJobFavoriteHandler(JobFavoriteService),
 	}, nil
 }
 
