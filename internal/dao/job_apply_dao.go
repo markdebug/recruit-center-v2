@@ -88,6 +88,27 @@ func (d *JobApplyDAO) ListByUser(userID uint, page, size int) ([]model.JobApply,
 	return applies, total, nil
 }
 
+// ListByCompany 获取公司所有的职位申请记录
+func (d *JobApplyDAO) ListByCompany(companyID uint, page, size int) ([]model.JobApply, int64, error) {
+	var applies []model.JobApply
+	var total int64
+
+	if err := d.db.Model(&model.JobApply{}).Where("company_id = ?", companyID).Count(&total).Error; err != nil {
+		return nil, 0, err
+	}
+
+	offset := (page - 1) * size
+	if err := d.db.Where("company_id = ?", companyID).
+		Offset(offset).
+		Limit(size).
+		Order("apply_time DESC").
+		Find(&applies).Error; err != nil {
+		return nil, 0, err
+	}
+
+	return applies, total, nil
+}
+
 // ListByJob 获取职位的所有申请记录
 func (d *JobApplyDAO) ListByJob(jobID uint, page, size int) ([]model.JobApply, int64, error) {
 	var applies []model.JobApply

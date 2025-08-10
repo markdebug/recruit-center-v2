@@ -107,14 +107,28 @@ func (s *JobApplyService) ListByUser(userID uint, page, size int) (*response.Job
 }
 
 // ListByJob 获取职位的申请列表
-func (s *JobApplyService) ListByJob(jobID uint, page, size int) ([]model.JobApply, int64, error) {
-	return s.jobApplyDAO.ListByJob(jobID, page, size)
+func (s *JobApplyService) ListByJob(jobID uint, page, size int) (*response.JobApplyListResponse, error) {
+	applies, total, err := s.jobApplyDAO.ListByJob(jobID, page, size)
+	if err != nil {
+		return nil, err
+	}
+
+	resp := &response.JobApplyListResponse{
+		Total:   total,
+		Records: make([]response.JobApplyResponse, len(applies)),
+	}
+
+	for i, apply := range applies {
+		resp.Records[i] = *s.ConvertToJobApplyResponse(&apply)
+	}
+
+	return resp, nil
 }
 
 // UpdateStatus 更新申请状态
-func (s *JobApplyService) UpdateStatus(id uint, status int) error {
+func (s *JobApplyService) UpdateStatus(id uint, status enums.JobApplyEnum) error {
 	// 1. 验证状态是否有效
-	if !enums.JobApplyEnum(status).IsValid() {
+	if !status.IsValid() {
 		return fmt.Errorf("无效的状态值")
 	}
 
@@ -124,17 +138,12 @@ func (s *JobApplyService) UpdateStatus(id uint, status int) error {
 		return errors.Wrap(err, errors.NotFound)
 	}
 
-	// 3. 验证状态流转是否合法
-	// if !apply.CanTransitionTo(status) {
-	// 	return errors.New(errors.BadRequest).WithMessage("无效的状态转换")
-	// }
-
 	// 4. 更新状态
-	if err := s.jobApplyDAO.UpdateStatus(id, status); err != nil {
+	if err := s.jobApplyDAO.UpdateStatus(id, int(status)); err != nil {
 		logger.L.Error("更新申请状态失败",
 			zap.Error(err),
 			zap.Uint("id", id),
-			zap.Int("status", status))
+			zap.Int("status", int(status)))
 		return err
 	}
 	return nil
@@ -178,6 +187,58 @@ func (s *JobApplyService) Delete(id uint) error {
 }
 
 // List 获取职位申请列表
-func (s *JobApplyService) List(page, size int) ([]model.JobApply, int64, error) {
-	return s.jobApplyDAO.List(page, size)
+func (s *JobApplyService) List(page, size int) (*response.JobApplyListResponse, error) {
+	applies, total, err := s.jobApplyDAO.List(page, size)
+	if err != nil {
+		return nil, err
+	}
+
+	resp := &response.JobApplyListResponse{
+		Total:   total,
+		Records: make([]response.JobApplyResponse, len(applies)),
+	}
+
+	for i, apply := range applies {
+		resp.Records[i] = *s.ConvertToJobApplyResponse(&apply)
+	}
+
+	return resp, nil
+}
+
+// ListByUserID 根据用户id，查询其全部的申请信息
+func (s *JobApplyService) ListByUserID(userID uint, page, size int) (*response.JobApplyListResponse, error) {
+	applies, total, err := s.jobApplyDAO.ListByUser(userID, page, size)
+	if err != nil {
+		return nil, err
+	}
+
+	resp := &response.JobApplyListResponse{
+		Total:   total,
+		Records: make([]response.JobApplyResponse, len(applies)),
+	}
+
+	for i, apply := range applies {
+		resp.Records[i] = *s.ConvertToJobApplyResponse(&apply)
+	}
+
+	return resp, nil
+}
+
+// ListByCompanyID 根据公司信息，查询所有的职位申请记录
+func (s *JobApplyService) ListByCompanyID(companyID uint, page, size int) (*response.JobApplyListResponse, error) {
+	applies, total, err := s.jobApplyDAO.ListByCompany(companyID, page, size)
+	if err != nil {
+		return nil, err
+	}
+
+	resp := &response.JobApplyListResponse{
+		Total:   total,
+		Records: make([]response.JobApplyResponse, len(applies)),
+	}
+
+	for i, apply := range applies {
+		resp.Records[i] = *s.ConvertToJobApplyResponse(&apply)
+	}
+
+	return resp, nil
 }

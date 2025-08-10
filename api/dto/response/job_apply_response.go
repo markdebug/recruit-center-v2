@@ -22,3 +22,18 @@ type JobApplyListResponse struct {
 	Total   int64              `json:"total"`
 	Records []JobApplyResponse `json:"records"`
 }
+
+// ToResponse 将 JobApply 转换为 JobApplyResponse
+func (apply *JobApplyResponse) ToResponse() *JobApplyResponse {
+	return &JobApplyResponse{
+		ID:            apply.ID,
+		JobID:         apply.JobID,
+		UserID:        apply.UserID,
+		ResumeID:      apply.ResumeID,
+		Status:        apply.Status,
+		ApplyProgress: apply.ApplyProgress,
+		ApplyTime:     apply.ApplyTime,
+		Job:           apply.Job,
+		Resume:        apply.Resume,
+	}
+}

@@ -4,47 +4,27 @@ import (
 	"time"
 
 	"org.thinkinai.com/recruit-center/internal/model"
+	"org.thinkinai.com/recruit-center/pkg/enums"
 )
 
 // JobApply 职位申请实体
 type JobApply struct {
-	ID            uint           `json:"id"`
-	JobID         uint           `json:"jobId"`         // 改为 jobId
-	UserID        uint           `json:"userId"`        // 改为 userId
-	ApplyTime     time.Time      `json:"applyTime"`     // 改为 applyTime
-	ApplyProgress string         `json:"applyProgress"` // 改为 applyProgress
-	Status        JobApplyStatus `json:"status"`
-	CreateTime    time.Time      `json:"createTime"` // 改为 createTime
-	UpdateTime    time.Time      `json:"updateTime"` // 改为 updateTime
+	ID            uint               `json:"id"`
+	JobID         uint               `json:"jobId"`         // 改为 jobId
+	UserID        uint               `json:"userId"`        // 改为 userId
+	ApplyTime     time.Time          `json:"applyTime"`     // 改为 applyTime
+	ApplyProgress string             `json:"applyProgress"` // 改为 applyProgress
+	Reason        string             `json:"reason"`        //拒绝原因
+	Status        enums.JobApplyEnum `json:"status"`
+	CreateTime    time.Time          `json:"createTime"` // 改为 createTime
+	UpdateTime    time.Time          `json:"updateTime"` // 改为 updateTime
 }
 
-// JobApplyStatus 申请状态枚举
-type JobApplyStatus int
-
-const (
-	JobApplyStatusPending    JobApplyStatus = 1 // 待处理
-	JobApplyStatusInProgress JobApplyStatus = 2 // 进行中
-	JobApplyStatusAccepted   JobApplyStatus = 3 // 已接受
-	JobApplyStatusRejected   JobApplyStatus = 4 // 已拒绝
-	JobApplyStatusWithdrawn  JobApplyStatus = 5 // 已撤回
-)
-
-// String 返回状态的字符串表示
-func (s JobApplyStatus) String() string {
-	switch s {
-	case JobApplyStatusPending:
-		return "待处理"
-	case JobApplyStatusInProgress:
-		return "进行中"
-	case JobApplyStatusAccepted:
-		return "已接受"
-	case JobApplyStatusRejected:
-		return "已拒绝"
-	case JobApplyStatusWithdrawn:
-		return "已撤回"
-	default:
-		return "未知状态"
-	}
+type JobApplyUpdateStatus struct {
+	Status enums.JobApplyEnum `json:"status" binding:"required"`
+	JobID  uint               `json:"jobId" binding:"required"`
+	UsID   uint               `json:"userId" binding:"required"`
+	Reason string             `json:"reason"`
 }
 
 // NewJobApply 创建新的职位申请
@@ -53,25 +33,25 @@ func NewJobApply(jobID, userID uint) *JobApply {
 		JobID:         jobID,
 		UserID:        userID,
 		ApplyTime:     time.Now(),
-		Status:        JobApplyStatusPending,
-		ApplyProgress: JobApplyStatusPending.String(),
+		Status:        enums.JobApplyPending,
+		ApplyProgress: enums.JobApplyPending.String(),
 		CreateTime:    time.Now(),
 		UpdateTime:    time.Now(),
 	}
 }
 
 // canTransitionTo 检查是否可以转换到目标状态
-func (ja *JobApply) canTransitionTo(targetStatus JobApplyStatus) bool {
+func (ja *JobApply) canTransitionTo(targetStatus enums.JobApplyEnum) bool {
 	// 定义状态转换规则
-	transitions := map[JobApplyStatus][]JobApplyStatus{
-		JobApplyStatusPending: {
-			JobApplyStatusInProgress,
-			JobApplyStatusRejected,
-			JobApplyStatusWithdrawn,
+	transitions := map[enums.JobApplyEnum][]enums.JobApplyEnum{
+		enums.JobApplyPending: {
+			enums.JobApplyInProgress,
+			enums.JobApplyRejected,
+			enums.JobApplyWithdrawn,
 		},
-		JobApplyStatusInProgress: {
-			JobApplyStatusAccepted,
-			JobApplyStatusRejected,
+		enums.JobApplyInProgress: {
+			enums.JobApplyAccepted,
+			enums.JobApplyRejected,
 		},
 		// 已接受、已拒绝、已撤回状态为终态，不能再转换
 	}

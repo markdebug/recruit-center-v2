@@ -148,7 +148,8 @@ func (h *ResumeHandler) GetByUser(c *gin.Context) {
 //	@Router			/api/v1/resumes/{id} [get]
 func (h *ResumeHandler) GetByID(c *gin.Context) {
 	id, _ := strconv.ParseUint(c.Param("id"), 10, 32)
-	resume, err := h.resumeService.GetResumeByID(uint(id))
+	userID := c.GetUint("userId")
+	resume, err := h.resumeService.GetResumeByID(uint(id), int(userID))
 	if err != nil {
 		c.JSON(http.StatusOK, response.NewError(errors.ResumeNotFound))
 		return

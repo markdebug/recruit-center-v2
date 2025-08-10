@@ -68,9 +68,13 @@ func setupJobRoutes(jobs *gin.RouterGroup, handler *handler.JobHandler) {
 // setupApplyRoutes 配置申请相关路由
 func setupApplyRoutes(applies *gin.RouterGroup, handler *handler.JobApplyHandler) {
 	applies.POST("/", middleware.AuthRequired(), handler.Create)
-	// applies.GET("/my", middleware.AuthRequired(), handler.ListByUser)
-	// applies.GET("/job/:id", handler.ListByJob)
-	// applies.PUT("/:id/status", middleware.AuthRequired(), handler.UpdateStatus)
+	applies.GET("/my", middleware.AuthRequired(), handler.ListByUser)
+	applies.GET("/job/:id", handler.List)
+	applies.GET("/:id", handler.GetByID)
+	applies.DELETE("/:id", middleware.AuthRequired(), handler.Delete)
+	//根据公司id查询职位申请信息
+	applies.GET("/company/:id", middleware.AuthRequired(), handler.ListByCompany)
+	applies.PUT("/:id/status", middleware.AuthRequired(), handler.UpdateStatus)
 }
 
 // setupResumeRoutes 配置简历相关路由

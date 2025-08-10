@@ -444,10 +444,20 @@ func (s *ResumeService) UploadResumeFile(userID uint, file io.Reader, filename s
 }
 
 // GetResumeByID 获取简历详情
-func (s *ResumeService) GetResumeByID(id uint) (*response.ResumeResponse, error) {
+func (s *ResumeService) GetResumeByID(id uint, userID int) (*response.ResumeResponse, error) {
 	resume, err := s.resumeDao.GetByID(id)
 	if err != nil {
 		return nil, err
+	}
+	if resume == nil {
+		logger.L.Warn("简历不存在", zap.Uint("id", id))
+		return nil, errors.New(errors.ResumeNotFound)
+	}
+
+	// 检查用户是否有权限访问简历
+	if resume.UserID != uint(userID) && resume.AccessStatus == int(enums.Hide) {
+		logger.L.Warn("简历访问被拒绝", zap.Uint("resumeID", resume.ID), zap.Uint("userID", uint(userID)))
+		return nil, errors.New(errors.ResumeAccessDenied)
 	}
 	return s.convertToResumeResponse(resume), nil
 }
