@@ -4,6 +4,7 @@ go 1.24.1
 
 require (
 	github.com/fsnotify/fsnotify v1.8.0
+	github.com/gin-contrib/cors v1.7.6
 	github.com/gin-gonic/gin v1.10.1
 	github.com/go-resty/resty/v2 v2.16.5
 	github.com/golang-jwt/jwt v3.2.2+incompatible

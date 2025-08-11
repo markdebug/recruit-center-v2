@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -40,7 +41,16 @@ func SetupRouter(jobHandler *handler.JobHandler, jobApplyHandler *handler.JobApp
 func setupGlobalMiddleware(r *gin.Engine) {
 	r.Use(gin.Recovery())
 	r.Use(middleware.LoggerMiddleware())
-	r.Use(middleware.CORSMiddleware())
+
+	// 配置CORS中间件
+	r.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"*"},                            // 允许所有来源
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"}, // 允许的HTTP方法
+		AllowHeaders:     []string{"Origin", "Authorization", "Content-Type"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour,
+	}))
 }
 
 // setupAPIRoutes 配置API路由
@@ -138,10 +148,22 @@ func setupToolRoutes(r *gin.Engine) {
 		})
 	})
 
-	// Swagger文档
+	// 创建 swagger 路由组并添加 CORS 中间件
+	swagger := r.Group("/swagger")
+	swagger.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"*"},
+		AllowMethods:     []string{"GET", "HEAD"},
+		AllowHeaders:     []string{"Origin", "Content-Type"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour,
+	}))
+
 	// Swagger配置
-	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler,
+	swagger.GET("/*any", ginSwagger.WrapHandler(swaggerfiles.Handler,
 		ginSwagger.URL("http://localhost:8080/swagger/doc.json"),
 		ginSwagger.DefaultModelsExpandDepth(-1),
+		ginSwagger.InstanceName("default"),
+		ginSwagger.PersistAuthorization(true),
 	))
 }
