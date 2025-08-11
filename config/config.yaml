@@ -5,11 +5,11 @@ port: 8080
 
 # 数据库配置
 db:
-  host: "192.168.2.185"
-  port: 5432
-  username: "pgtest"
-  password: "123456"
-  database: "testdb"
+  host: "db.dev.thinkinai.xyz"
+  port: 15432
+  username: "postgres"
+  password: "HyveANDePAcSvcpkpUzm"
+  database: "thinkinai"
 
 # 日志配置
 log:
