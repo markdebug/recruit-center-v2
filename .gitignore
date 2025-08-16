@@ -37,3 +37,4 @@ go/pkg/mod/cache/
 
 # Logs
 *.log
+logs/*.log
