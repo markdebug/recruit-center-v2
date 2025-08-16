@@ -27,9 +27,11 @@ type AIConfig struct {
 type Config struct {
 	DB               DB               `mapstructure:"db"`          // Database configuration
 	Oss              OssConfig        `mapstructure:"oss"`         // OSS configuration
+	JWTConfig        JWTConfig        `mapstructure:"jwt"`         // JWT configuration
 	FileUploadConfig FileUploadConfig `mapstructure:"file_upload"` // File upload configuration
 	Name             string           `mapstructure:"name"`        // Application name
 	Port             int              `mapstructure:"port"`        // Application port
+	Host             string           `mapstructure:"host"`        // Application host
 	Env              string           `mapstructure:"env"`         // Application environment (e.g., development, production)
 	Log              LogConfig        `mapstructure:"log"`         // Logging configuration
 	Version          string           `mapstructure:"version"`     // Application version
@@ -40,6 +42,10 @@ type Config struct {
 
 type SystemConfig struct {
 	UserTagLimit int `mapstructure:"user_tag_limit"` // 用户标签限制
+}
+
+type JWTConfig struct {
+	Secret string `mapstructure:"secret"` // JWT密钥
 }
 
 type DB struct {

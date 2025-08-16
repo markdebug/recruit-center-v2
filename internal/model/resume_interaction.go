@@ -13,9 +13,9 @@ const (
 // ResumeInteraction 简历交互记录
 type ResumeInteraction struct {
 	Id        uint            `gorm:"primarykey"`
-	ResumeID  uint            `gorm:"index:idx_resume_user_type"`
-	UserID    uint            `gorm:"index:idx_resume_user_type"`
-	Type      InteractionType `gorm:"index:idx_resume_user_type;type:varchar(20)"`
+	ResumeID  uint            `gorm:"index:idx_resume_user_type,priority:1"`
+	UserID    uint            `gorm:"index:idx_resume_user_type,priority:2"`
+	Type      InteractionType `gorm:"index:idx_resume_user_type,priority:3;type:varchar(20)"`
 	CreatedAt time.Time       `gorm:"autoCreateTime"`
 	UpdatedAt time.Time
 }

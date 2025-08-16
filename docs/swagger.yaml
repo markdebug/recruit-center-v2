@@ -1051,7 +1051,7 @@ definitions:
         description: 响应信息
         type: string
     type: object
-host: localhost:8080
+host: localhost:9850
 info:
   contact:
     email: support@swagger.io

@@ -2,6 +2,7 @@ name: "recruit-center"
 version: "1.0.0"
 env: "development"
 port: 9850
+host: "localhost"
 
 # 数据库配置
 db:
@@ -51,3 +52,5 @@ ai:
   modelName: gpt-4
   timeout: 30s
   maxRetries: 3
+jwt:
+  secret: abcd123456

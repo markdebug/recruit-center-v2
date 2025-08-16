@@ -44,22 +44,22 @@ const (
 // Job 职位信息
 type Job struct {
 	ID            uint      `gorm:"primarykey" json:"id"`
-	Name          string    `gorm:"size:100;not null" json:"name"`
-	CompanyID     uint      `gorm:"not null" json:"companyId"`
+	Name          string    `gorm:"size:100;not null;index:idx_name_status_del,priority:1" json:"name"`
+	CompanyID     uint      `gorm:"not null;index:idx_company_status_del,priority:1" json:"companyId"`
 	JobSkill      string    `gorm:"size:500" json:"jobSkill"`
 	JobSalary     int       `gorm:"size:50" json:"jobSalary"`
 	JobSalaryMax  int       `gorm:"size:50" json:"jobSalaryMax"`
 	JobDescribe   string    `gorm:"type:text" json:"jobDescribe"`
 	JobLocation   string    `gorm:"size:200" json:"jobLocation"`
-	JobExpireTime time.Time `gorm:"index" json:"jobExpireTime"`
-	Status        int       `gorm:"default:1" json:"status"` // 职位状态 1: 待发布 2: 已发布 3: 暂停发布
+	JobExpireTime time.Time `gorm:"index:idx_expire_status_del,priority:1" json:"jobExpireTime"`
+	Status        int       `gorm:"default:1;index:idx_name_status_del,priority:2;index:idx_company_status_del,priority:2;index:idx_expire_status_del,priority:2" json:"status"` // 职位状态 1: 待发布 2: 已发布 3: 暂停发布
 	JobType       int       `gorm:"size:50" json:"jobType"`
-	JobCategory   string    `gorm:"size:50" json:"jobCategory"`
+	JobCategory   string    `gorm:"size:50;index:idx_category_status_del,priority:1" json:"jobCategory"`
 	JobExperience string    `gorm:"size:50" json:"jobExperience"`
 	JobEducation  string    `gorm:"size:50" json:"jobEducation"`
 	JobBenefit    string    `gorm:"size:500" json:"jobBenefit"`
 	JobContact    string    `gorm:"size:100" json:"jobContact"`
-	DeleteStatus  int       `gorm:"default:0" json:"deleteStatus"`
+	DeleteStatus  int       `gorm:"default:0;index:idx_name_status_del,priority:3;index:idx_company_status_del,priority:3;index:idx_expire_status_del,priority:3;index:idx_category_status_del,priority:2" json:"deleteStatus"`
 	JobSource     string    `gorm:"size:100" json:"jobSource"`
 	CreateTime    time.Time `gorm:"autoCreateTime" json:"createTime"`
 	UpdateTime    time.Time `gorm:"autoUpdateTime" json:"updateTime"`

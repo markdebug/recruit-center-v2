@@ -1,16 +1,42 @@
 package utils
 
 import (
+	"time"
+
 	"github.com/golang-jwt/jwt"
+	"org.thinkinai.com/recruit-center/pkg/config"
 )
 
-var jwtSecret = []byte("your-secret-key") // 建议从配置文件读取
+var jwtSecret []byte
 
+func InitJwt(jwtConfig *config.JWTConfig) {
+	// 初始化JWT密钥
+	jwtSecret = []byte(jwtConfig.Secret)
+}
+
+// Claims JWT载荷
 type Claims struct {
 	UserID   uint   `json:"userId"`
 	Username string `json:"username"`
 	Role     string `json:"role"`
 	jwt.StandardClaims
+}
+
+// GenerateToken 生成JWT token
+func GenerateToken(userID uint, username, role string) (string, error) {
+	claims := Claims{
+		UserID:   userID,
+		Username: username,
+		Role:     role,
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: time.Now().Add(24 * time.Hour).Unix(), // 24小时过期
+			IssuedAt:  time.Now().Unix(),
+			Issuer:    "recruit-center",
+		},
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	return token.SignedString(jwtSecret)
 }
 
 // ParseToken 解析JWT token

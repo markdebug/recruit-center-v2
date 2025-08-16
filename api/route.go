@@ -159,11 +159,18 @@ func setupToolRoutes(r *gin.Engine) {
 		MaxAge:           12 * time.Hour,
 	}))
 
+	// 从配置获取服务地址和端口
+	cfg := config.GetConfig()
+	swaggerURL := fmt.Sprintf("http://%s:%d/swagger/doc.json",
+		cfg.Host,
+		cfg.Port,
+	)
+
 	// Swagger配置
 	swagger.GET("/*any", ginSwagger.WrapHandler(swaggerfiles.Handler,
-		ginSwagger.URL("http://localhost:8080/swagger/doc.json"),
+		ginSwagger.URL(swaggerURL),
 		ginSwagger.DefaultModelsExpandDepth(-1),
-		ginSwagger.InstanceName("default"),
-		ginSwagger.PersistAuthorization(true),
+		// ginSwagger.InstanceName("default"),
+		// ginSwagger.PersistAuthorization(true),
 	))
 }

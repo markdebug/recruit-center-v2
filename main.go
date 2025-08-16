@@ -12,7 +12,7 @@ package main
 //	@license.name	Apache 2.0
 //	@license.url	http://www.apache.org/licenses/LICENSE-2.0.html
 
-//	@host		localhost:8080
+//	@host		localhost:9850
 
 import (
 	"context"
@@ -34,6 +34,7 @@ import (
 	"org.thinkinai.com/recruit-center/pkg/config"
 	"org.thinkinai.com/recruit-center/pkg/database"
 	"org.thinkinai.com/recruit-center/pkg/logger"
+	"org.thinkinai.com/recruit-center/pkg/utils"
 )
 
 var (
@@ -133,7 +134,8 @@ func (a *App) initHTTPServer() error {
 	if err != nil {
 		return fmt.Errorf("初始化数据库失败: %w", err)
 	}
-
+	// 初始化jwt配置
+	utils.InitJwt(&a.cfg.JWTConfig)
 	// 初始化依赖
 	handlers, err := a.initializeDependencies(db)
 	if err != nil {

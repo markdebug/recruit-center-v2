@@ -5,8 +5,8 @@ import "time"
 // JobStatistics 职位统计信息
 type JobStatistics struct {
 	ID             uint      `gorm:"primarykey" json:"id"`
-	JobID          uint      `gorm:"not null;index" json:"jobId"`
-	CompanyID      uint      `gorm:"not null;index" json:"companyId"`
+	JobID          uint      `gorm:"not null;index:idx_job_company,priority:1;uniqueIndex" json:"jobId"`
+	CompanyID      uint      `gorm:"not null;index:idx_job_company,priority:2" json:"companyId"`
 	ViewCount      int64     `gorm:"default:0" json:"viewCount"`      // 浏览数
 	ApplyCount     int64     `gorm:"default:0" json:"applyCount"`     // 申请数
 	ConversionRate float64   `gorm:"default:0" json:"conversionRate"` // 转化率 (申请数/浏览数)

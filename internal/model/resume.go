@@ -10,7 +10,7 @@ import (
 // Resume 简历基本信息
 type Resume struct {
 	ID             uint      `gorm:"primarykey" json:"id"`
-	UserID         uint      `gorm:"not null;index" json:"userId"`
+	UserID         uint      `gorm:"not null;index:idx_user_status_del,priority:1" json:"userId"`
 	Name           string    `gorm:"size:50;not null" json:"name"`
 	Avatar         string    `gorm:"size:255" json:"avatar"`
 	Gender         int       `gorm:"default:0" json:"gender"`
@@ -19,19 +19,19 @@ type Resume struct {
 	Email          string    `gorm:"size:200" json:"email"`    // 修改size以适应加密后的长度
 	Location       string    `gorm:"size:200" json:"location"` // 修改size以适应加密后的长度
 	Experience     int       `json:"experience"`
-	JobStatus      int       `gorm:"default:0" json:"jobStatus"`             // 0: 未找工作, 1: 在找工作, 2: 已找到工作
-	ExpectedJob    string    `gorm:"size:50" json:"expectedJob"`             // 期望职位
-	ExpectedCity   string    `gorm:"size:50" json:"expectedCity"`            // 期望城市
-	ExpectedSalary string    `gorm:"size:50" json:"expectedSalary"`          // 期望薪资
-	Introduction   string    `gorm:"type:text" json:"introduction"`          // 个人简介
-	Skills         string    `gorm:"type:text" json:"skills"`                // 技能描述
-	ShareToken     string    `gorm:"size:100;uniqueIndex" json:"shareToken"` // 用于分享简历的唯一标识
-	AccessStatus   int       `gorm:"default:2" json:"accessStatus"`          // 1: 隐藏, 2: 公开
-	WorkingStatus  int       `gorm:"default:1" json:"workingStatus"`         // 1: 在职, 2: 离职
-	Status         int       `gorm:"default:1" json:"status"`                // 1: 正常, 0: 删除
+	JobStatus      int       `gorm:"default:0;index:idx_status_access_del,priority:1" json:"jobStatus"`                                   // 0: 未找工作, 1: 在找工作, 2: 已找到工作
+	ExpectedJob    string    `gorm:"size:50" json:"expectedJob"`                                                                          // 期望职位
+	ExpectedCity   string    `gorm:"size:50" json:"expectedCity"`                                                                         // 期望城市
+	ExpectedSalary string    `gorm:"size:50" json:"expectedSalary"`                                                                       // 期望薪资
+	Introduction   string    `gorm:"type:text" json:"introduction"`                                                                       // 个人简介
+	Skills         string    `gorm:"type:text" json:"skills"`                                                                             // 技能描述
+	ShareToken     string    `gorm:"size:100;uniqueIndex" json:"shareToken"`                                                              // 用于分享简历的唯一标识
+	AccessStatus   int       `gorm:"default:2;index:idx_status_access_del,priority:2" json:"accessStatus"`                                // 1: 隐藏, 2: 公开
+	WorkingStatus  int       `gorm:"default:1" json:"workingStatus"`                                                                      // 1: 在职, 2: 离职
+	Status         int       `gorm:"default:1;index:idx_user_status_del,priority:2;index:idx_status_access_del,priority:3" json:"status"` // 1: 正常, 0: 删除
 	CreatedAt      time.Time
 	UpdatedAt      time.Time
-	DeletedAt      *time.Time `gorm:"index"`
+	DeletedAt      *time.Time `gorm:"index:idx_user_status_del,priority:3;index:idx_status_access_del,priority:4"`
 
 	// 关联
 	Educations      []Education        `json:"educations"`
@@ -43,7 +43,7 @@ type Resume struct {
 // Education 教育经历
 type Education struct {
 	ID        uint      `gorm:"primarykey" json:"id"`
-	ResumeID  uint      `gorm:"not null;index" json:"resumeId"`
+	ResumeID  uint      `gorm:"not null;index:idx_resume_del,priority:1" json:"resumeId"`
 	School    string    `gorm:"size:100;not null" json:"school"`
 	Major     string    `gorm:"size:100" json:"major"`
 	Degree    string    `gorm:"size:50" json:"degree"`
@@ -51,12 +51,13 @@ type Education struct {
 	EndTime   time.Time `json:"endTime"`
 	CreatedAt time.Time
 	UpdatedAt time.Time
+	DeletedAt *time.Time `gorm:"index:idx_resume_del,priority:2"`
 }
 
 // WorkExperience 工作经历
 type WorkExperience struct {
 	ID          uint      `gorm:"primarykey" json:"id"`
-	ResumeID    uint      `gorm:"not null;index" json:"resumeId"`
+	ResumeID    uint      `gorm:"not null;index:idx_resume_del,priority:1" json:"resumeId"`
 	CompanyName string    `gorm:"size:100;not null" json:"companyName"`
 	Position    string    `gorm:"size:100" json:"position"`
 	Department  string    `gorm:"size:100" json:"department"`
@@ -66,12 +67,13 @@ type WorkExperience struct {
 	Achievement string    `gorm:"type:text" json:"achievement"`
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
+	DeletedAt   *time.Time `gorm:"index:idx_resume_del,priority:2"`
 }
 
 // Project 项目经历
 type Project struct {
 	ID          uint      `gorm:"primarykey" json:"id"`
-	ResumeID    uint      `gorm:"not null;index" json:"resumeId"`
+	ResumeID    uint      `gorm:"not null;index:idx_resume_del,priority:1" json:"resumeId"`
 	Name        string    `gorm:"size:100;not null" json:"name"`
 	Role        string    `gorm:"size:50" json:"role"`
 	StartTime   time.Time `json:"startTime"`
@@ -81,20 +83,21 @@ type Project struct {
 	Achievement string    `gorm:"type:text" json:"achievement"`
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
+	DeletedAt   *time.Time `gorm:"index:idx_resume_del,priority:2"`
 }
 
 // ResumeAttachment 简历附件
 type ResumeAttachment struct {
 	ID        uint   `gorm:"primarykey" json:"id"`
-	ResumeID  uint   `gorm:"not null;index" json:"resumeId"`
-	FileName  string `gorm:"size:255;not null" json:"fileName"` // 文件名
-	FileURL   string `gorm:"size:1000;not null" json:"fileUrl"` // 文件URL
-	FileSize  int64  `gorm:"not null" json:"fileSize"`          // 文件大小(字节)
-	FileType  string `gorm:"size:50;not null" json:"fileType"`  // 文件类型(如: pdf, doc, docx等)
-	Status    int    `gorm:"default:1" json:"status"`           // 状态(1: 正常, 0: 删除)
+	ResumeID  uint   `gorm:"not null;index:idx_resume_status_del,priority:1" json:"resumeId"`
+	FileName  string `gorm:"size:255;not null" json:"fileName"`                              // 文件名
+	FileURL   string `gorm:"size:1000;not null" json:"fileUrl"`                              // 文件URL
+	FileSize  int64  `gorm:"not null" json:"fileSize"`                                       // 文件大小(字节)
+	FileType  string `gorm:"size:50;not null" json:"fileType"`                               // 文件类型(如: pdf, doc, docx等)
+	Status    int    `gorm:"default:1;index:idx_resume_status_del,priority:2" json:"status"` // 状态(1: 正常, 0: 删除)
 	CreatedAt time.Time
 	UpdatedAt time.Time
-	DeletedAt *time.Time `gorm:"index"`
+	DeletedAt *time.Time `gorm:"index:idx_resume_status_del,priority:3"`
 }
 
 // TableName 指定表名
