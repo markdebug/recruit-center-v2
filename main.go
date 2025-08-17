@@ -44,7 +44,7 @@ var (
 
 func init() {
 	// 添加命令行参数支持
-	flag.StringVar(&configPath, "config", "config/config.yaml", "配置文件路径")
+	flag.StringVar(&configPath, "config", "config/config.dev.yaml", "配置文件路径")
 	flag.StringVar(&env, "env", "dev", "运行环境(dev/prod)")
 	flag.Parse()
 }
@@ -133,6 +133,10 @@ func (a *App) initHTTPServer() error {
 	db, err := database.Init(&a.cfg.DB)
 	if err != nil {
 		return fmt.Errorf("初始化数据库失败: %w", err)
+	}
+	// 自动迁移数据库表结构
+	if err := database.AutoMigrate(db); err != nil {
+		return fmt.Errorf("自动迁移数据库失败: %w", err)
 	}
 	// 初始化jwt配置
 	utils.InitJwt(&a.cfg.JWTConfig)

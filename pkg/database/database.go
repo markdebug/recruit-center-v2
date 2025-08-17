@@ -64,9 +64,11 @@ func AutoMigrate(db *gorm.DB) error {
 		&model.Job{},
 		&model.JobApply{},
 		&model.JobStatistics{},
+		&model.JobFavorite{},
 		&model.Notification{},
 		&model.NotificationTemplate{},
 		&model.Dict{},
+
 	// 添加其他需要迁移的模型
 	)
 }
